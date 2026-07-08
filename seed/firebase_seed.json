@@ -1,0 +1,303 @@
+{
+  "lines": {
+    "line_101": {
+      "number": "L101",
+      "name": "Centro/Ecoparque",
+      "description": "Centro → Ecoparque",
+      "distance": 8.5,
+      "averageDuration": 35,
+      "color": "#4A9EBF"
+    },
+    "line_102": {
+      "number": "L102",
+      "name": "Efapi",
+      "description": "Centro → Efapi",
+      "distance": 10.2,
+      "averageDuration": 40,
+      "color": "#2E9E4F"
+    },
+    "line_103": {
+      "number": "L103",
+      "name": "H. Regional",
+      "description": "Centro → Hospital Regional",
+      "distance": 5.4,
+      "averageDuration": 20,
+      "color": "#E5484D"
+    }
+  },
+  "stops": {
+    "line_101_stop_01": {
+      "lineId": "line_101",
+      "name": "Terminal Urbano Centro",
+      "latitude": -27.098,
+      "longitude": -52.618,
+      "order": 1
+    },
+    "line_101_stop_02": {
+      "lineId": "line_101",
+      "name": "Av. Getúlio Vargas",
+      "latitude": -27.0998,
+      "longitude": -52.617,
+      "order": 2
+    },
+    "line_101_stop_03": {
+      "lineId": "line_101",
+      "name": "R. Condá",
+      "latitude": -27.1015,
+      "longitude": -52.6158,
+      "order": 3
+    },
+    "line_101_stop_04": {
+      "lineId": "line_101",
+      "name": "UCEFF Faculdades",
+      "latitude": -27.1032,
+      "longitude": -52.6148,
+      "order": 4
+    },
+    "line_101_stop_05": {
+      "lineId": "line_101",
+      "name": "R. São Marcos",
+      "latitude": -27.105,
+      "longitude": -52.6136,
+      "order": 5
+    },
+    "line_101_stop_06": {
+      "lineId": "line_101",
+      "name": "R. Santo André",
+      "latitude": -27.1068,
+      "longitude": -52.612,
+      "order": 6
+    },
+    "line_101_stop_07": {
+      "lineId": "line_101",
+      "name": "R. Pinheiros",
+      "latitude": -27.1085,
+      "longitude": -52.6105,
+      "order": 7
+    },
+    "line_101_stop_08": {
+      "lineId": "line_101",
+      "name": "Ecoparque",
+      "latitude": -27.1102,
+      "longitude": -52.6088,
+      "order": 8
+    },
+    "line_102_stop_01": {
+      "lineId": "line_102",
+      "name": "Terminal Urbano Centro",
+      "latitude": -27.098,
+      "longitude": -52.618,
+      "order": 1
+    },
+    "line_102_stop_02": {
+      "lineId": "line_102",
+      "name": "Av. Fernando Machado",
+      "latitude": -27.0972,
+      "longitude": -52.623,
+      "order": 2
+    },
+    "line_102_stop_03": {
+      "lineId": "line_102",
+      "name": "R. Marechal Bormann",
+      "latitude": -27.096,
+      "longitude": -52.629,
+      "order": 3
+    },
+    "line_102_stop_04": {
+      "lineId": "line_102",
+      "name": "Bairro São Cristóvão",
+      "latitude": -27.0948,
+      "longitude": -52.637,
+      "order": 4
+    },
+    "line_102_stop_05": {
+      "lineId": "line_102",
+      "name": "Arena Condá",
+      "latitude": -27.0935,
+      "longitude": -52.646,
+      "order": 5
+    },
+    "line_102_stop_06": {
+      "lineId": "line_102",
+      "name": "Bairro Efapi",
+      "latitude": -27.092,
+      "longitude": -52.656,
+      "order": 6
+    },
+    "line_102_stop_07": {
+      "lineId": "line_102",
+      "name": "Terminal Efapi",
+      "latitude": -27.091,
+      "longitude": -52.665,
+      "order": 7
+    },
+    "line_103_stop_01": {
+      "lineId": "line_103",
+      "name": "Terminal Urbano Centro",
+      "latitude": -27.098,
+      "longitude": -52.618,
+      "order": 1
+    },
+    "line_103_stop_02": {
+      "lineId": "line_103",
+      "name": "Catedral Santo Antônio",
+      "latitude": -27.0965,
+      "longitude": -52.6172,
+      "order": 2
+    },
+    "line_103_stop_03": {
+      "lineId": "line_103",
+      "name": "R. Clevelândia",
+      "latitude": -27.094,
+      "longitude": -52.616,
+      "order": 3
+    },
+    "line_103_stop_04": {
+      "lineId": "line_103",
+      "name": "R. Lauro Müller",
+      "latitude": -27.0915,
+      "longitude": -52.6145,
+      "order": 4
+    },
+    "line_103_stop_05": {
+      "lineId": "line_103",
+      "name": "R. Florianópolis",
+      "latitude": -27.0895,
+      "longitude": -52.6132,
+      "order": 5
+    },
+    "line_103_stop_06": {
+      "lineId": "line_103",
+      "name": "Hospital Regional",
+      "latitude": -27.0872,
+      "longitude": -52.6118,
+      "order": 6
+    }
+  },
+  "schedules": {
+    "line_101_sch_01": {
+      "lineId": "line_101",
+      "departureTime": "06:30",
+      "weekday": 1
+    },
+    "line_101_sch_02": {
+      "lineId": "line_101",
+      "departureTime": "07:15",
+      "weekday": 1
+    },
+    "line_101_sch_03": {
+      "lineId": "line_101",
+      "departureTime": "12:00",
+      "weekday": 1
+    },
+    "line_101_sch_04": {
+      "lineId": "line_101",
+      "departureTime": "17:45",
+      "weekday": 1
+    },
+    "line_101_sch_05": {
+      "lineId": "line_101",
+      "departureTime": "08:00",
+      "weekday": 6
+    },
+    "line_101_sch_06": {
+      "lineId": "line_101",
+      "departureTime": "14:00",
+      "weekday": 6
+    },
+    "line_102_sch_01": {
+      "lineId": "line_102",
+      "departureTime": "06:30",
+      "weekday": 1
+    },
+    "line_102_sch_02": {
+      "lineId": "line_102",
+      "departureTime": "07:15",
+      "weekday": 1
+    },
+    "line_102_sch_03": {
+      "lineId": "line_102",
+      "departureTime": "12:00",
+      "weekday": 1
+    },
+    "line_102_sch_04": {
+      "lineId": "line_102",
+      "departureTime": "17:45",
+      "weekday": 1
+    },
+    "line_102_sch_05": {
+      "lineId": "line_102",
+      "departureTime": "08:00",
+      "weekday": 6
+    },
+    "line_102_sch_06": {
+      "lineId": "line_102",
+      "departureTime": "14:00",
+      "weekday": 6
+    },
+    "line_103_sch_01": {
+      "lineId": "line_103",
+      "departureTime": "06:30",
+      "weekday": 1
+    },
+    "line_103_sch_02": {
+      "lineId": "line_103",
+      "departureTime": "07:15",
+      "weekday": 1
+    },
+    "line_103_sch_03": {
+      "lineId": "line_103",
+      "departureTime": "12:00",
+      "weekday": 1
+    },
+    "line_103_sch_04": {
+      "lineId": "line_103",
+      "departureTime": "17:45",
+      "weekday": 1
+    },
+    "line_103_sch_05": {
+      "lineId": "line_103",
+      "departureTime": "08:00",
+      "weekday": 6
+    },
+    "line_103_sch_06": {
+      "lineId": "line_103",
+      "departureTime": "14:00",
+      "weekday": 6
+    }
+  },
+  "buses": {
+    "bus_1430": {
+      "number": "1430",
+      "plate": "CHA-4321",
+      "model": "Mercedes-Benz OF-1721",
+      "year": 2019,
+      "lineId": "line_101",
+      "status": "offline"
+    },
+    "bus_1431": {
+      "number": "1431",
+      "plate": "CHA-4388",
+      "model": "Mercedes-Benz OF-1721",
+      "year": 2020,
+      "lineId": "line_101",
+      "status": "offline"
+    },
+    "bus_1521": {
+      "number": "1521",
+      "plate": "CHA-5512",
+      "model": "Volvo B270F",
+      "year": 2021,
+      "lineId": "line_102",
+      "status": "offline"
+    },
+    "bus_1610": {
+      "number": "1610",
+      "plate": "CHA-6103",
+      "model": "Marcopolo Torino",
+      "year": 2022,
+      "lineId": "line_103",
+      "status": "offline"
+    }
+  }
+}
