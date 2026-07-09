@@ -3,11 +3,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
+import '../../../domain/entities/enums/driver_status.dart';
 import '../../../domain/entities/line.dart';
 import '../../../domain/entities/user.dart';
 import '../../controllers/driver_trip_controller.dart';
 import '../../controllers/profile_controller.dart';
 import '../../providers/line_providers.dart';
+import '../../providers/repository_providers.dart';
+import '../../providers/usecase_providers.dart';
 import '../../routes/app_routes.dart';
 import '../../widgets/common/app_snackbar.dart';
 import '../../widgets/common/loading_overlay.dart';
@@ -25,9 +28,15 @@ class DriverProfilePage extends ConsumerWidget {
   const DriverProfilePage({super.key});
 
   Future<void> _logout(BuildContext context, WidgetRef ref) async {
-    // Encerra um trajeto ativo antes de sair, evitando um ônibus
-    // "fantasma" transmitindo no mapa dos passageiros.
+    // Encerra um trajeto ativo e marca o motorista como offline antes
+    // de sair, evitando um ônibus "fantasma" no mapa dos passageiros.
     await ref.read(driverTripControllerProvider.notifier).finishTrip();
+    final String? uid = ref.read(authRepositoryProvider).currentUid;
+    if (uid != null) {
+      await ref
+          .read(updateDriverStatusProvider)
+          .call(uid, DriverStatus.offline);
+    }
     final bool success =
         await ref.read(profileControllerProvider.notifier).logout();
     if (success && context.mounted) {

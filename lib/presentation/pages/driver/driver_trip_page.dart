@@ -110,10 +110,9 @@ class DriverTripPage extends ConsumerWidget {
   Set<Polyline> _buildPolylines(Line? line, List<Stop> stops) {
     if (line == null || stops.length < 2) return const <Polyline>{};
     return <Polyline>{
-      Polyline(
-        polylineId: PolylineId(line.id),
+      MapUtils.routePolyline(
+        id: line.id,
         color: colorFromHex(line.color),
-        width: kRoutePolylineWidth,
         points: stops
             .map((Stop stop) => LatLng(stop.latitude, stop.longitude))
             .toList(),

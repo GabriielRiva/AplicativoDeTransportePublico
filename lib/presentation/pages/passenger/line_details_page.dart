@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
-import '../../../core/constants/map_constants.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../core/utils/map_utils.dart';
@@ -139,10 +138,9 @@ class _LineDetailsPageState extends ConsumerState<LineDetailsPage> {
   Set<Polyline> _buildPolylines(List<Stop> stops) {
     if (stops.length < 2) return const <Polyline>{};
     return <Polyline>{
-      Polyline(
-        polylineId: PolylineId(widget.line.id),
+      MapUtils.routePolyline(
+        id: widget.line.id,
         color: colorFromHex(widget.line.color),
-        width: kRoutePolylineWidth,
         points: stops
             .map((Stop stop) => LatLng(stop.latitude, stop.longitude))
             .toList(),

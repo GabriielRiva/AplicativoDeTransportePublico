@@ -3,9 +3,6 @@ import 'package:flutter/material.dart';
 /// Azul principal da identidade visual (logo e botões).
 const Color kPrimaryColor = Color(0xFF4A9EBF);
 
-/// Variante escura do azul principal.
-const Color kPrimaryDarkColor = Color(0xFF35708A);
-
 /// Cor de fundo padrão das telas.
 const Color kBackgroundColor = Color(0xFFF7F6F4);
 

@@ -18,13 +18,6 @@ abstract final class Formatters {
   /// Formata duração em minutos (ex.: "35 min").
   static String durationMinutes(int minutes) => '$minutes min';
 
-  /// Formata o horário de um [DateTime] como "HH:mm".
-  static String time(DateTime dateTime) {
-    final String hour = dateTime.hour.toString().padLeft(2, '0');
-    final String minute = dateTime.minute.toString().padLeft(2, '0');
-    return '$hour:$minute';
-  }
-
   /// Converte o número do dia da semana (1 = segunda) em nome por extenso.
   static String weekdayName(int weekday) {
     if (weekday < DateTime.monday || weekday > DateTime.sunday) {

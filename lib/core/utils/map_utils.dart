@@ -1,7 +1,9 @@
 import 'dart:math' as math;
 
+import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
+import '../constants/map_constants.dart';
 import 'geo_utils.dart';
 
 /// Utilitários de mapa dependentes do Google Maps (camada de apresentação).
@@ -9,16 +11,6 @@ abstract final class MapUtils {
   /// Calcula a distância em km entre dois pontos do mapa.
   static double distanceInKm(LatLng from, LatLng to) {
     return GeoUtils.distanceInKm(
-      from.latitude,
-      from.longitude,
-      to.latitude,
-      to.longitude,
-    );
-  }
-
-  /// Estima o tempo de chegada em minutos entre dois pontos do mapa.
-  static int estimateArrivalMinutes(LatLng from, LatLng to) {
-    return GeoUtils.estimateArrivalMinutes(
       from.latitude,
       from.longitude,
       to.latitude,
@@ -45,6 +37,22 @@ abstract final class MapUtils {
     return LatLngBounds(
       southwest: LatLng(minLat, minLng),
       northeast: LatLng(maxLat, maxLng),
+    );
+  }
+
+  /// Cria a polyline de uma rota a partir dos pontos ordenados,
+  /// reutilizada nas telas de detalhes da linha e de trajeto ativo.
+  static Polyline routePolyline({
+    required String id,
+    required Color color,
+    required List<LatLng> points,
+    int width = kRoutePolylineWidth,
+  }) {
+    return Polyline(
+      polylineId: PolylineId(id),
+      color: color,
+      width: width,
+      points: points,
     );
   }
 }
