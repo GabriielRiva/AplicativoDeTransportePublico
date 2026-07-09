@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../core/utils/formatters.dart';
 import '../../../domain/entities/line.dart';
+import '../common/info_row.dart';
 
 /// Painel "Rota Detalhada" da tela de Linhas e Trajetos (RF09).
 class RouteInfoCard extends StatelessWidget {
@@ -33,63 +34,28 @@ class RouteInfoCard extends StatelessWidget {
               style: AppTextStyles.title,
             ),
             const SizedBox(height: 12),
-            _InfoRow(
+            InfoRow(
               icon: Icons.map_outlined,
               label: 'Trajetos:',
               value: line.description,
             ),
-            _InfoRow(
+            InfoRow(
               icon: Icons.route_outlined,
               label: 'Distância Total:',
               value: Formatters.distanceKm(line.distance),
             ),
-            _InfoRow(
+            InfoRow(
               icon: Icons.directions_bus_outlined,
               label: 'Quantidade de Pontos:',
               value: '$stopsCount',
             ),
-            _InfoRow(
+            InfoRow(
               icon: Icons.access_time,
               label: 'Tempo Médio:',
               value: Formatters.durationMinutes(line.averageDuration),
             ),
           ],
         ),
-      ),
-    );
-  }
-}
-
-class _InfoRow extends StatelessWidget {
-  const _InfoRow({
-    required this.icon,
-    required this.label,
-    required this.value,
-  });
-
-  final IconData icon;
-  final String label;
-  final String value;
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4),
-      child: Row(
-        children: <Widget>[
-          Icon(icon, size: 18),
-          const SizedBox(width: 8),
-          Text(label, style: AppTextStyles.body),
-          const SizedBox(width: 4),
-          Expanded(
-            child: Text(
-              value,
-              style:
-                  AppTextStyles.body.copyWith(fontWeight: FontWeight.bold),
-              overflow: TextOverflow.ellipsis,
-            ),
-          ),
-        ],
       ),
     );
   }

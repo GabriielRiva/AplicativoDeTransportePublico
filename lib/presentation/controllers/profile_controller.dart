@@ -6,6 +6,7 @@ import '../../core/errors/error_handler.dart';
 import '../../core/utils/app_logger.dart';
 import '../../domain/entities/passenger.dart';
 import '../../domain/entities/user.dart';
+import '../providers/auth_providers.dart';
 import '../providers/usecase_providers.dart';
 
 /// ViewModel do perfil do usuário autenticado (RF15/RF16).
@@ -15,6 +16,9 @@ import '../providers/usecase_providers.dart';
 class ProfileController extends AsyncNotifier<User?> {
   @override
   Future<User?> build() {
+    // Recarrega o perfil a cada mudança de sessão (login/logout),
+    // evitando que a tela de Perfil mostre dados do usuário anterior.
+    ref.watch(authStateProvider);
     return ref.watch(getCurrentUserProvider).call();
   }
 

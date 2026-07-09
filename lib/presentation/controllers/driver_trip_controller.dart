@@ -10,6 +10,7 @@ import '../../domain/entities/bus.dart';
 import '../../domain/entities/enums/driver_status.dart';
 import '../../domain/entities/line.dart';
 import '../../domain/entities/trip.dart';
+import '../providers/auth_providers.dart';
 import '../providers/repository_providers.dart';
 import '../providers/service_providers.dart';
 import '../providers/usecase_providers.dart';
@@ -90,6 +91,9 @@ class DriverTripController extends Notifier<DriverTripState> {
 
   @override
   DriverTripState build() {
+    // Reinicia o fluxo de trajeto a cada mudança de sessão, evitando
+    // que dados do motorista anterior permaneçam após um novo login.
+    ref.watch(authStateProvider);
     ref.onDispose(_stopTransmission);
     return const DriverTripState();
   }
