@@ -1,3 +1,4 @@
+import '../../providers/navigation_providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -137,12 +138,18 @@ class DriverProfilePage extends ConsumerWidget {
               const SizedBox(height: 24),
               TripStatusCard(status: tripState.status),
               const SizedBox(height: 16),
-              TripActionButtons(
+                 TripActionButtons(
                 canStart: tripState.canStartTrip,
                 canFinish: tripState.isTransmitting,
-                onStart: ref
-                    .read(driverTripControllerProvider.notifier)
-                    .startTrip,
+                onStart: () async {
+                  await ref
+                      .read(driverTripControllerProvider.notifier)
+                      .startTrip();
+                  // Se iniciou de fato, vai para a aba Trajeto.
+                  if (ref.read(driverTripControllerProvider).isTransmitting) {
+                    ref.read(driverNavIndexProvider.notifier).state = 0;
+                  }
+                },
                 onFinish: ref
                     .read(driverTripControllerProvider.notifier)
                     .finishTrip,

@@ -1,3 +1,4 @@
+import '../providers/map_icon_providers.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -40,13 +41,15 @@ class PassengerMapState {
 /// drivers/ os marcadores e a lista de próximos são recalculados
 /// automaticamente, sem intervenção do usuário (RF18).
 class PassengerMapController extends Notifier<PassengerMapState> {
-  @override
+   @override
   PassengerMapState build() {
     final AsyncValue<List<Trip>> tripsAsync =
         ref.watch(activeBusesProvider);
     final AsyncValue<List<Line>> linesAsync = ref.watch(linesProvider);
     final AsyncValue<Position> positionAsync =
         ref.watch(userPositionProvider);
+    final MapMarkerIcons? icons =
+        ref.watch(markerIconsProvider).valueOrNull;
 
     final List<Trip> trips = tripsAsync.valueOrNull ?? <Trip>[];
     final List<Line> lines = linesAsync.valueOrNull ?? <Line>[];
@@ -57,14 +60,18 @@ class PassengerMapController extends Notifier<PassengerMapState> {
         : LatLng(position.latitude, position.longitude);
 
     return PassengerMapState(
-      markers: _buildMarkers(trips, lines),
+      markers: _buildMarkers(trips, lines, icons),
       nearbyBuses: _buildNearbyBuses(trips, lines, userPosition),
       userPosition: userPosition,
       isLoading: tripsAsync.isLoading || linesAsync.isLoading,
     );
   }
 
-  Set<Marker> _buildMarkers(List<Trip> trips, List<Line> lines) {
+Set<Marker> _buildMarkers(
+    List<Trip> trips,
+    List<Line> lines,
+    MapMarkerIcons? icons,
+  ) {
     final Map<String, Line> linesById = <String, Line>{
       for (final Line line in lines) line.id: line,
     };
@@ -74,9 +81,10 @@ class PassengerMapController extends Notifier<PassengerMapState> {
       return Marker(
         markerId: MarkerId(trip.id),
         position: LatLng(trip.currentLatitude, trip.currentLongitude),
-        icon: BitmapDescriptor.defaultMarkerWithHue(
-          BitmapDescriptor.hueGreen,
-        ),
+        icon: icons?.bus ??
+            BitmapDescriptor.defaultMarkerWithHue(
+              BitmapDescriptor.hueGreen,
+            ),
         infoWindow: InfoWindow(
           title: line?.displayName ?? 'Ônibus em circulação',
           snippet: 'Em trajeto',

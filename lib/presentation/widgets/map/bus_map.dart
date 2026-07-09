@@ -46,7 +46,12 @@ class BusMap extends StatelessWidget {
       onMapCreated: onMapCreated,
       myLocationEnabled: myLocationEnabled,
       myLocationButtonEnabled: myLocationEnabled,
-      zoomControlsEnabled: false,
+      // Trava a câmera dentro de Chapecó e limita o zoom.
+      cameraTargetBounds: CameraTargetBounds(kChapecoBounds),
+      minMaxZoomPreference: const MinMaxZoomPreference(kMinZoom, kMaxZoom),
+      zoomGesturesEnabled: true,
+      // Botões +/- ajudam no zoom pelo emulador (sem pinça no mouse).
+      zoomControlsEnabled: true,
       mapToolbarEnabled: false,
     );
   }

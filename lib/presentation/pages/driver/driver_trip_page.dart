@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../domain/entities/line.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
@@ -11,6 +12,7 @@ import '../../../domain/entities/stop.dart';
 import '../../../domain/entities/trip.dart';
 import '../../controllers/driver_trip_controller.dart';
 import '../../providers/line_providers.dart';
+import '../../providers/map_icon_providers.dart';
 import '../../widgets/common/app_button.dart';
 import '../../widgets/common/empty_state.dart';
 import '../../widgets/map/bus_info_card.dart';
@@ -57,7 +59,13 @@ class DriverTripPage extends ConsumerWidget {
       );
     }
 
-    final Line? line = state.selectedLine;
+    final MapMarkerIcons? icons =
+        ref.watch(markerIconsProvider).valueOrNull;
+
+   final List<Line> allLines =
+        ref.watch(linesProvider).valueOrNull ?? <Line>[];
+    final Line? line = state.selectedLine ??
+        allLines.where((Line l) => l.id == trip.lineId).firstOrNull;
     final List<Stop> stops =
         ref.watch(lineStopsProvider(trip.lineId)).valueOrNull ?? <Stop>[];
     final LatLng busPosition =
@@ -75,9 +83,10 @@ class DriverTripPage extends ConsumerWidget {
               Marker(
                 markerId: MarkerId(trip.id),
                 position: busPosition,
-                icon: BitmapDescriptor.defaultMarkerWithHue(
-                  BitmapDescriptor.hueGreen,
-                ),
+                icon: icons?.bus ??
+                    BitmapDescriptor.defaultMarkerWithHue(
+                      BitmapDescriptor.hueGreen,
+                    ),
                 infoWindow: InfoWindow(
                   title: line?.displayName ?? 'Trajeto ativo',
                 ),

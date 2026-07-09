@@ -11,6 +11,7 @@ import '../../../domain/entities/stop.dart';
 import '../../../domain/entities/trip.dart';
 import '../../controllers/lines_controller.dart';
 import '../../providers/bus_providers.dart';
+import '../../providers/map_icon_providers.dart';
 import '../../widgets/lines/route_info_card.dart';
 import '../../widgets/lines/schedule_tile.dart';
 import '../../widgets/lines/stop_tile.dart';
@@ -55,6 +56,8 @@ class _LineDetailsPageState extends ConsumerState<LineDetailsPage> {
     final List<Stop> stops = state?.stops ?? <Stop>[];
     final List<Schedule> schedules = state?.schedules ?? <Schedule>[];
     final bool isLoadingDetails = state?.isLoadingDetails ?? true;
+    final MapMarkerIcons? icons =
+        ref.watch(markerIconsProvider).valueOrNull;
 
     final List<Trip> lineTrips = (ref
                 .watch(activeBusesProvider)
@@ -71,7 +74,7 @@ class _LineDetailsPageState extends ConsumerState<LineDetailsPage> {
             flex: 2,
             child: BusMap(
               polylines: _buildPolylines(stops),
-              markers: _buildMarkers(stops, lineTrips),
+              markers: _buildMarkers(stops, lineTrips, icons),
               onMapCreated: (GoogleMapController controller) {
                 _mapController = controller;
                 _fitRoute(stops);
@@ -148,15 +151,20 @@ class _LineDetailsPageState extends ConsumerState<LineDetailsPage> {
     };
   }
 
-  Set<Marker> _buildMarkers(List<Stop> stops, List<Trip> trips) {
+  Set<Marker> _buildMarkers(
+    List<Stop> stops,
+    List<Trip> trips,
+    MapMarkerIcons? icons,
+  ) {
     final Set<Marker> markers = stops
         .map(
           (Stop stop) => Marker(
             markerId: MarkerId('stop_${stop.id}'),
             position: LatLng(stop.latitude, stop.longitude),
-            icon: BitmapDescriptor.defaultMarkerWithHue(
-              BitmapDescriptor.hueAzure,
-            ),
+            icon: icons?.stop ??
+                BitmapDescriptor.defaultMarkerWithHue(
+                  BitmapDescriptor.hueAzure,
+                ),
             infoWindow: InfoWindow(title: stop.name),
           ),
         )
@@ -167,9 +175,10 @@ class _LineDetailsPageState extends ConsumerState<LineDetailsPage> {
         (Trip trip) => Marker(
           markerId: MarkerId('bus_${trip.id}'),
           position: LatLng(trip.currentLatitude, trip.currentLongitude),
-          icon: BitmapDescriptor.defaultMarkerWithHue(
-            BitmapDescriptor.hueGreen,
-          ),
+          icon: icons?.bus ??
+              BitmapDescriptor.defaultMarkerWithHue(
+                BitmapDescriptor.hueGreen,
+              ),
           infoWindow: const InfoWindow(title: 'Ônibus em trajeto'),
         ),
       ),
