@@ -35,6 +35,23 @@ void main() {
       expect(line.color, '#4A9EBF');
       expect(line.number, 'line_103');
     });
+
+    test('lê routePolyline quando presente', () {
+      final LineModel line = LineModel.fromJson('line_101', <String, dynamic>{
+        'number': 'L101',
+        'routePolyline': r'_p~iF~ps|U_ulLnnqC_mqNvxq`@',
+      });
+
+      expect(line.routePolyline, r'_p~iF~ps|U_ulLnnqC_mqNvxq`@');
+    });
+
+    test('routePolyline é string vazia quando a rota ainda não foi semeada',
+        () {
+      final LineModel line =
+          LineModel.fromJson('line_103', <String, dynamic>{});
+
+      expect(line.routePolyline, isEmpty);
+    });
   });
 
   group('LineModel.toJson', () {
@@ -47,12 +64,14 @@ void main() {
         distance: 8.5,
         averageDuration: 35,
         color: '#4A9EBF',
+        routePolyline: r'_p~iF~ps|U_ulLnnqC_mqNvxq`@',
       );
 
       final Map<String, dynamic> json = line.toJson();
       expect(json['number'], 'L101');
       expect(json['distance'], 8.5);
       expect(json['averageDuration'], 35);
+      expect(json['routePolyline'], r'_p~iF~ps|U_ulLnnqC_mqNvxq`@');
     });
   });
 }
