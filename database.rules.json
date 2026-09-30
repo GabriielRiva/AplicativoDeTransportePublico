@@ -2,18 +2,73 @@
   "rules": {
     ".read": false,
     ".write": false,
+
     "users": {
       "$uid": {
         ".read": "auth != null && auth.uid == $uid",
-        ".write": "auth != null && auth.uid == $uid"
+        ".write": "auth != null && auth.uid == $uid",
+
+        "name": {
+          ".validate": "newData.isString() && newData.val().length > 0 && newData.val().length <= 120"
+        },
+        "email": {
+          ".validate": "newData.isString() && newData.val().length > 0"
+        },
+        "role": {
+          ".validate": "(newData.val() == 'driver' || newData.val() == 'passenger') && (!data.exists() || newData.val() == data.val())"
+        },
+        "cnh": {
+          ".validate": "newData.isString()"
+        },
+        "createdAt": {
+          ".validate": "newData.isNumber()"
+        },
+        "favoriteLines": {
+          "$index": {
+            ".validate": "newData.isString()"
+          }
+        },
+        "$other": {
+          ".validate": false
+        }
       }
     },
+
     "drivers": {
       ".read": "auth != null",
       "$uid": {
-        ".write": "auth != null && auth.uid == $uid"
+        ".write": "auth != null && auth.uid == $uid && root.child('users').child(auth.uid).child('role').val() == 'driver'",
+
+        "lineId": {
+          ".validate": "newData.isString() && newData.val().length > 0"
+        },
+        "busId": {
+          ".validate": "newData.isString() && newData.val().length > 0"
+        },
+        "latitude": {
+          ".validate": "newData.isNumber() && newData.val() >= -90 && newData.val() <= 90"
+        },
+        "longitude": {
+          ".validate": "newData.isNumber() && newData.val() >= -180 && newData.val() <= 180"
+        },
+        "status": {
+          ".validate": "newData.val() == 'offline' || newData.val() == 'online' || newData.val() == 'waiting' || newData.val() == 'trip_started' || newData.val() == 'trip_finished'"
+        },
+        "startedAt": {
+          ".validate": "newData.isNumber()"
+        },
+        "finishedAt": {
+          ".validate": "newData.isNumber()"
+        },
+        "updatedAt": {
+          ".validate": "newData.val() == now"
+        },
+        "$other": {
+          ".validate": false
+        }
       }
     },
+
     "lines": {
       ".read": "auth != null",
       ".write": false
