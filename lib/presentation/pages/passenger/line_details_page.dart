@@ -11,13 +11,17 @@ import '../../../domain/entities/stop.dart';
 import '../../../domain/entities/trip.dart';
 import '../../controllers/lines_controller.dart';
 import '../../providers/bus_providers.dart';
+import '../../providers/line_providers.dart';
 import '../../providers/map_icon_providers.dart';
 import '../../widgets/lines/route_info_card.dart';
 import '../../widgets/lines/schedule_tile.dart';
 import '../../widgets/lines/stop_tile.dart';
 import '../../widgets/map/bus_map.dart';
+import '../../widgets/map/trip_camera_config.dart';
+import '../../widgets/map/trip_map_view.dart';
 
-/// Tela de detalhes da linha: rota no mapa (polyline), paradas,
+/// Tela de detalhes da linha: rota de rua no mapa, acompanhamento do ônibus
+/// em tempo real (tracking, no estilo "carrinho deslizando"), paradas,
 /// horários e o painel "Rota Detalhada" (RF09/RF10).
 class LineDetailsPage extends ConsumerStatefulWidget {
   /// Cria a tela com a [line] selecionada.
@@ -39,11 +43,8 @@ class _LineDetailsPageState extends ConsumerState<LineDetailsPage> {
     super.dispose();
   }
 
-  void _fitRoute(List<Stop> stops) {
-    if (_mapController == null || stops.isEmpty) return;
-    final List<LatLng> points = stops
-        .map((Stop stop) => LatLng(stop.latitude, stop.longitude))
-        .toList();
+  void _fitRoute(List<LatLng> points) {
+    if (_mapController == null || points.isEmpty) return;
     _mapController!.animateCamera(
       CameraUpdate.newLatLngBounds(MapUtils.boundsFromPoints(points), 48),
     );
@@ -59,12 +60,22 @@ class _LineDetailsPageState extends ConsumerState<LineDetailsPage> {
     final MapMarkerIcons? icons =
         ref.watch(markerIconsProvider).valueOrNull;
 
+    final List<LatLng> streetRoute =
+        ref.watch(lineRouteProvider(widget.line.id)).valueOrNull ??
+            <LatLng>[];
+    final List<LatLng> routePoints = streetRoute.isNotEmpty
+        ? streetRoute
+        : stops
+            .map((Stop stop) => LatLng(stop.latitude, stop.longitude))
+            .toList();
+
     final List<Trip> lineTrips = (ref
                 .watch(activeBusesProvider)
                 .valueOrNull ??
             <Trip>[])
         .where((Trip trip) => trip.lineId == widget.line.id)
         .toList();
+    final Trip? activeBus = lineTrips.isNotEmpty ? lineTrips.first : null;
 
     return Scaffold(
       appBar: AppBar(title: Text(widget.line.displayName)),
@@ -72,15 +83,27 @@ class _LineDetailsPageState extends ConsumerState<LineDetailsPage> {
         children: <Widget>[
           Expanded(
             flex: 2,
-            child: BusMap(
-              polylines: _buildPolylines(stops),
-              markers: _buildMarkers(stops, lineTrips, icons),
-              onMapCreated: (GoogleMapController controller) {
-                _mapController = controller;
-                _fitRoute(stops);
-              },
-              myLocationEnabled: false,
-            ),
+            child: activeBus == null
+                ? BusMap(
+                    polylines: _buildPolylines(routePoints),
+                    markers: _buildStopMarkers(stops, icons),
+                    onMapCreated: (GoogleMapController controller) {
+                      _mapController = controller;
+                      _fitRoute(routePoints);
+                    },
+                    myLocationEnabled: false,
+                  )
+                : TripMapView(
+                    mode: TripMode.passenger,
+                    busPosition: LatLng(
+                      activeBus.currentLatitude,
+                      activeBus.currentLongitude,
+                    ),
+                    route: routePoints,
+                    follow: false,
+                    extraMarkers: _buildStopMarkers(stops, icons),
+                    busIcon: icons?.bus,
+                  ),
           ),
           Expanded(
             flex: 3,
@@ -138,25 +161,19 @@ class _LineDetailsPageState extends ConsumerState<LineDetailsPage> {
     );
   }
 
-  Set<Polyline> _buildPolylines(List<Stop> stops) {
-    if (stops.length < 2) return const <Polyline>{};
+  Set<Polyline> _buildPolylines(List<LatLng> points) {
+    if (points.length < 2) return const <Polyline>{};
     return <Polyline>{
       MapUtils.routePolyline(
         id: widget.line.id,
         color: colorFromHex(widget.line.color),
-        points: stops
-            .map((Stop stop) => LatLng(stop.latitude, stop.longitude))
-            .toList(),
+        points: points,
       ),
     };
   }
 
-  Set<Marker> _buildMarkers(
-    List<Stop> stops,
-    List<Trip> trips,
-    MapMarkerIcons? icons,
-  ) {
-    final Set<Marker> markers = stops
+  Set<Marker> _buildStopMarkers(List<Stop> stops, MapMarkerIcons? icons) {
+    return stops
         .map(
           (Stop stop) => Marker(
             markerId: MarkerId('stop_${stop.id}'),
@@ -169,20 +186,5 @@ class _LineDetailsPageState extends ConsumerState<LineDetailsPage> {
           ),
         )
         .toSet();
-
-    markers.addAll(
-      trips.map(
-        (Trip trip) => Marker(
-          markerId: MarkerId('bus_${trip.id}'),
-          position: LatLng(trip.currentLatitude, trip.currentLongitude),
-          icon: icons?.bus ??
-              BitmapDescriptor.defaultMarkerWithHue(
-                BitmapDescriptor.hueGreen,
-              ),
-          infoWindow: const InfoWindow(title: 'Ônibus em trajeto'),
-        ),
-      ),
-    );
-    return markers;
   }
 }

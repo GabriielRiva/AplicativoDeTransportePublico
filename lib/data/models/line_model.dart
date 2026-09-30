@@ -11,6 +11,7 @@ class LineModel extends Line {
     required super.distance,
     required super.averageDuration,
     required super.color,
+    super.routePolyline,
   });
 
   /// Constrói a linha a partir do JSON do nó lines/{lineId}.
@@ -28,6 +29,7 @@ class LineModel extends Line {
       distance: (json['distance'] as num?)?.toDouble() ?? 0,
       averageDuration: duration?.toInt() ?? 0,
       color: json['color'] as String? ?? '#4A9EBF',
+      routePolyline: json['routePolyline'] as String? ?? '',
     );
   }
 
@@ -40,6 +42,7 @@ class LineModel extends Line {
       'distance': distance,
       'averageDuration': averageDuration,
       'color': color,
+      'routePolyline': routePolyline,
     };
   }
 }

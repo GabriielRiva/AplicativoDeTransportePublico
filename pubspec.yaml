@@ -27,6 +27,7 @@ dependencies:
   # Infraestrutura
   connectivity_plus: ^6.1.0
   logger: ^2.4.0
+  http: ^1.6.0
 
 dev_dependencies:
   flutter_test:

@@ -40,7 +40,7 @@ class VehicleInfoCard extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
-                      Text(
+                        Text(
                           'Ônibus: #${bus!.number}',
                           style: AppTextStyles.body,
                         ),

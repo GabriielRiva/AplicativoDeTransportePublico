@@ -12,6 +12,7 @@ import '../../domain/usecases/driver/send_location.dart';
 import '../../domain/usecases/driver/start_trip.dart';
 import '../../domain/usecases/driver/update_driver_status.dart';
 import '../../domain/usecases/passenger/favorite_line.dart';
+import '../../domain/usecases/passenger/get_line_route.dart';
 import '../../domain/usecases/passenger/get_line_schedules.dart';
 import '../../domain/usecases/passenger/get_line_stops.dart';
 import '../../domain/usecases/passenger/get_lines.dart';
@@ -112,6 +113,11 @@ final Provider<GetLines> getLinesProvider = Provider<GetLines>(
 /// Usecase de consulta de paradas de uma linha (RF09).
 final Provider<GetLineStops> getLineStopsProvider = Provider<GetLineStops>(
   (Ref ref) => GetLineStops(ref.watch(stopRepositoryProvider)),
+);
+
+/// Usecase de consulta do traçado de rua de uma linha (RF09).
+final Provider<GetLineRoute> getLineRouteProvider = Provider<GetLineRoute>(
+  (Ref ref) => GetLineRoute(ref.watch(lineRepositoryProvider)),
 );
 
 /// Usecase de consulta de horários de uma linha (RF10).

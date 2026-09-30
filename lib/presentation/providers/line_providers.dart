@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 import '../../domain/entities/line.dart';
 import '../../domain/entities/schedule.dart';
@@ -15,6 +16,12 @@ final FutureProvider<List<Line>> linesProvider =
 final FutureProviderFamily<List<Stop>, String> lineStopsProvider =
     FutureProvider.family<List<Stop>, String>((Ref ref, String lineId) {
   return ref.watch(getLineStopsProvider).call(lineId);
+});
+
+/// Traçado de rua de uma linha, decodificado da polyline pré-calculada (RF09).
+final FutureProviderFamily<List<LatLng>, String> lineRouteProvider =
+    FutureProvider.family<List<LatLng>, String>((Ref ref, String lineId) {
+  return ref.watch(getLineRouteProvider).call(lineId);
 });
 
 /// Horários de saída de uma linha (RF10).

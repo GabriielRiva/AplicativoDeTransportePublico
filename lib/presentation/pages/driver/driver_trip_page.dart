@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
-import '../../../domain/entities/line.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
-import '../../../core/constants/map_constants.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/utils/formatters.dart';
 import '../../../core/utils/map_utils.dart';
@@ -16,10 +14,11 @@ import '../../providers/map_icon_providers.dart';
 import '../../widgets/common/app_button.dart';
 import '../../widgets/common/empty_state.dart';
 import '../../widgets/map/bus_info_card.dart';
-import '../../widgets/map/bus_map.dart';
+import '../../widgets/map/trip_camera_config.dart';
+import '../../widgets/map/trip_map_view.dart';
 
-/// Tela de Trajeto do motorista: mapa com a rota da linha, a posição
-/// atual do veículo e o card do trajeto ativo (wireframe da Figura 2).
+/// Tela de Trajeto do motorista: navegação turn-by-turn com a rota da linha,
+/// a posição do veículo seguindo o traçado e o card do trajeto ativo.
 class DriverTripPage extends ConsumerWidget {
   /// Cria a tela do trajeto ativo.
   const DriverTripPage({super.key});
@@ -62,12 +61,21 @@ class DriverTripPage extends ConsumerWidget {
     final MapMarkerIcons? icons =
         ref.watch(markerIconsProvider).valueOrNull;
 
-   final List<Line> allLines =
+    final List<Line> allLines =
         ref.watch(linesProvider).valueOrNull ?? <Line>[];
     final Line? line = state.selectedLine ??
         allLines.where((Line l) => l.id == trip.lineId).firstOrNull;
+
     final List<Stop> stops =
         ref.watch(lineStopsProvider(trip.lineId)).valueOrNull ?? <Stop>[];
+    final List<LatLng> streetRoute =
+        ref.watch(lineRouteProvider(trip.lineId)).valueOrNull ?? <LatLng>[];
+    final List<LatLng> routePoints = streetRoute.isNotEmpty
+        ? streetRoute
+        : stops
+            .map((Stop stop) => LatLng(stop.latitude, stop.longitude))
+            .toList();
+
     final LatLng busPosition =
         LatLng(trip.currentLatitude, trip.currentLongitude);
     final Stop? nextStop = _nearestStop(stops, busPosition);
@@ -75,23 +83,13 @@ class DriverTripPage extends ConsumerWidget {
     return Scaffold(
       body: Stack(
         children: <Widget>[
-          BusMap(
-            initialTarget: busPosition,
-            initialZoom: kBusFocusZoom,
-            polylines: _buildPolylines(line, stops),
-            markers: <Marker>{
-              Marker(
-                markerId: MarkerId(trip.id),
-                position: busPosition,
-                icon: icons?.bus ??
-                    BitmapDescriptor.defaultMarkerWithHue(
-                      BitmapDescriptor.hueGreen,
-                    ),
-                infoWindow: InfoWindow(
-                  title: line?.displayName ?? 'Trajeto ativo',
-                ),
-              ),
-            },
+          TripMapView(
+            mode: TripMode.driver,
+            busPosition: busPosition,
+            route: routePoints,
+            heading: state.heading,
+            busIcon: icons?.bus,
+            interpolationDuration: const Duration(milliseconds: 1200),
           ),
           Align(
             alignment: Alignment.bottomCenter,
@@ -114,18 +112,5 @@ class DriverTripPage extends ConsumerWidget {
         ],
       ),
     );
-  }
-
-  Set<Polyline> _buildPolylines(Line? line, List<Stop> stops) {
-    if (line == null || stops.length < 2) return const <Polyline>{};
-    return <Polyline>{
-      MapUtils.routePolyline(
-        id: line.id,
-        color: colorFromHex(line.color),
-        points: stops
-            .map((Stop stop) => LatLng(stop.latitude, stop.longitude))
-            .toList(),
-      ),
-    };
   }
 }

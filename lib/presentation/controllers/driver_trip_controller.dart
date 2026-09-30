@@ -24,6 +24,7 @@ class DriverTripState {
     this.selectedBus,
     this.availableBuses = const <Bus>[],
     this.activeTrip,
+    this.heading = 0,
     this.isLoading = false,
     this.errorMessage,
   });
@@ -42,6 +43,10 @@ class DriverTripState {
 
   /// Trajeto ativo (nulo quando não há trajeto em andamento).
   final Trip? activeTrip;
+
+  /// Rumo (bearing) mais recente do GPS em graus, usado para orientar a
+  /// câmera turn-by-turn e o marcador do ônibus.
+  final double heading;
 
   /// Indica operação em andamento (exibe Loading na tela).
   final bool isLoading;
@@ -64,6 +69,7 @@ class DriverTripState {
     Bus? selectedBus,
     List<Bus>? availableBuses,
     Trip? activeTrip,
+    double? heading,
     bool? isLoading,
     String? errorMessage,
     bool clearBus = false,
@@ -76,6 +82,7 @@ class DriverTripState {
       selectedBus: clearBus ? null : (selectedBus ?? this.selectedBus),
       availableBuses: availableBuses ?? this.availableBuses,
       activeTrip: clearTrip ? null : (activeTrip ?? this.activeTrip),
+      heading: heading ?? this.heading,
       isLoading: isLoading ?? this.isLoading,
       errorMessage: clearError ? null : (errorMessage ?? this.errorMessage),
     );
@@ -171,6 +178,7 @@ class DriverTripController extends Notifier<DriverTripState> {
         isLoading: false,
         status: DriverStatus.tripStarted,
         activeTrip: trip,
+        heading: position.heading >= 0 ? position.heading : 0,
       );
       AppLogger.info('Trajeto iniciado na linha ${line.displayName}');
     } on AppException catch (error) {
@@ -231,6 +239,7 @@ class DriverTripController extends Notifier<DriverTripState> {
               currentLatitude: position.latitude,
               currentLongitude: position.longitude,
             ),
+            heading: position.heading >= 0 ? position.heading : state.heading,
           );
         }
       } catch (error, stackTrace) {

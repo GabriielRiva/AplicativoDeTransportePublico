@@ -9,6 +9,7 @@ class Line {
     required this.distance,
     required this.averageDuration,
     required this.color,
+    this.routePolyline = '',
   });
 
   /// Identificador único da linha.
@@ -31,6 +32,11 @@ class Line {
 
   /// Cor da linha em hexadecimal (ex.: "#4A9EBF"), usada na polyline.
   final String color;
+
+  /// Traçado de rua da linha como polyline codificada (Google, precisão 5),
+  /// pré-calculada uma única vez via Directions API. Vazia enquanto a rota
+  /// ainda não foi semeada no Realtime Database.
+  final String routePolyline;
 
   /// Nome completo exibido nas listas (ex.: "L101 - Centro/Ecoparque").
   String get displayName => '$number - $name';
