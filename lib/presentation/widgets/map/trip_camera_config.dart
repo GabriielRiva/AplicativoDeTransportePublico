@@ -8,9 +8,11 @@ enum TripMode { driver, passenger }
 /// Configurações de câmera de cada [TripMode]. Centralizadas aqui para que
 /// as telas do motorista e do passageiro nunca dupliquem a lógica de câmera.
 abstract final class TripCameraConfig {
-  static const double _driverZoom = 17.5;
+  static const double _driverZoom = 18.5;
   static const double _passengerZoom = 15;
-  static const double _driverTilt = 45;
+  /// Mesma inclinação usada para renderizar o ônibus 3D (assets/images),
+  /// para o desenho combinar com a perspectiva do mapa.
+  static const double _driverTilt = 50;
 
   /// Monta a câmera para o [mode] centrada em [position]. [heading] é o
   /// rumo (bearing) em graus (0-360); só gira o mapa no modo motorista.

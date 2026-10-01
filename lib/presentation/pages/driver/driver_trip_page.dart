@@ -89,7 +89,17 @@ class DriverTripPage extends ConsumerWidget {
             busPosition: busPosition,
             route: routePoints,
             heading: state.heading,
-            busIcon: icons?.busTopDown,
+            // Ônibus 3D visto de trás: a câmera do motorista gira junto com
+            // o ônibus, então ele aparece sempre de costas, em pé na tela.
+            busIcon: icons?.bus3d,
+            rotateBusIcon: false,
+            busIconAnchor: kBus3dAnchor,
+            // Ônibus no terço de baixo da área visível (acima do card),
+            // como nos apps de navegação: mais rua à frente na tela.
+            mapPadding: EdgeInsets.only(
+              top: MediaQuery.sizeOf(context).height * 0.32,
+              bottom: 210,
+            ),
             // Mesma duração da leitura do GPS: o ônibus termina um trecho
             // quando chega a próxima posição, sem paradas entre leituras.
             interpolationDuration: kGpsSampleInterval,

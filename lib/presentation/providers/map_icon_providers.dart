@@ -5,21 +5,28 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/utils/marker_icon_utils.dart';
 
+/// Imagem do ônibus 3D visto de trás, usada no trajeto do motorista.
+const String kBus3dAsset = 'assets/images/bus_3d.png';
+
+/// Ponto da imagem [kBus3dAsset] que fica sobre a posição do GPS: o centro
+/// do ônibus no chão (calculado na renderização do modelo 3D).
+const Offset kBus3dAnchor = Offset(0.5, 0.59);
+
 /// Conjunto de ícones customizados usados nos mapas.
 class MapMarkerIcons {
   /// Cria o conjunto de ícones.
   const MapMarkerIcons({
     required this.bus,
-    required this.busTopDown,
+    required this.bus3d,
     required this.stop,
   });
 
-  /// Ícone circular do ônibus em circulação (mapa geral do passageiro).
+  /// Ícone circular do ônibus em circulação (telas do passageiro).
   final BitmapDescriptor bus;
 
-  /// Ônibus visto de cima, usado no trajeto ativo (motorista e
-  /// acompanhamento da linha), girando com a direção da rua.
-  final BitmapDescriptor busTopDown;
+  /// Ônibus 3D visto de trás, no mesmo ângulo da câmera inclinada do
+  /// motorista (que sempre gira junto com o ônibus).
+  final BitmapDescriptor bus3d;
 
   /// Ícone das paradas da rota (menor, cor primária).
   final BitmapDescriptor stop;
@@ -33,13 +40,14 @@ final FutureProvider<MapMarkerIcons> markerIconsProvider =
     color: kSuccessColor,
     size: 40,
   );
-  final BitmapDescriptor busTopDown = await MarkerIconUtils.topDownBus(
-    color: kSuccessColor,
+  final BitmapDescriptor bus3d = await MarkerIconUtils.fromAsset(
+    kBus3dAsset,
+    width: 40,
   );
   final BitmapDescriptor stop = await MarkerIconUtils.fromIcon(
     icon: Icons.location_on,
     color: kPrimaryColor,
     size: 26,
   );
-  return MapMarkerIcons(bus: bus, busTopDown: busTopDown, stop: stop);
+  return MapMarkerIcons(bus: bus, bus3d: bus3d, stop: stop);
 });

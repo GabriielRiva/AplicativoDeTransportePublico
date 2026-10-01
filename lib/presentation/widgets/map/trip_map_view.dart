@@ -26,6 +26,9 @@ class TripMapView extends StatefulWidget {
     this.heading,
     this.extraMarkers = const <Marker>{},
     this.busIcon,
+    this.rotateBusIcon = true,
+    this.busIconAnchor = const Offset(0.5, 0.5),
+    this.mapPadding = EdgeInsets.zero,
     this.follow = true,
     this.interpolationDuration = const Duration(seconds: 5),
     this.remainingColor = const Color(0xFF1D9E75),
@@ -52,6 +55,19 @@ class TripMapView extends StatefulWidget {
 
   /// Ícone do ônibus. Quando nulo, usa um marcador padrão.
   final BitmapDescriptor? busIcon;
+
+  /// Se o ícone fica "deitado" no mapa girando com a direção da rua (ex.:
+  /// ônibus visto de cima). Quando falso, o ícone fica em pé, sempre virado
+  /// para a tela (ex.: ônibus 3D visto de trás, com a câmera girando junto).
+  final bool rotateBusIcon;
+
+  /// Ponto do ícone (0..1) que fica sobre a posição do ônibus.
+  final Offset busIconAnchor;
+
+  /// Margens do mapa. A câmera centraliza o ônibus no meio da área que
+  /// sobra; no motorista, uma margem maior em cima deixa o ônibus mais
+  /// embaixo na tela, mostrando mais da rua à frente.
+  final EdgeInsets mapPadding;
 
   /// Se a câmera deve seguir o ônibus continuamente.
   final bool follow;
@@ -276,9 +292,9 @@ class _TripMapViewState extends State<TripMapView>
       Marker(
         markerId: const MarkerId('active_bus'),
         position: _display,
-        rotation: _displayHeading,
-        flat: true,
-        anchor: const Offset(0.5, 0.5),
+        rotation: widget.rotateBusIcon ? _displayHeading : 0,
+        flat: widget.rotateBusIcon,
+        anchor: widget.busIconAnchor,
         icon: widget.busIcon ??
             BitmapDescriptor.defaultMarkerWithHue(
               BitmapDescriptor.hueGreen,
@@ -315,6 +331,7 @@ class _TripMapViewState extends State<TripMapView>
         heading: _displayHeading,
       ),
       onMapCreated: _onMapCreated,
+      padding: widget.mapPadding,
       polylines: _polylines,
       markers: _buildMarkers(),
       myLocationEnabled: false,
