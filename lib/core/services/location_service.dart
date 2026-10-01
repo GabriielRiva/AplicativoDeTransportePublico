@@ -6,12 +6,13 @@ import '../utils/app_logger.dart';
 
 /// Serviço de acesso ao GPS do dispositivo via Geolocator.
 ///
-/// Toda captura de coordenadas do TranCity passa por esta classe,
-/// que aplica o intervalo de atualização definido pelo RNF05 (5 segundos).
+/// Toda captura de coordenadas do TranCity passa por esta classe. A leitura
+/// é feita a cada [kGpsSampleInterval]; o limite de envio do RNF05
+/// (5 segundos) é aplicado por quem transmite a posição.
 class LocationService {
   static final LocationSettings _trackingSettings = AndroidSettings(
     accuracy: LocationAccuracy.high,
-    intervalDuration: kGpsUpdateInterval,
+    intervalDuration: kGpsSampleInterval,
     distanceFilter: 0,
   );
 
@@ -32,7 +33,7 @@ class LocationService {
   }
 
   /// Stream contínua de posições usada durante um trajeto ativo,
-  /// emitindo novas coordenadas a cada [kGpsUpdateInterval].
+  /// emitindo novas coordenadas a cada [kGpsSampleInterval].
   Stream<Position> watchPosition() {
     return Geolocator.getPositionStream(locationSettings: _trackingSettings);
   }

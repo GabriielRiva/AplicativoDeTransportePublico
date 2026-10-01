@@ -68,5 +68,44 @@ void main() {
         0,
       );
     });
+
+    group('snap', () {
+      const List<LatLng> line = <LatLng>[
+        LatLng(0, 0),
+        LatLng(0, 0.001),
+        LatLng(0, 0.002),
+      ];
+
+      test('projeta a posição sobre o trecho da rua', () {
+        final RouteSnap snap = RouteProgress.snap(
+          line,
+          const LatLng(0.0001, 0.0015),
+          1,
+        );
+        expect(snap.point.latitude, closeTo(0, 1e-9));
+        expect(snap.point.longitude, closeTo(0.0015, 1e-9));
+        expect(snap.segmentStart, 1);
+      });
+
+      test('antes do início fica no primeiro ponto', () {
+        final RouteSnap snap = RouteProgress.snap(
+          line,
+          const LatLng(0.0001, -0.0005),
+          0,
+        );
+        expect(snap.point.longitude, closeTo(0, 1e-9));
+        expect(snap.segmentStart, 0);
+      });
+
+      test('depois do fim fica no último ponto', () {
+        final RouteSnap snap = RouteProgress.snap(
+          line,
+          const LatLng(0, 0.003),
+          2,
+        );
+        expect(snap.point.longitude, closeTo(0.002, 1e-9));
+        expect(snap.segmentStart, 1);
+      });
+    });
   });
 }

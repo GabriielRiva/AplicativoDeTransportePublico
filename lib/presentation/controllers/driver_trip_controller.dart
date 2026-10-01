@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:geolocator/geolocator.dart';
 
+import '../../core/constants/app_constants.dart';
 import '../../core/errors/app_exception.dart';
 import '../../core/errors/error_handler.dart';
 import '../../core/utils/app_logger.dart';
@@ -95,6 +96,9 @@ class DriverTripState {
 /// trajeto e o loop de transmissão de GPS a cada 5 segundos (RNF05).
 class DriverTripController extends Notifier<DriverTripState> {
   StreamSubscription<Position>? _positionSubscription;
+
+  /// Momento do último envio de posição ao Firebase (controle do RNF05).
+  DateTime? _lastSentAt;
 
   @override
   DriverTripState build() {
@@ -222,28 +226,45 @@ class DriverTripController extends Notifier<DriverTripState> {
 
   void _startTransmission(String driverId) {
     _positionSubscription?.cancel();
+    // A posição inicial acabou de ser gravada pelo StartTrip.
+    _lastSentAt = DateTime.now();
     _positionSubscription = ref
         .read(locationServiceProvider)
         .watchPosition()
         .listen((Position position) async {
+      // O mapa do próprio motorista acompanha toda leitura do GPS
+      // (a cada kGpsSampleInterval), para o ônibus andar de forma contínua.
+      final Trip? trip = state.activeTrip;
+      if (trip != null) {
+        state = state.copyWith(
+          activeTrip: trip.copyWith(
+            currentLatitude: position.latitude,
+            currentLongitude: position.longitude,
+          ),
+          heading: position.heading >= 0 ? position.heading : state.heading,
+        );
+      }
+
+      // O envio ao Firebase continua respeitando o RNF05: uma posição a,
+      // no máximo, cada kGpsUpdateInterval. A margem de uma leitura garante
+      // que o intervalo real entre envios não passe de 5 segundos.
+      final DateTime now = DateTime.now();
+      final DateTime? lastSent = _lastSentAt;
+      if (lastSent != null &&
+          now.difference(lastSent) < kGpsUpdateInterval - kGpsSampleInterval) {
+        return;
+      }
+      _lastSentAt = now;
       try {
         await ref.read(sendLocationProvider).call(
               driverId: driverId,
               latitude: position.latitude,
               longitude: position.longitude,
             );
-        final Trip? trip = state.activeTrip;
-        if (trip != null) {
-          state = state.copyWith(
-            activeTrip: trip.copyWith(
-              currentLatitude: position.latitude,
-              currentLongitude: position.longitude,
-            ),
-            heading: position.heading >= 0 ? position.heading : state.heading,
-          );
-        }
       } catch (error, stackTrace) {
-        // Falha pontual de transmissão não interrompe o trajeto.
+        // Falha pontual de transmissão não interrompe o trajeto; a próxima
+        // leitura tenta enviar de novo.
+        _lastSentAt = lastSent;
         AppLogger.error('Falha ao transmitir posição', error, stackTrace);
       }
     });
@@ -252,6 +273,7 @@ class DriverTripController extends Notifier<DriverTripState> {
   void _stopTransmission() {
     _positionSubscription?.cancel();
     _positionSubscription = null;
+    _lastSentAt = null;
   }
 }
 

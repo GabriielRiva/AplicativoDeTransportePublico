@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
+import '../../../core/constants/app_constants.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/utils/formatters.dart';
 import '../../../core/utils/map_utils.dart';
@@ -88,8 +89,10 @@ class DriverTripPage extends ConsumerWidget {
             busPosition: busPosition,
             route: routePoints,
             heading: state.heading,
-            busIcon: icons?.bus,
-            interpolationDuration: const Duration(milliseconds: 1200),
+            busIcon: icons?.busTopDown,
+            // Mesma duração da leitura do GPS: o ônibus termina um trecho
+            // quando chega a próxima posição, sem paradas entre leituras.
+            interpolationDuration: kGpsSampleInterval,
           ),
           Align(
             alignment: Alignment.bottomCenter,
