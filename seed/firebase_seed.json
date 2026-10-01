@@ -3,10 +3,11 @@
     "line_101": {
       "number": "L101",
       "name": "Centro/Ecoparque",
-      "description": "Centro → Ecoparque",
-      "distance": 8.5,
-      "averageDuration": 35,
-      "color": "#4A9EBF"
+      "description": "Terminal Urbano → Ecoparque",
+      "distance": 2.8,
+      "averageDuration": 11,
+      "color": "#4A9EBF",
+      "routePolyline": "ndmdDfwb`IAKCKKw@MeAOcAIq@CQ?A?A@A?A?A?AA??A?AA??AA??AA??AA?A?A?A?A??@A??@A??@A??@eANiAN[H[FgAReAVA??AA?A??AA?A?A??@A?A??@A??@A??@A??@iAPkARyAV{AVA??AA?A?A?A?A?A?A??@A?A??@A??@A??@?@A??@?@?@_BRw@Lu@LS@M@WBQF}@R_ATa@Jc@JAAA??AA?A??AA?A?A?A@A?A??@A??@A??@A??@?@A?wCh@I@_AR?AA??AA??AA?A??AA?A?A??@A?A?A@A@A@?@A@?@gBZYFm@J{@NQDu@NUDMBcATQBQBQBIBC?A@A@A?C@A@A?AAA?AAA?A?A??@A?A??@A??@A??@A??@?@?@?@A??@@@_@Dy@NUDuB\\G@G?PdAPdALfALhADTNjAL|@NvAFb@F`@BRBN@HBFBHCDc@Fa@HWHa@Ha@HOB_@DO?A?AAA?A?A?A?A?A?A@A??@A??@A??@?@A??@?@?@?@k@Dm@Fo@Jq@Le@HeAN_@H_ARiAPiCd@eB\\gB\\s@Nu@Lq@Js@JcB\\C@aB\\c@J_@Bu@PG@}@N"
     },
     "line_102": {
       "number": "L102",
@@ -14,7 +15,8 @@
       "description": "Centro → Efapi",
       "distance": 10.2,
       "averageDuration": 40,
-      "color": "#2E9E4F"
+      "color": "#2E9E4F",
+      "routePolyline": "vqkdDx~c`ImEr@kNnCAP|@~GfBa@dC]l@jETpA^~@d@xDzAY{AXIj@[nAmA~BiElHgAhB]l@dArAp@lAb@fBlA`EJ^\\zAIxAMN?RHP@^Ir@eAxDy@fCqAlHy@`FQnAE`AAr@FrAHr@f@|AKR@TJNRDNIHWEUMMMAOHIR@TLNPBpAlFbDhMIVOJeBp@HPWvEoAzOGDBH@@WhDI`AcGm@cAK}@zK@LoC^s@EaBM_ABcEj@}@NMV@ZJVrB[\\NJTA\\[d@kA`A}FhE]\\rArAf@l@dB~CL^NbANlJFzIfFM~CAj@ALu@Mt@aCDiAA@|HxA?}EjFkApAODy@?}CIPzP?lED`BCx@FlDEn@A`AKzA?f@H|@HV\\@JEJM?a@^U`@GLILMJQ`BmB`@ONAnAf@t@^q@iBIKKEPa@"
     },
     "line_103": {
       "number": "L103",
@@ -22,66 +24,29 @@
       "description": "Centro → Hospital Regional",
       "distance": 5.4,
       "averageDuration": 20,
-      "color": "#E5484D"
+      "color": "#E5484D",
+      "routePolyline": "vqkdDx~c`ImEr@qFdAUkB]kB[wC@EnCa@zAWR`B~@fGqFdAUkB]kB[wC@QIMM@EFeAPkB`@q@gFE_@w@P_AyG]yBDGCGIB?BcEt@iDr@_BX}@sG_CVcBXbBY~BWkBoLY{BHEAMIEIH?DoGfAsBd@w@T_@tD"
+    },
+    "line_104": {
+      "number": "L104",
+      "name": "Unochapecó",
+      "description": "Terminal Urbano ⇄ Unochapecó (circular)",
+      "distance": 19.2,
+      "averageDuration": 72,
+      "color": "#F2994A",
+      "routePolyline": "lfmdDvbc`I_ANc@HE@eBZKBsBf@A?A?A?A?A?A?A??@A??@A??@[DYDc@He@FOBgARYFYFc@Hc@JIBI@cAPcAPo@Jq@JI@IBuAVsAV_@Fa@FSDuCn@UD_APi@JoAR{AXMFOF?AA??AA?A??AA?A?A?A?A?A@A?A@A@A??@?@A??@?@k@Hi@HaANcAPG@E@I@G@OBeAT_@Fe@Hy@PQF?AA??AA?AAA?A?A?A?A?A??@A?A@CDc@Fa@HWHa@Ha@HOB_@DO?A?AAA?A?A?A?A?A?A@A??@A??@A??@?@A??@?@?@?@k@Dm@Fo@Jq@Le@HeAN_@H_AR@PBPPrATdBf@vD@J@JPlAHd@@J\\~B?H@F\\dC\\bCBLBLJt@D^Dd@VnBZrBb@hDJ`@Nb@RPbAtAdArA~@jADFp@lAPr@Pr@Z`AX~@V~@BJLb@DLF^H\\Cj@El@A@A??@A?A@A@?@A@A@?@?@?@A@?@?@?@?@?@?@@@?@?@@@?@@@?@@?@@?@@??@@??^APG`@Qp@YbAYbA]bA[bAUhAShASjASlAShAShAQlAQnAE`AAl@?D@b@Dn@Hr@Rn@Rl@A@A@A@?@A@A@?@?@AB?@?@?@?@?B?@?@@@?B?@@@?@@@@@@@?@@@@?@@@??@@?@?@?@@@?BA@@T~@?BLb@Jd@XjAFRFPVdAJZBHXjALb@^|AFRFVZpA@@DLDPRr@lBfHlBfHXdAXfAH\\HZNl@Ph@Pt@FXFZHn@JbADl@B\\@jA?bAA~@E|AANUhECVSxBAh@AFSfECf@GnA[jGCPCLCLA@A??@A?A@A@A@?BA@?B?@?@?BA@@B?B?D@B?B@B@@@BBD?F@HInACf@MnBARIbBCf@Ab@OzCItAGvA?RUhECf@O~CC`@q@dMq@K}@Qc@Ia@GGAEA}Ba@GA}@QK?LvB?F?DD`AB\\?@?D@b@ADEh@AHAFSfAAFQjAAJc@`BCFCFOd@EHCPCF?DADCXA`@ADCZAZAJ?H@F@BFFJLlChAv@\\RHtDfBGtAGtAGhAEhAGhAEhAGfAG~@ARGlAElAEp@En@C^A\\M~BAVATGx@MzAC^KhA?DG`AAx@C|@E|@MtDKjBCh@MrCKpBEl@ANMvCOfAGhA[rDA@A@A@A@A@ABA@?@AB?@?B?@?B?@?@?B?@@B@B@@?B@@@@@@@@@?B@@@GfAKvC?DEt@Ob@U^EF[l@IRELEPAh@@d@?HHh@@BF\\Jd@@F@R?R?JAVANEj@GjAN@pAF`@BjBJdBJdBJjBLXBbCPjBHbBHfBJdBJF_AD_AF}@?AD}@F_AF_A@{@By@DaADaAD_AJwBFmABa@Bg@DgADgAFiAFiAHuA@CHoAFoABg@Bg@DkADmAB[@g@@EDkAHwAFoA?C?CEEEAEAeAEk@CgAEkCO}@G_@CsBMgBUIAuEU_AIc@CkBOD}@D}@Fu@FcA@CFoABg@HuADw@@S@QLeC@]@]Fq@Dq@DkAB]Bs@FgAFqAFiAFiAFiAFiAJiDB[XqFJyBB]l@uLLeCp@cMJwBPaDHoC@a@LeCBg@P_D@_@@C@g@JwB\\mFDS@A@?@C@A@A?A?A@A?A?A?A@??A?C?A?AAC?A?A?A?A?AAA?A?AAAACAM?I?KPeDLsBNmCBq@Dg@DeA@QLkC@]d@mI?kA@kA?_@?_@Cs@Cu@SkAWeASy@Su@]mAMe@]kAEUK_@CS{AsFmBiH[iA]iA[oA]oAs@uCMe@Ka@GYy@cDWoA@A?A@A?A@A?A?C@A?A?A?CAA?A?CAA?AACAA?AAAAAAAAAA?AAA?AAA?A?C?A?c@sAIo@Gi@Cq@?i@@UDa@B]Hs@RoARkATmARkARkAPiATeAXiA\\cA\\cA^cAR_ADYFo@@??A@??A@??A@??A@A?A@A?A@A?A?A?A?A?A?A?A?A?A?A?AAA?AAA?AAAAA?AA?Im@Go@I]G_@EMMc@CKW_AY_A[aAQs@Qs@q@mAEG_AkAeAsAcAuASQOc@Ka@c@iD[sBWoBEe@E_@Ku@CMCM]cC]eCpBWFAtAWlB_@zAUj@Mz@SbAM`AQ?@@?@??@@?@?@?@??A@?@?@A@??A@??A?A@?`@I`@Kb@Id@KVGdAU@??@@?@?@?@?@?@A@??A@??ArB[PEn@Kp@KHAHAz@O|@Qd@I^Ij@K?@@?@@@?@?@?@?@?@??A@?@??A@??A@A?A@Ap@Ip@K`AS~@UJAJAn@Kp@K`@I`@IbAS?@@??@@?@?@?@?@?@?@??A@??A@??A@??Ax@Ox@Qv@Ov@OFAHAn@KnCc@hAQdAO@??@@?@?@?@?@?@?@?@A@??A@?@A|A[HAtAWXGXGj@Oj@I@?@@@?@?@?@??A@?@A@??A?A@??A?A@??A?A?A?AA??A?AAA?AA??AA?A??AA?ScCEWAEG]Ec@Gc@AIAIOeAOgAEe@Gc@QqAQqACQCQK@"
+    },
+    "line_105": {
+      "number": "L105",
+      "name": "Rota Teste",
+      "description": "Circuito de teste - R. Israel (circular)",
+      "distance": 2.0,
+      "averageDuration": 8,
+      "color": "#8E44AD",
+      "routePolyline": "`undDd```I@HLbANdANdARjBThBBNBNmAnDQb@a@|@GFEFIHe@j@eDrDgDtDq@z@k@r@B?B?HAF?FANAPCNClASHATI~Bc@JCdCg@~@Qd@KfB]tAKlFaAQqAAKCWACMaAM_AO_AM_AMaAUcBUeBWkBWkB_@gC_@iCoB\\E?_BX"
     }
   },
   "stops": {
-    "line_101_stop_01": {
-      "lineId": "line_101",
-      "name": "Terminal Urbano Centro",
-      "latitude": -27.098,
-      "longitude": -52.618,
-      "order": 1
-    },
-    "line_101_stop_02": {
-      "lineId": "line_101",
-      "name": "Av. Getúlio Vargas",
-      "latitude": -27.0998,
-      "longitude": -52.617,
-      "order": 2
-    },
-    "line_101_stop_03": {
-      "lineId": "line_101",
-      "name": "R. Condá",
-      "latitude": -27.1015,
-      "longitude": -52.6158,
-      "order": 3
-    },
-    "line_101_stop_04": {
-      "lineId": "line_101",
-      "name": "UCEFF Faculdades",
-      "latitude": -27.1032,
-      "longitude": -52.6148,
-      "order": 4
-    },
-    "line_101_stop_05": {
-      "lineId": "line_101",
-      "name": "R. São Marcos",
-      "latitude": -27.105,
-      "longitude": -52.6136,
-      "order": 5
-    },
-    "line_101_stop_06": {
-      "lineId": "line_101",
-      "name": "R. Santo André",
-      "latitude": -27.1068,
-      "longitude": -52.612,
-      "order": 6
-    },
-    "line_101_stop_07": {
-      "lineId": "line_101",
-      "name": "R. Pinheiros",
-      "latitude": -27.1085,
-      "longitude": -52.6105,
-      "order": 7
-    },
-    "line_101_stop_08": {
-      "lineId": "line_101",
-      "name": "Ecoparque",
-      "latitude": -27.1102,
-      "longitude": -52.6088,
-      "order": 8
-    },
     "line_102_stop_01": {
       "lineId": "line_102",
       "name": "Terminal Urbano Centro",
@@ -172,6 +137,118 @@
       "latitude": -27.0872,
       "longitude": -52.6118,
       "order": 6
+    },
+    "line_104_stop_01": {
+      "lineId": "line_104",
+      "name": "Terminal Urbano",
+      "latitude": -27.10627,
+      "longitude": -52.61254,
+      "order": 1
+    },
+    "line_104_stop_02": {
+      "lineId": "line_104",
+      "name": "Parada 02",
+      "latitude": -27.09355,
+      "longitude": -52.61731,
+      "order": 2
+    },
+    "line_104_stop_03": {
+      "lineId": "line_104",
+      "name": "Parada 03",
+      "latitude": -27.09592,
+      "longitude": -52.63001,
+      "order": 3
+    },
+    "line_104_stop_04": {
+      "lineId": "line_104",
+      "name": "Parada 04",
+      "latitude": -27.09733,
+      "longitude": -52.64425,
+      "order": 4
+    },
+    "line_104_stop_05": {
+      "lineId": "line_104",
+      "name": "Parada 05",
+      "latitude": -27.09703,
+      "longitude": -52.65927,
+      "order": 5
+    },
+    "line_104_stop_06": {
+      "lineId": "line_104",
+      "name": "Parada 06",
+      "latitude": -27.09601,
+      "longitude": -52.6693,
+      "order": 6
+    },
+    "line_104_stop_07": {
+      "lineId": "line_104",
+      "name": "Unochapecó",
+      "latitude": -27.09418,
+      "longitude": -52.68625,
+      "order": 7
+    },
+    "line_101_stop_01": {
+      "lineId": "line_101",
+      "name": "Terminal Urbano",
+      "latitude": -27.10627,
+      "longitude": -52.61254,
+      "order": 1
+    },
+    "line_101_stop_02": {
+      "lineId": "line_101",
+      "name": "Parada 02",
+      "latitude": -27.10137,
+      "longitude": -52.61155,
+      "order": 2
+    },
+    "line_101_stop_03": {
+      "lineId": "line_101",
+      "name": "Parada 03",
+      "latitude": -27.09531,
+      "longitude": -52.61331,
+      "order": 3
+    },
+    "line_101_stop_04": {
+      "lineId": "line_101",
+      "name": "Parada 04",
+      "latitude": -27.09306,
+      "longitude": -52.61744,
+      "order": 4
+    },
+    "line_101_stop_05": {
+      "lineId": "line_101",
+      "name": "Ecoparque",
+      "latitude": -27.08694,
+      "longitude": -52.61914,
+      "order": 5
+    },
+    "line_105_stop_01": {
+      "lineId": "line_105",
+      "name": "Início - R. Israel",
+      "latitude": -27.11393,
+      "longitude": -52.59795,
+      "order": 1
+    },
+    "line_105_stop_02": {
+      "lineId": "line_105",
+      "name": "Parada 02",
+      "latitude": -27.11346,
+      "longitude": -52.60199,
+      "order": 2
+    },
+    "line_105_stop_03": {
+      "lineId": "line_105",
+      "name": "Parada 03",
+      "latitude": -27.11299,
+      "longitude": -52.60393,
+      "order": 3
+    },
+    "line_105_stop_04": {
+      "lineId": "line_105",
+      "name": "Parada 04",
+      "latitude": -27.11596,
+      "longitude": -52.60146,
+      "order": 4
     }
   },
   "schedules": {
@@ -264,6 +341,66 @@
       "lineId": "line_103",
       "departureTime": "14:00",
       "weekday": 6
+    },
+    "line_104_sch_01": {
+      "lineId": "line_104",
+      "departureTime": "06:30",
+      "weekday": 1
+    },
+    "line_104_sch_02": {
+      "lineId": "line_104",
+      "departureTime": "07:15",
+      "weekday": 1
+    },
+    "line_104_sch_03": {
+      "lineId": "line_104",
+      "departureTime": "12:00",
+      "weekday": 1
+    },
+    "line_104_sch_04": {
+      "lineId": "line_104",
+      "departureTime": "17:45",
+      "weekday": 1
+    },
+    "line_104_sch_05": {
+      "lineId": "line_104",
+      "departureTime": "08:00",
+      "weekday": 6
+    },
+    "line_104_sch_06": {
+      "lineId": "line_104",
+      "departureTime": "14:00",
+      "weekday": 6
+    },
+    "line_105_sch_01": {
+      "lineId": "line_105",
+      "departureTime": "06:30",
+      "weekday": 1
+    },
+    "line_105_sch_02": {
+      "lineId": "line_105",
+      "departureTime": "07:15",
+      "weekday": 1
+    },
+    "line_105_sch_03": {
+      "lineId": "line_105",
+      "departureTime": "12:00",
+      "weekday": 1
+    },
+    "line_105_sch_04": {
+      "lineId": "line_105",
+      "departureTime": "17:45",
+      "weekday": 1
+    },
+    "line_105_sch_05": {
+      "lineId": "line_105",
+      "departureTime": "08:00",
+      "weekday": 6
+    },
+    "line_105_sch_06": {
+      "lineId": "line_105",
+      "departureTime": "14:00",
+      "weekday": 6
     }
   },
   "buses": {
@@ -297,6 +434,22 @@
       "model": "Marcopolo Torino",
       "year": 2022,
       "lineId": "line_103",
+      "status": "offline"
+    },
+    "bus_1725": {
+      "number": "1725",
+      "plate": "CHA-7254",
+      "model": "Marcopolo Viale BRT",
+      "year": 2023,
+      "lineId": "line_104",
+      "status": "offline"
+    },
+    "bus_1810": {
+      "number": "1810",
+      "plate": "CHA-8105",
+      "model": "Volkswagen Volksbus 15.190",
+      "year": 2024,
+      "lineId": "line_105",
       "status": "offline"
     }
   }

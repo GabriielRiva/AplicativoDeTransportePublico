@@ -3,7 +3,9 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
+import '../../../core/constants/map_constants.dart';
 import '../../../core/utils/map_utils.dart';
+import 'route_progress.dart';
 import 'trip_camera_config.dart';
 
 /// Mapa de trajeto ativo compartilhado pelo motorista e pelo passageiro.
@@ -71,11 +73,21 @@ class TripMapView extends StatefulWidget {
 
 class _TripMapViewState extends State<TripMapView>
     with SingleTickerProviderStateMixin {
+  /// Distância máxima (km) entre a posição atual e o ponto mais próximo da
+  /// rota para considerar o ônibus "sobre o traçado". Acima disso, o GPS
+  /// está fora da rota (localização fixa do emulador, ainda a caminho do
+  /// início da linha, imprecisão pontual) e nenhum progresso é desenhado.
+  static const double _maxSnapDistanceKm = 0.3;
+
   GoogleMapController? _controller;
   late final AnimationController _animation;
   late LatLng _from;
   late LatLng _to;
   double _heading = 0;
+
+  /// Último índice da rota alcançado pelo ônibus. Mantido entre os quadros
+  /// para que a divisão percorrido/restante só avance (ver [RouteProgress]).
+  int _progressIndex = 0;
 
   @override
   void initState() {
@@ -92,6 +104,9 @@ class _TripMapViewState extends State<TripMapView>
   @override
   void didUpdateWidget(covariant TripMapView oldWidget) {
     super.didUpdateWidget(oldWidget);
+    if (_routeChanged(oldWidget.route, widget.route)) {
+      _progressIndex = 0;
+    }
     if (oldWidget.busPosition != widget.busPosition) {
       final LatLng start = _currentPosition();
       _heading = widget.heading ?? _bearing(start, widget.busPosition);
@@ -138,25 +153,42 @@ class _TripMapViewState extends State<TripMapView>
     return (math.atan2(y, x) * 180 / math.pi + 360) % 360;
   }
 
-  int _nearestIndex(LatLng position) {
-    int bestIndex = 0;
-    double bestDistance = double.infinity;
-    for (int i = 0; i < widget.route.length; i++) {
-      final LatLng p = widget.route[i];
-      final double dLat = p.latitude - position.latitude;
-      final double dLng = p.longitude - position.longitude;
-      final double distance = dLat * dLat + dLng * dLng;
-      if (distance < bestDistance) {
-        bestDistance = distance;
-        bestIndex = i;
-      }
-    }
-    return bestIndex;
+  /// Compara de forma barata (tamanho e extremidades) se o traçado mudou,
+  /// para reiniciar o progresso ao trocar de linha.
+  bool _routeChanged(List<LatLng> previous, List<LatLng> current) {
+    if (previous.length != current.length) return true;
+    if (current.isEmpty) return false;
+    return previous.first != current.first || previous.last != current.last;
   }
 
   Set<Polyline> _buildPolylines(LatLng position) {
     if (widget.route.isEmpty) return const <Polyline>{};
-    final int splitIndex = _nearestIndex(position);
+    final int splitIndex = RouteProgress.advance(
+      widget.route,
+      position,
+      fromIndex: _progressIndex,
+    );
+
+    // Ônibus fora do traçado (GPS ainda longe do início da linha, posição
+    // fixa do emulador, desvio): não há progresso a mostrar. Desenha a rota
+    // inteira como "restante" e mantém o último progresso conhecido, em vez
+    // de pintar parte da rota de cinza nem ligar o marcador à rota com uma
+    // linha reta cortando quarteirões.
+    final bool onRoute =
+        MapUtils.distanceInKm(position, widget.route[splitIndex]) <=
+            _maxSnapDistanceKm;
+    if (!onRoute) {
+      return <Polyline>{
+        Polyline(
+          polylineId: const PolylineId('route_remaining'),
+          points: widget.route,
+          color: widget.remainingColor,
+          width: 6,
+        ),
+      };
+    }
+    _progressIndex = splitIndex;
+
     final List<LatLng> traveled = <LatLng>[
       ...widget.route.sublist(0, splitIndex + 1),
       position,
@@ -233,6 +265,12 @@ class _TripMapViewState extends State<TripMapView>
       compassEnabled: widget.mode == TripMode.driver,
       zoomControlsEnabled: false,
       mapToolbarEnabled: false,
+      // Trava a câmera dentro de Chapecó, igual ao BusMap — evita o
+      // trajeto "fugir" pra fora da área de cobertura (ex.: localização
+      // padrão do emulador Android, que cai no Googleplex em Mountain
+      // View) aparecendo no mapa do motorista/passageiro.
+      cameraTargetBounds: CameraTargetBounds(kChapecoBounds),
+      minMaxZoomPreference: const MinMaxZoomPreference(kMinZoom, kMaxZoom),
     );
   }
 }
