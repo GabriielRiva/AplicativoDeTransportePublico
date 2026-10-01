@@ -14,7 +14,7 @@ void main() {
       );
 
       expect(camera.target, position);
-      expect(camera.tilt, 50);
+      expect(camera.tilt, 60);
       expect(camera.bearing, 128);
       expect(camera.zoom, 18.5);
     });

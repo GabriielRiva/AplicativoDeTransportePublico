@@ -10,9 +10,9 @@ enum TripMode { driver, passenger }
 abstract final class TripCameraConfig {
   static const double _driverZoom = 18.5;
   static const double _passengerZoom = 15;
-  /// Mesma inclinação usada para renderizar o ônibus 3D (assets/images),
-  /// para o desenho combinar com a perspectiva do mapa.
-  static const double _driverTilt = 50;
+  /// Próxima da inclinação usada para renderizar o ônibus 3D
+  /// (assets/images), para o desenho combinar com a perspectiva do mapa.
+  static const double _driverTilt = 60;
 
   /// Monta a câmera para o [mode] centrada em [position]. [heading] é o
   /// rumo (bearing) em graus (0-360); só gira o mapa no modo motorista.

@@ -10,7 +10,7 @@ const String kBus3dAsset = 'assets/images/bus_3d.png';
 
 /// Ponto da imagem [kBus3dAsset] que fica sobre a posição do GPS: o centro
 /// do ônibus no chão (calculado na renderização do modelo 3D).
-const Offset kBus3dAnchor = Offset(0.5, 0.59);
+const Offset kBus3dAnchor = Offset(0.5, 0.66);
 
 /// Conjunto de ícones customizados usados nos mapas.
 class MapMarkerIcons {
