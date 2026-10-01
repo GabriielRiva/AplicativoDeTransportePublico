@@ -18,3 +18,9 @@ lib/firebase_options.dart
 # Chaves locais
 android/local.properties
 android/key.properties
+
+# Arquivos locais gerados por ferramentas (não versionar)
+flutter_*.log
+flutter_*.png
+bugreport-*.zip
+Claude outputs/
