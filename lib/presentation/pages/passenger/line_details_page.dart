@@ -102,7 +102,7 @@ class _LineDetailsPageState extends ConsumerState<LineDetailsPage> {
                     route: routePoints,
                     follow: false,
                     extraMarkers: _buildStopMarkers(stops, icons),
-                    busIcon: icons?.bus,
+                    busIcon: icons?.busTopDown,
                   ),
           ),
           Expanded(

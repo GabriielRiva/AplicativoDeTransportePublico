@@ -8,10 +8,18 @@ import '../../core/utils/marker_icon_utils.dart';
 /// Conjunto de ícones customizados usados nos mapas.
 class MapMarkerIcons {
   /// Cria o conjunto de ícones.
-  const MapMarkerIcons({required this.bus, required this.stop});
+  const MapMarkerIcons({
+    required this.bus,
+    required this.busTopDown,
+    required this.stop,
+  });
 
-  /// Ícone do ônibus em circulação (verde).
+  /// Ícone circular do ônibus em circulação (mapa geral do passageiro).
   final BitmapDescriptor bus;
+
+  /// Ônibus visto de cima, usado no trajeto ativo (motorista e
+  /// acompanhamento da linha), girando com a direção da rua.
+  final BitmapDescriptor busTopDown;
 
   /// Ícone das paradas da rota (menor, cor primária).
   final BitmapDescriptor stop;
@@ -23,11 +31,15 @@ final FutureProvider<MapMarkerIcons> markerIconsProvider =
   final BitmapDescriptor bus = await MarkerIconUtils.fromIcon(
     icon: Icons.directions_bus,
     color: kSuccessColor,
+    size: 40,
+  );
+  final BitmapDescriptor busTopDown = await MarkerIconUtils.topDownBus(
+    color: kSuccessColor,
   );
   final BitmapDescriptor stop = await MarkerIconUtils.fromIcon(
     icon: Icons.location_on,
     color: kPrimaryColor,
-    size: 64,
+    size: 26,
   );
-  return MapMarkerIcons(bus: bus, stop: stop);
+  return MapMarkerIcons(bus: bus, busTopDown: busTopDown, stop: stop);
 });
