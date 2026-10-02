@@ -114,7 +114,9 @@ class _LineDetailsPageState extends ConsumerState<LineDetailsPage> {
                         route: routePoints,
                         follow: false,
                         extraMarkers: _buildStopMarkers(stops, icons),
+                        // Ônibus 3D virado na direção em que está andando.
                         busIcon: icons?.bus,
+                        busIconForHeading: icons?.busFacing,
                         rotateBusIcon: false,
                         // Posições chegam a cada kGpsUpdateInterval (1 s):
                         // a animação dura o mesmo, sem paradas entre elas.

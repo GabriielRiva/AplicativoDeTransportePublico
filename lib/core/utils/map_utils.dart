@@ -18,6 +18,18 @@ abstract final class MapUtils {
     );
   }
 
+  /// Rumo (bearing) de [from] para [to], em graus de 0 a 360 no sentido
+  /// horário a partir do norte.
+  static double bearing(LatLng from, LatLng to) {
+    final double lat1 = from.latitude * math.pi / 180;
+    final double lat2 = to.latitude * math.pi / 180;
+    final double dLon = (to.longitude - from.longitude) * math.pi / 180;
+    final double y = math.sin(dLon) * math.cos(lat2);
+    final double x = math.cos(lat1) * math.sin(lat2) -
+        math.sin(lat1) * math.cos(lat2) * math.cos(dLon);
+    return (math.atan2(y, x) * 180 / math.pi + 360) % 360;
+  }
+
   /// Calcula os limites (bounds) que englobam todos os [points],
   /// usado para enquadrar uma rota inteira na câmera.
   static LatLngBounds boundsFromPoints(List<LatLng> points) {

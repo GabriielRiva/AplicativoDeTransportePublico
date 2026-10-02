@@ -12,24 +12,49 @@ const String kBus3dAsset = 'assets/images/bus_3d.png';
 /// do ônibus no chão (calculado na renderização do modelo 3D).
 const Offset kBus3dAnchor = Offset(0.5, 0.66);
 
+/// Quantidade de ângulos em que o ônibus 3D foi renderizado para os mapas
+/// do passageiro (um a cada 22,5°).
+const int kBusDirectionCount = 16;
+
+/// Imagem do ônibus 3D virado para o ângulo [index] × 22,5° (0 = indo para
+/// o norte, visto de trás; 4 = indo para o leste; ...), vista por uma câmera
+/// inclinada 45° olhando para o norte. O centro do ônibus no chão fica no
+/// centro da imagem.
+String busDirectionAsset(int index) =>
+    'assets/images/bus_dir/bus_${index.toString().padLeft(2, '0')}.png';
+
 /// Conjunto de ícones customizados usados nos mapas.
 class MapMarkerIcons {
   /// Cria o conjunto de ícones.
   const MapMarkerIcons({
     required this.bus,
     required this.bus3d,
+    required this.busDirections,
     required this.stop,
   });
 
-  /// Ícone circular do ônibus em circulação (telas do passageiro).
+  /// Ícone circular do ônibus (reserva, caso o 3D não carregue).
   final BitmapDescriptor bus;
 
-  /// Ônibus 3D visto de trás, no mesmo ângulo da câmera inclinada do
-  /// motorista (que sempre gira junto com o ônibus).
+  /// Ônibus 3D visto de trás, no mesmo ângulo da câmera inclinada de
+  /// navegação (que sempre gira junto com o ônibus).
   final BitmapDescriptor bus3d;
+
+  /// Ônibus 3D em [kBusDirectionCount] direções, para mapas que não giram
+  /// junto com o ônibus (mapa inicial e detalhes da linha do passageiro).
+  final List<BitmapDescriptor> busDirections;
 
   /// Ícone das paradas da rota (menor, cor primária).
   final BitmapDescriptor stop;
+
+  /// Ônibus 3D virado para [heading] (graus, 0 = norte), num mapa cuja
+  /// câmera aponta para [cameraBearing].
+  BitmapDescriptor busFacing(double heading, {double cameraBearing = 0}) {
+    final double relative = ((heading - cameraBearing) % 360 + 360) % 360;
+    final double step = 360 / busDirections.length;
+    final int index = (relative / step).round() % busDirections.length;
+    return busDirections[index];
+  }
 }
 
 /// Carrega os ícones uma única vez para reuso em todas as telas de mapa.
@@ -44,10 +69,23 @@ final FutureProvider<MapMarkerIcons> markerIconsProvider =
     kBus3dAsset,
     width: 40,
   );
+  final List<BitmapDescriptor> busDirections =
+      await Future.wait<BitmapDescriptor>(
+    List<Future<BitmapDescriptor>>.generate(
+      kBusDirectionCount,
+      (int index) =>
+          MarkerIconUtils.fromAsset(busDirectionAsset(index), width: 56),
+    ),
+  );
   final BitmapDescriptor stop = await MarkerIconUtils.fromIcon(
     icon: Icons.location_on,
     color: kPrimaryColor,
     size: 26,
   );
-  return MapMarkerIcons(bus: bus, bus3d: bus3d, stop: stop);
+  return MapMarkerIcons(
+    bus: bus,
+    bus3d: bus3d,
+    busDirections: busDirections,
+    stop: stop,
+  );
 });

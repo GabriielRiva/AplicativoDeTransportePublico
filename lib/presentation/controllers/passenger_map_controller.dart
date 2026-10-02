@@ -4,8 +4,8 @@ import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 import '../../core/constants/app_constants.dart';
-import '../../core/theme/app_colors.dart';
 import '../../core/utils/geo_utils.dart';
+import '../../core/utils/map_utils.dart';
 import '../../domain/entities/line.dart';
 import '../../domain/entities/stop.dart';
 import '../../domain/entities/trip.dart';
@@ -27,7 +27,7 @@ class PassengerMapState {
   /// Cria o estado do mapa.
   const PassengerMapState({
     this.markers = const <Marker>{},
-    this.polylines = const <Polyline>{},
+    this.stopMarkers = const <Marker>{},
     this.nearbyBuses = const <NearbyBus>[],
     this.userPosition,
     this.isLoading = true,
@@ -41,9 +41,9 @@ class PassengerMapState {
   /// Marcadores dos ônibus em circulação (RF12) e dos pontos de parada.
   final Set<Marker> markers;
 
-  /// Trajeto do ônibus selecionado: trecho percorrido e trecho que ele
-  /// ainda vai percorrer.
-  final Set<Polyline> polylines;
+  /// Só os marcadores dos pontos de parada (usados no acompanhamento do
+  /// ônibus selecionado).
+  final Set<Marker> stopMarkers;
 
   /// Lista "Ônibus próximos" com estimativa de chegada (RF13).
   final List<NearbyBus> nearbyBuses;
@@ -77,6 +77,15 @@ class PassengerMapState {
 /// automaticamente, sem intervenção do usuário (RF18).
 class PassengerMapController extends Notifier<PassengerMapState> {
   static const FindStopAtPosition _findStop = FindStopAtPosition();
+
+  /// Deslocamento mínimo (m) para recalcular o rumo de um ônibus; abaixo
+  /// disso a imprecisão do GPS faria o ícone "tremer" de direção.
+  static const double _minMoveMeters = 3;
+
+  /// Última posição e rumo conhecidos de cada ônibus, para virar o ícone
+  /// 3D na direção em que ele está andando.
+  final Map<String, ({LatLng position, double heading})> _busHeadings =
+      <String, ({LatLng position, double heading})>{};
 
   @override
   PassengerMapState build() {
@@ -117,12 +126,27 @@ class PassengerMapController extends Notifier<PassengerMapState> {
         : ref.watch(lineRouteProvider(selectedTrip.lineId)).valueOrNull ??
             const <LatLng>[];
 
+    final Map<String, List<LatLng>> routesByLine = <String, List<LatLng>>{
+      for (final Trip trip in trips)
+        trip.lineId:
+            ref.watch(lineRouteProvider(trip.lineId)).valueOrNull ??
+                const <LatLng>[],
+    };
+    final Set<Marker> stopMarkers =
+        _buildStopMarkers(stopsByLine, linesById, icons);
+
     return PassengerMapState(
       markers: <Marker>{
-        ..._buildStopMarkers(stopsByLine, linesById, icons),
-        ..._buildBusMarkers(trips, linesById, stopsByLine, icons),
+        ...stopMarkers,
+        ..._buildBusMarkers(
+          trips,
+          linesById,
+          stopsByLine,
+          routesByLine,
+          icons,
+        ),
       },
-      polylines: _buildSelectedRoute(selectedTrip, selectedLine, selectedRoute),
+      stopMarkers: stopMarkers,
       nearbyBuses: _buildNearbyBuses(trips, lines, userPosition),
       userPosition: userPosition,
       isLoading: tripsAsync.isLoading || linesAsync.isLoading,
@@ -161,20 +185,58 @@ class PassengerMapController extends Notifier<PassengerMapState> {
     );
   }
 
+  /// Rumo do ônibus: pelo deslocamento desde a última posição; antes do
+  /// primeiro deslocamento, pela direção do trecho da rota em que ele está.
+  double _headingFor(Trip trip, List<LatLng> route) {
+    final LatLng current = LatLng(trip.currentLatitude, trip.currentLongitude);
+    final ({LatLng position, double heading})? previous =
+        _busHeadings[trip.id];
+
+    if (previous != null) {
+      final double movedMeters =
+          MapUtils.distanceInKm(previous.position, current) * 1000;
+      if (movedMeters < _minMoveMeters) return previous.heading;
+      final double heading = MapUtils.bearing(previous.position, current);
+      _busHeadings[trip.id] = (position: current, heading: heading);
+      return heading;
+    }
+
+    double heading = 0;
+    if (route.length >= 2) {
+      final int index = RouteProgress.nearestIndex(route, current);
+      final RouteSnap snap = RouteProgress.snap(route, current, index);
+      heading = MapUtils.bearing(
+        route[snap.segmentStart],
+        route[snap.segmentStart + 1],
+      );
+    }
+    _busHeadings[trip.id] = (position: current, heading: heading);
+    return heading;
+  }
+
   Set<Marker> _buildBusMarkers(
     List<Trip> trips,
     Map<String, Line> linesById,
     Map<String, List<Stop>> stopsByLine,
+    Map<String, List<LatLng>> routesByLine,
     MapMarkerIcons? icons,
   ) {
+    // Esquece ônibus que encerraram o trajeto.
+    _busHeadings.removeWhere(
+      (String id, _) => !trips.any((Trip trip) => trip.id == id),
+    );
     return trips.map((Trip trip) {
       final Line? line = linesById[trip.lineId];
       final Stop? stopHere = _stopHere(trip, stopsByLine);
+      final double heading =
+          _headingFor(trip, routesByLine[trip.lineId] ?? const <LatLng>[]);
       return Marker(
         markerId: MarkerId('bus_${trip.id}'),
         position: LatLng(trip.currentLatitude, trip.currentLongitude),
         zIndex: 2,
-        icon: icons?.bus ??
+        // Ônibus 3D "em pé", virado na direção em que está andando.
+        anchor: const Offset(0.5, 0.5),
+        icon: icons?.busFacing(heading) ??
             BitmapDescriptor.defaultMarkerWithHue(
               BitmapDescriptor.hueGreen,
             ),
@@ -225,42 +287,6 @@ class PassengerMapController extends Notifier<PassengerMapState> {
         ),
       );
     }).toSet();
-  }
-
-  /// Trajeto do ônibus selecionado: cinza no que já foi percorrido e na
-  /// cor da linha no que ele ainda vai percorrer.
-  Set<Polyline> _buildSelectedRoute(
-    Trip? trip,
-    Line? line,
-    List<LatLng> route,
-  ) {
-    if (trip == null || route.length < 2) return const <Polyline>{};
-    final LatLng bus = LatLng(trip.currentLatitude, trip.currentLongitude);
-    final int index = RouteProgress.nearestIndex(route, bus);
-    final RouteSnap snap = RouteProgress.snap(route, bus, index);
-    final Color lineColor =
-        line == null ? kSuccessColor : colorFromHex(line.color);
-
-    return <Polyline>{
-      Polyline(
-        polylineId: const PolylineId('selected_traveled'),
-        points: <LatLng>[
-          ...route.sublist(0, snap.segmentStart + 1),
-          snap.point,
-        ],
-        color: const Color(0xFF9E9E9E),
-        width: 5,
-      ),
-      Polyline(
-        polylineId: const PolylineId('selected_remaining'),
-        points: <LatLng>[
-          snap.point,
-          ...route.sublist(snap.segmentStart + 1),
-        ],
-        color: lineColor,
-        width: 6,
-      ),
-    };
   }
 
   List<NearbyBus> _buildNearbyBuses(

@@ -26,6 +26,7 @@ class TripMapView extends StatefulWidget {
     this.heading,
     this.extraMarkers = const <Marker>{},
     this.busIcon,
+    this.busIconForHeading,
     this.rotateBusIcon = true,
     this.busIconAnchor = const Offset(0.5, 0.5),
     this.mapPadding = EdgeInsets.zero,
@@ -56,6 +57,10 @@ class TripMapView extends StatefulWidget {
 
   /// Ícone do ônibus. Quando nulo, usa um marcador padrão.
   final BitmapDescriptor? busIcon;
+
+  /// Ícone do ônibus de acordo com o rumo dele (ex.: ônibus 3D renderizado
+  /// em vários ângulos). Quando informado, tem prioridade sobre [busIcon].
+  final BitmapDescriptor Function(double heading)? busIconForHeading;
 
   /// Se o ícone fica "deitado" no mapa girando com a direção da rua (ex.:
   /// ônibus visto de cima). Quando falso, o ícone fica em pé, sempre virado
@@ -300,7 +305,8 @@ class _TripMapViewState extends State<TripMapView>
         rotation: widget.rotateBusIcon ? _displayHeading : 0,
         flat: widget.rotateBusIcon,
         anchor: widget.busIconAnchor,
-        icon: widget.busIcon ??
+        icon: widget.busIconForHeading?.call(_displayHeading) ??
+            widget.busIcon ??
             BitmapDescriptor.defaultMarkerWithHue(
               BitmapDescriptor.hueGreen,
             ),

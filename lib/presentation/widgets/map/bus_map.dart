@@ -14,6 +14,9 @@ class BusMap extends StatelessWidget {
     this.initialZoom = kGoogleMapsZoom,
     this.onMapCreated,
     this.onTap,
+    this.initialTilt = 0,
+    this.rotateGesturesEnabled = true,
+    this.tiltGesturesEnabled = true,
     this.myLocationEnabled = true,
   });
 
@@ -35,6 +38,16 @@ class BusMap extends StatelessWidget {
   /// Toque em uma área vazia do mapa.
   final void Function(LatLng)? onTap;
 
+  /// Inclinação inicial da câmera (0 = vista de cima). Com inclinação e
+  /// zoom alto o Google Maps mostra os prédios em 3D.
+  final double initialTilt;
+
+  /// Permite girar o mapa com dois dedos.
+  final bool rotateGesturesEnabled;
+
+  /// Permite mudar a inclinação com dois dedos.
+  final bool tiltGesturesEnabled;
+
   /// Exibe o ponto azul da posição do usuário.
   final bool myLocationEnabled;
 
@@ -44,11 +57,14 @@ class BusMap extends StatelessWidget {
       initialCameraPosition: CameraPosition(
         target: initialTarget,
         zoom: initialZoom,
+        tilt: initialTilt,
       ),
       markers: markers,
       polylines: polylines,
       onMapCreated: onMapCreated,
       onTap: onTap,
+      rotateGesturesEnabled: rotateGesturesEnabled,
+      tiltGesturesEnabled: tiltGesturesEnabled,
       myLocationEnabled: myLocationEnabled,
       myLocationButtonEnabled: myLocationEnabled,
       // Trava a câmera dentro de Chapecó e limita o zoom.

@@ -1,6 +1,6 @@
 # Créditos de terceiros
 
-## Ônibus 3D (`assets/images/bus_3d.png`)
+## Ônibus 3D (`assets/images/bus_3d.png` e `assets/images/bus_dir/`)
 
 Imagem renderizada a partir do modelo 3D **"Isuzu Erga Mio bus"**, de
 **own.guest** (https://sketchfab.com/own.guest), disponível em
@@ -11,5 +11,5 @@ http://creativecommons.org/licenses/by/4.0/
 **Alterações feitas:** a pintura original foi substituída pelas cores do
 TranCity (sem logotipos, letreiros, placa ou marcas d'água), o teto foi
 recolorido, o comprimento foi encurtado (visual mais compacto) e o modelo
-foi renderizado como imagem 2D (vista traseira
-superior) para uso como marcador no mapa.
+foi renderizado como imagens 2D (vista traseira superior e 16 ângulos
+em vista inclinada) para uso como marcador no mapa.
