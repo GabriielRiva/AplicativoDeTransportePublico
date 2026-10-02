@@ -45,6 +45,24 @@ class DriverTripPage extends ConsumerWidget {
     return nearest;
   }
 
+  /// Pontos de parada da linha, mostrados no mapa como abrigos 3D.
+  Set<Marker> _buildStopMarkers(List<Stop> stops, MapMarkerIcons? icons) {
+    return stops
+        .map(
+          (Stop stop) => Marker(
+            markerId: MarkerId('stop_${stop.id}'),
+            position: LatLng(stop.latitude, stop.longitude),
+            anchor: icons?.stopAnchor ?? const Offset(0.5, 1),
+            icon: icons?.stop ??
+                BitmapDescriptor.defaultMarkerWithHue(
+                  BitmapDescriptor.hueAzure,
+                ),
+            infoWindow: InfoWindow(title: stop.name),
+          ),
+        )
+        .toSet();
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final DriverTripState state = ref.watch(driverTripControllerProvider);
@@ -95,6 +113,7 @@ class DriverTripPage extends ConsumerWidget {
             mode: TripMode.driver,
             busPosition: busPosition,
             route: routePoints,
+            extraMarkers: _buildStopMarkers(stops, icons),
             heading: state.heading,
             // Ônibus 3D visto de trás: a câmera do motorista gira junto com
             // o ônibus, então ele aparece sempre de costas, em pé na tela.

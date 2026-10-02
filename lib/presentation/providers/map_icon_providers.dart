@@ -12,6 +12,13 @@ const String kBus3dAsset = 'assets/images/bus_3d.png';
 /// do ônibus no chão (calculado na renderização do modelo 3D).
 const Offset kBus3dAnchor = Offset(0.5, 0.66);
 
+/// Abrigo de ônibus 3D usado como marcador dos pontos de parada.
+const String kStop3dAsset = 'assets/images/bus_stop_3d.png';
+
+/// Ponto da imagem [kStop3dAsset] que fica sobre a coordenada da parada
+/// (o centro do abrigo no chão).
+const Offset kStop3dAnchor = Offset(0.41, 0.74);
+
 /// Quantidade de ângulos em que o ônibus 3D foi renderizado para os mapas
 /// do passageiro (um a cada 22,5°).
 const int kBusDirectionCount = 16;
@@ -44,8 +51,11 @@ class MapMarkerIcons {
   /// junto com o ônibus (mapa inicial e detalhes da linha do passageiro).
   final List<BitmapDescriptor> busDirections;
 
-  /// Ícone das paradas da rota (menor, cor primária).
+  /// Abrigo de ônibus 3D dos pontos de parada (âncora: [stopAnchor]).
   final BitmapDescriptor stop;
+
+  /// Âncora do ícone [stop].
+  Offset get stopAnchor => kStop3dAnchor;
 
   /// Ônibus 3D virado para [heading] (graus, 0 = norte), num mapa cuja
   /// câmera aponta para [cameraBearing].
@@ -77,10 +87,9 @@ final FutureProvider<MapMarkerIcons> markerIconsProvider =
           MarkerIconUtils.fromAsset(busDirectionAsset(index), width: 56),
     ),
   );
-  final BitmapDescriptor stop = await MarkerIconUtils.fromIcon(
-    icon: Icons.location_on,
-    color: kPrimaryColor,
-    size: 26,
+  final BitmapDescriptor stop = await MarkerIconUtils.fromAsset(
+    kStop3dAsset,
+    width: 40,
   );
   return MapMarkerIcons(
     bus: bus,

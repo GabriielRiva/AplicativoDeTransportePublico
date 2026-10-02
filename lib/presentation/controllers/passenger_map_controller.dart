@@ -279,6 +279,7 @@ class PassengerMapController extends Notifier<PassengerMapState> {
         markerId: MarkerId('stop_${entry.key}'),
         position: LatLng(stop.latitude, stop.longitude),
         zIndex: 1,
+        anchor: icons?.stopAnchor ?? const Offset(0.5, 1),
         icon: icons?.stop ??
             BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueAzure),
         infoWindow: InfoWindow(

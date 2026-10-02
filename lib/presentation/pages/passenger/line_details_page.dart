@@ -206,6 +206,7 @@ class _LineDetailsPageState extends ConsumerState<LineDetailsPage> {
           (Stop stop) => Marker(
             markerId: MarkerId('stop_${stop.id}'),
             position: LatLng(stop.latitude, stop.longitude),
+            anchor: icons?.stopAnchor ?? const Offset(0.5, 1),
             icon: icons?.stop ??
                 BitmapDescriptor.defaultMarkerWithHue(
                   BitmapDescriptor.hueAzure,
