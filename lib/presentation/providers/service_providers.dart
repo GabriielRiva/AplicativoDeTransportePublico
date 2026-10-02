@@ -2,6 +2,7 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:geolocator/geolocator.dart';
 
+import '../../core/constants/app_constants.dart';
 import '../../core/network/network_info.dart';
 import '../../core/services/location_service.dart';
 import '../../core/services/permission_service.dart';
@@ -18,12 +19,16 @@ final Provider<PermissionService> permissionServiceProvider =
 final Provider<NetworkInfo> networkInfoProvider =
     Provider<NetworkInfo>((Ref ref) => NetworkInfoImpl(Connectivity()));
 
-/// Posição atual do usuário, obtida após garantir a permissão de GPS.
+/// Posição do usuário em tempo real, após garantir a permissão de GPS.
 ///
-/// Usada pelo mapa do passageiro para centralizar a câmera e calcular
-/// a lista de ônibus próximos (RF13).
-final FutureProvider<Position> userPositionProvider =
-    FutureProvider<Position>((Ref ref) async {
+/// Emite a posição atual assim que o GPS responde e, depois, uma nova a
+/// cada deslocamento de [kPassengerDistanceFilterMeters] metros. Usada pelo
+/// mapa do passageiro para centralizar a câmera e manter a lista de ônibus
+/// próximos atualizada (RF13). Fica só no aparelho: não vai ao Firebase.
+final StreamProvider<Position> userPositionProvider =
+    StreamProvider<Position>((Ref ref) async* {
   await ref.watch(permissionServiceProvider).ensureLocationPermission();
-  return ref.watch(locationServiceProvider).getCurrentPosition();
+  final LocationService location = ref.watch(locationServiceProvider);
+  yield await location.getCurrentPosition();
+  yield* location.watchUserPosition();
 });

@@ -91,10 +91,10 @@ class _LineDetailsPageState extends ConsumerState<LineDetailsPage> {
                       _mapController = controller;
                       _fitRoute(routePoints);
                     },
-                    myLocationEnabled: false,
                   )
                 : TripMapView(
                     mode: TripMode.passenger,
+                    showMyLocation: true,
                     busPosition: LatLng(
                       activeBus.currentLatitude,
                       activeBus.currentLongitude,

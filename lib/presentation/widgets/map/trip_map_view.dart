@@ -29,6 +29,7 @@ class TripMapView extends StatefulWidget {
     this.rotateBusIcon = true,
     this.busIconAnchor = const Offset(0.5, 0.5),
     this.mapPadding = EdgeInsets.zero,
+    this.showMyLocation = false,
     this.follow = true,
     this.interpolationDuration = const Duration(seconds: 5),
     this.remainingColor = const Color(0xFF1D9E75),
@@ -68,6 +69,9 @@ class TripMapView extends StatefulWidget {
   /// sobra; no motorista, uma margem maior em cima deixa o ônibus mais
   /// embaixo na tela, mostrando mais da rua à frente.
   final EdgeInsets mapPadding;
+
+  /// Exibe o ponto azul com a posição do próprio usuário (passageiro).
+  final bool showMyLocation;
 
   /// Se a câmera deve seguir o ônibus continuamente.
   final bool follow;
@@ -334,7 +338,8 @@ class _TripMapViewState extends State<TripMapView>
       padding: widget.mapPadding,
       polylines: _polylines,
       markers: _buildMarkers(),
-      myLocationEnabled: false,
+      myLocationEnabled: widget.showMyLocation,
+      myLocationButtonEnabled: false,
       compassEnabled: widget.mode == TripMode.driver,
       zoomControlsEnabled: false,
       mapToolbarEnabled: false,

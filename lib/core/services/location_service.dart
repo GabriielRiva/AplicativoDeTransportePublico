@@ -16,6 +16,11 @@ class LocationService {
     distanceFilter: 0,
   );
 
+  static const LocationSettings _passengerSettings = LocationSettings(
+    accuracy: LocationAccuracy.high,
+    distanceFilter: kPassengerDistanceFilterMeters,
+  );
+
   /// Obtém a posição atual do dispositivo uma única vez.
   Future<Position> getCurrentPosition() async {
     try {
@@ -36,5 +41,11 @@ class LocationService {
   /// emitindo novas coordenadas a cada [kGpsSampleInterval].
   Stream<Position> watchPosition() {
     return Geolocator.getPositionStream(locationSettings: _trackingSettings);
+  }
+
+  /// Stream de posições do passageiro: só emite quando ele se desloca pelo
+  /// menos [kPassengerDistanceFilterMeters] metros, economizando bateria.
+  Stream<Position> watchUserPosition() {
+    return Geolocator.getPositionStream(locationSettings: _passengerSettings);
   }
 }

@@ -24,3 +24,8 @@ const double kAverageBusSpeedKmh = 25;
 
 /// Quantidade máxima de linhas exibidas na lista "Ônibus próximos".
 const int kMaxNearbyBuses = 3;
+
+/// Deslocamento mínimo (em metros) do passageiro para o app recalcular a
+/// lista "Ônibus próximos". A posição do passageiro só é usada no próprio
+/// aparelho e nunca é enviada ao Firebase.
+const int kPassengerDistanceFilterMeters = 25;
