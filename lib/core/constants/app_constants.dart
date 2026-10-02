@@ -4,14 +4,17 @@ library;
 /// Nome do aplicativo exibido ao usuário.
 const String kAppName = 'TranCity';
 
-/// Intervalo de envio da posição do motorista ao Firebase
-/// (RNF05: máximo 5 segundos).
-const Duration kGpsUpdateInterval = Duration(seconds: 5);
+/// Intervalo de envio da posição do motorista ao Firebase. O RNF05 exige
+/// no máximo 5 segundos; o app envia a cada 1 segundo para o passageiro
+/// acompanhar o ônibus praticamente em tempo real.
+const Duration kGpsUpdateInterval = Duration(seconds: 1);
 
-/// Intervalo de leitura do GPS no aparelho do motorista. Mais curto que o
-/// envio para que o mapa do próprio motorista se mova de forma contínua;
-/// o envio ao Firebase continua limitado por [kGpsUpdateInterval].
+/// Intervalo de leitura do GPS no aparelho do motorista.
 const Duration kGpsSampleInterval = Duration(seconds: 1);
+
+/// Raio (em metros) em que o ônibus é considerado "no ponto": a partir daí
+/// o app avisa que o embarque e o desembarque estão liberados.
+const double kStopArrivalRadiusMeters = 35;
 
 /// Tamanho mínimo de senha aceito no cadastro (padrão Firebase Auth).
 const int kMinPasswordLength = 6;

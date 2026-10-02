@@ -31,7 +31,7 @@ void main() {
       expect(camera.target, position);
       expect(camera.tilt, 0);
       expect(camera.bearing, 0);
-      expect(camera.zoom, 15);
+      expect(camera.zoom, 16);
     });
 
     test('heading tem valor padrão zero quando omitido', () {

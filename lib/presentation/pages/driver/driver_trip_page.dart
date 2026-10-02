@@ -9,12 +9,14 @@ import '../../../core/utils/map_utils.dart';
 import '../../../domain/entities/line.dart';
 import '../../../domain/entities/stop.dart';
 import '../../../domain/entities/trip.dart';
+import '../../../domain/usecases/passenger/find_stop_at_position.dart';
 import '../../controllers/driver_trip_controller.dart';
 import '../../providers/line_providers.dart';
 import '../../providers/map_icon_providers.dart';
 import '../../widgets/common/app_button.dart';
 import '../../widgets/common/empty_state.dart';
 import '../../widgets/map/bus_info_card.dart';
+import '../../widgets/map/stop_arrival_banner.dart';
 import '../../widgets/map/trip_camera_config.dart';
 import '../../widgets/map/trip_map_view.dart';
 
@@ -80,6 +82,11 @@ class DriverTripPage extends ConsumerWidget {
     final LatLng busPosition =
         LatLng(trip.currentLatitude, trip.currentLongitude);
     final Stop? nextStop = _nearestStop(stops, busPosition);
+    final Stop? stopHere = const FindStopAtPosition()(
+      stops: stops,
+      latitude: trip.currentLatitude,
+      longitude: trip.currentLongitude,
+    );
 
     return Scaffold(
       body: Stack(
@@ -104,6 +111,16 @@ class DriverTripPage extends ConsumerWidget {
             // quando chega a próxima posição, sem paradas entre leituras.
             interpolationDuration: kGpsSampleInterval,
           ),
+          if (stopHere != null)
+            SafeArea(
+              child: Align(
+                alignment: Alignment.topCenter,
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: StopArrivalBanner(stopName: stopHere.name),
+                ),
+              ),
+            ),
           Align(
             alignment: Alignment.bottomCenter,
             child: BusInfoCard(

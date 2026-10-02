@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
+import '../../../core/constants/app_constants.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../core/utils/map_utils.dart';
@@ -9,6 +10,7 @@ import '../../../domain/entities/line.dart';
 import '../../../domain/entities/schedule.dart';
 import '../../../domain/entities/stop.dart';
 import '../../../domain/entities/trip.dart';
+import '../../../domain/usecases/passenger/find_stop_at_position.dart';
 import '../../controllers/lines_controller.dart';
 import '../../providers/bus_providers.dart';
 import '../../providers/line_providers.dart';
@@ -17,6 +19,7 @@ import '../../widgets/lines/route_info_card.dart';
 import '../../widgets/lines/schedule_tile.dart';
 import '../../widgets/lines/stop_tile.dart';
 import '../../widgets/map/bus_map.dart';
+import '../../widgets/map/stop_arrival_banner.dart';
 import '../../widgets/map/trip_camera_config.dart';
 import '../../widgets/map/trip_map_view.dart';
 
@@ -76,6 +79,13 @@ class _LineDetailsPageState extends ConsumerState<LineDetailsPage> {
         .where((Trip trip) => trip.lineId == widget.line.id)
         .toList();
     final Trip? activeBus = lineTrips.isNotEmpty ? lineTrips.first : null;
+    final Stop? stopHere = activeBus == null
+        ? null
+        : const FindStopAtPosition()(
+            stops: stops,
+            latitude: activeBus.currentLatitude,
+            longitude: activeBus.currentLongitude,
+          );
 
     return Scaffold(
       appBar: AppBar(title: Text(widget.line.displayName)),
@@ -92,18 +102,33 @@ class _LineDetailsPageState extends ConsumerState<LineDetailsPage> {
                       _fitRoute(routePoints);
                     },
                   )
-                : TripMapView(
-                    mode: TripMode.passenger,
-                    showMyLocation: true,
-                    busPosition: LatLng(
-                      activeBus.currentLatitude,
-                      activeBus.currentLongitude,
-                    ),
-                    route: routePoints,
-                    follow: false,
-                    extraMarkers: _buildStopMarkers(stops, icons),
-                    busIcon: icons?.bus,
-                    rotateBusIcon: false,
+                : Stack(
+                    children: <Widget>[
+                      TripMapView(
+                        mode: TripMode.passenger,
+                        showMyLocation: true,
+                        busPosition: LatLng(
+                          activeBus.currentLatitude,
+                          activeBus.currentLongitude,
+                        ),
+                        route: routePoints,
+                        follow: false,
+                        extraMarkers: _buildStopMarkers(stops, icons),
+                        busIcon: icons?.bus,
+                        rotateBusIcon: false,
+                        // Posições chegam a cada kGpsUpdateInterval (1 s):
+                        // a animação dura o mesmo, sem paradas entre elas.
+                        interpolationDuration: kGpsUpdateInterval,
+                      ),
+                      if (stopHere != null)
+                        Align(
+                          alignment: Alignment.topCenter,
+                          child: Padding(
+                            padding: const EdgeInsets.all(12),
+                            child: StopArrivalBanner(stopName: stopHere.name),
+                          ),
+                        ),
+                    ],
                   ),
           ),
           Expanded(

@@ -4,7 +4,7 @@ import 'enums/driver_status.dart';
 ///
 /// Decisão de projeto: o trajeto é persistido dentro do nó
 /// `drivers/{uid}` do Realtime Database (FIREBASE_SCHEMA), sobrescrito
-/// a cada 5 segundos, sem histórico de posições. Esta entidade
+/// a cada 1 segundo (RNF05: até 5 s), sem histórico de posições. Esta entidade
 /// representa esse estado em memória nas camadas superiores.
 class Trip {
   /// Cria a representação de um trajeto.

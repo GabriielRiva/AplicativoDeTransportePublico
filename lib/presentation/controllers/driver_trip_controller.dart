@@ -93,7 +93,7 @@ class DriverTripState {
 /// ViewModel do perfil do motorista (RF04/RF05/RF06).
 ///
 /// Orquestra a seleção de linha e ônibus, o início e o encerramento do
-/// trajeto e o loop de transmissão de GPS a cada 5 segundos (RNF05).
+/// trajeto e o loop de transmissão de GPS a cada 1 segundo (RNF05: até 5 s).
 class DriverTripController extends Notifier<DriverTripState> {
   StreamSubscription<Position>? _positionSubscription;
 
@@ -245,13 +245,14 @@ class DriverTripController extends Notifier<DriverTripState> {
         );
       }
 
-      // O envio ao Firebase continua respeitando o RNF05: uma posição a,
-      // no máximo, cada kGpsUpdateInterval. A margem de uma leitura garante
-      // que o intervalo real entre envios não passe de 5 segundos.
+      // Envio ao Firebase a cada kGpsUpdateInterval (1 s, dentro do limite
+      // de 5 s do RNF05). A pequena folga absorve variações do GPS, para
+      // nenhuma leitura ser descartada por chegar alguns milissegundos antes.
       final DateTime now = DateTime.now();
       final DateTime? lastSent = _lastSentAt;
       if (lastSent != null &&
-          now.difference(lastSent) < kGpsUpdateInterval - kGpsSampleInterval) {
+          now.difference(lastSent) <
+              kGpsUpdateInterval - const Duration(milliseconds: 250)) {
         return;
       }
       _lastSentAt = now;

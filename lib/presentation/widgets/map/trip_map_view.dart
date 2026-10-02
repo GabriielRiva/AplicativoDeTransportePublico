@@ -77,7 +77,8 @@ class TripMapView extends StatefulWidget {
   final bool follow;
 
   /// Duração da interpolação do marcador entre duas posições. As atualizações
-  /// do passageiro chegam a cada 5s, então o padrão evita o "teletransporte".
+  /// do passageiro chegam a cada 1 s (kGpsUpdateInterval); o padrão de 5 s
+  /// é só um valor seguro para quem não informar a duração.
   /// Para o motorista (GPS frequente) passe uma duração menor.
   final Duration interpolationDuration;
 

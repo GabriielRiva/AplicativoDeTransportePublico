@@ -13,6 +13,7 @@ class BusMap extends StatelessWidget {
     this.initialTarget = kChapecoCenter,
     this.initialZoom = kGoogleMapsZoom,
     this.onMapCreated,
+    this.onTap,
     this.myLocationEnabled = true,
   });
 
@@ -31,6 +32,9 @@ class BusMap extends StatelessWidget {
   /// Callback com o controlador do mapa.
   final void Function(GoogleMapController)? onMapCreated;
 
+  /// Toque em uma área vazia do mapa.
+  final void Function(LatLng)? onTap;
+
   /// Exibe o ponto azul da posição do usuário.
   final bool myLocationEnabled;
 
@@ -44,6 +48,7 @@ class BusMap extends StatelessWidget {
       markers: markers,
       polylines: polylines,
       onMapCreated: onMapCreated,
+      onTap: onTap,
       myLocationEnabled: myLocationEnabled,
       myLocationButtonEnabled: myLocationEnabled,
       // Trava a câmera dentro de Chapecó e limita o zoom.

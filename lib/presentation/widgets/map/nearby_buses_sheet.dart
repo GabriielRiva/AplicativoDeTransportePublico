@@ -7,10 +7,13 @@ import '../../../domain/usecases/passenger/get_nearby_buses.dart';
 /// Painel "Ônibus próximos" da tela inicial do passageiro (RF13).
 class NearbyBusesSheet extends StatelessWidget {
   /// Cria o painel com a lista de [buses] próximos.
-  const NearbyBusesSheet({required this.buses, super.key});
+  const NearbyBusesSheet({required this.buses, super.key, this.onSelect});
 
   /// Ônibus próximos ordenados pela distância.
   final List<NearbyBus> buses;
+
+  /// Toque em um ônibus da lista (mostra o trajeto dele no mapa).
+  final ValueChanged<NearbyBus>? onSelect;
 
   @override
   Widget build(BuildContext context) {
@@ -30,27 +33,32 @@ class NearbyBusesSheet extends StatelessWidget {
                 style: AppTextStyles.caption,
               )
             else
-              ...buses.map(
-                (NearbyBus bus) => Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 6),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: <Widget>[
-                      Expanded(
-                        child: Text(
-                          bus.line.displayName,
-                          style: AppTextStyles.body,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                      Text(
-                        Formatters.durationMinutes(bus.etaMinutes),
-                        style: AppTextStyles.title,
-                      ),
-                    ],
-                  ),
-                ),
+              ...buses.map(_buildRow),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildRow(NearbyBus bus) {
+    return InkWell(
+      onTap: onSelect == null ? null : () => onSelect!(bus),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 6),
+        child: Row(
+          children: <Widget>[
+            Expanded(
+              child: Text(
+                bus.line.displayName,
+                style: AppTextStyles.body,
+                overflow: TextOverflow.ellipsis,
               ),
+            ),
+            Text(
+              Formatters.durationMinutes(bus.etaMinutes),
+              style: AppTextStyles.title,
+            ),
+            if (onSelect != null) const Icon(Icons.chevron_right),
           ],
         ),
       ),

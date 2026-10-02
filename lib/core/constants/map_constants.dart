@@ -1,7 +1,7 @@
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 /// Zoom inicial da câmera ao abrir o mapa (mais próximo do centro).
-const double kGoogleMapsZoom = 15.5;
+const double kGoogleMapsZoom = 16.5;
 
 /// Zoom aplicado ao focar em um ônibus específico.
 const double kBusFocusZoom = 16;
