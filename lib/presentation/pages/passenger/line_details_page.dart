@@ -205,28 +205,26 @@ class _LineDetailsPageState extends ConsumerState<LineDetailsPage> {
     };
   }
 
-  /// Abrigos 3D das paradas, desenhados na calçada ao lado do traçado.
+  /// Abrigos 3D das paradas, desenhados na calçada ao lado do traçado e
+  /// de frente para a rua (o mapa desta tela fica apontado para o norte).
   Set<Marker> _buildStopMarkers(
     List<Stop> stops,
     List<LatLng> route,
     MapMarkerIcons? icons,
   ) {
-    return stops
-        .map(
-          (Stop stop) => Marker(
-            markerId: MarkerId('stop_${stop.id}'),
-            position: StopPlacement.roadside(
-              LatLng(stop.latitude, stop.longitude),
-              route,
-            ),
-            anchor: icons?.stopAnchor ?? const Offset(0.5, 1),
-            icon: icons?.stop ??
-                BitmapDescriptor.defaultMarkerWithHue(
-                  BitmapDescriptor.hueAzure,
-                ),
-            infoWindow: InfoWindow(title: stop.name),
-          ),
-        )
-        .toSet();
+    return stops.map((Stop stop) {
+      final StopDisplay display = StopPlacement.roadside(
+        LatLng(stop.latitude, stop.longitude),
+        route,
+      );
+      return Marker(
+        markerId: MarkerId('stop_${stop.id}'),
+        position: display.position,
+        anchor: icons?.stopAnchor ?? const Offset(0.5, 1),
+        icon: icons?.stopFacing(display.facing) ??
+            BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueAzure),
+        infoWindow: InfoWindow(title: stop.name),
+      );
+    }).toSet();
   }
 }

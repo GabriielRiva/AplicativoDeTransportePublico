@@ -134,21 +134,32 @@ class PassengerMapController extends Notifier<PassengerMapState> {
         line.id: ref.watch(lineRouteProvider(line.id)).valueOrNull ??
             const <LatLng>[],
     };
-    final Set<Marker> stopMarkers =
+    final Set<Marker> busMarkers = _buildBusMarkers(
+      trips,
+      linesById,
+      stopsByLine,
+      routesByLine,
+      icons,
+    );
+    // Visão geral: mapa sempre apontado para o norte.
+    final Set<Marker> overviewStops =
         _buildStopMarkers(stopsByLine, linesById, routesByLine, icons);
+    // Acompanhando um ônibus: a câmera gira junto com ele, então o abrigo
+    // é escolhido em relação ao rumo do ônibus.
+    final double? followBearing =
+        selectedTrip == null ? null : _busHeadings[selectedTrip.id]?.heading;
 
     return PassengerMapState(
-      markers: <Marker>{
-        ...stopMarkers,
-        ..._buildBusMarkers(
-          trips,
-          linesById,
-          stopsByLine,
-          routesByLine,
-          icons,
-        ),
-      },
-      stopMarkers: stopMarkers,
+      markers: <Marker>{...overviewStops, ...busMarkers},
+      stopMarkers: followBearing == null
+          ? overviewStops
+          : _buildStopMarkers(
+              stopsByLine,
+              linesById,
+              routesByLine,
+              icons,
+              cameraBearing: followBearing,
+            ),
       nearbyBuses: _buildNearbyBuses(trips, lines, userPosition),
       userPosition: userPosition,
       isLoading: tripsAsync.isLoading || linesAsync.isLoading,
@@ -253,22 +264,23 @@ class PassengerMapController extends Notifier<PassengerMapState> {
     }).toSet();
   }
 
-  /// Posição de desenho de cada parada, calculada uma vez por traçado
+  /// Posição e orientação de cada abrigo, calculadas uma vez por traçado
   /// (o estado é recalculado a cada posição nova dos ônibus).
-  final Map<String, ({int routeLength, LatLng position})> _stopPositions =
-      <String, ({int routeLength, LatLng position})>{};
+  final Map<String, ({int routeLength, StopDisplay display})> _stopDisplays =
+      <String, ({int routeLength, StopDisplay display})>{};
 
-  LatLng _stopDisplayPosition(String key, Stop stop, List<LatLng> route) {
-    final ({int routeLength, LatLng position})? cached = _stopPositions[key];
+  StopDisplay _stopDisplay(String key, Stop stop, List<LatLng> route) {
+    final ({int routeLength, StopDisplay display})? cached =
+        _stopDisplays[key];
     if (cached != null && cached.routeLength == route.length) {
-      return cached.position;
+      return cached.display;
     }
-    final LatLng position = StopPlacement.roadside(
+    final StopDisplay display = StopPlacement.roadside(
       LatLng(stop.latitude, stop.longitude),
       route,
     );
-    _stopPositions[key] = (routeLength: route.length, position: position);
-    return position;
+    _stopDisplays[key] = (routeLength: route.length, display: display);
+    return display;
   }
 
   /// Pontos de parada de todas as linhas. Pontos compartilhados (ex.:
@@ -277,8 +289,9 @@ class PassengerMapController extends Notifier<PassengerMapState> {
     Map<String, List<Stop>> stopsByLine,
     Map<String, Line> linesById,
     Map<String, List<LatLng>> routesByLine,
-    MapMarkerIcons? icons,
-  ) {
+    MapMarkerIcons? icons, {
+    double cameraBearing = 0,
+  }) {
     final Map<String, ({Stop stop, String lineId})> byPlace =
         <String, ({Stop stop, String lineId})>{};
     final Map<String, Set<String>> linesByPlace = <String, Set<String>>{};
@@ -298,17 +311,18 @@ class PassengerMapController extends Notifier<PassengerMapState> {
         .map((MapEntry<String, ({Stop stop, String lineId})> entry) {
       final Stop stop = entry.value.stop;
       final List<String> numbers = linesByPlace[entry.key]!.toList()..sort();
+      // Abrigo na calçada, ao lado do traçado e de frente para a rua.
+      final StopDisplay display = _stopDisplay(
+        entry.key,
+        stop,
+        routesByLine[entry.value.lineId] ?? const <LatLng>[],
+      );
       return Marker(
         markerId: MarkerId('stop_${entry.key}'),
-        // Abrigo na calçada, ao lado do traçado da linha.
-        position: _stopDisplayPosition(
-          entry.key,
-          stop,
-          routesByLine[entry.value.lineId] ?? const <LatLng>[],
-        ),
+        position: display.position,
         zIndex: 1,
         anchor: icons?.stopAnchor ?? const Offset(0.5, 1),
-        icon: icons?.stop ??
+        icon: icons?.stopFacing(display.facing, cameraBearing: cameraBearing) ??
             BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueAzure),
         infoWindow: InfoWindow(
           title: stop.name,

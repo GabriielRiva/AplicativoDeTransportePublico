@@ -9,9 +9,19 @@ const List<LatLng> _eastbound = <LatLng>[
   LatLng(-27.1, -52.61),
 ];
 
+/// Rua de teste indo para o norte (~1,1 km).
+const List<LatLng> _northbound = <LatLng>[
+  LatLng(-27.11, -52.615),
+  LatLng(-27.1, -52.615),
+];
+
 /// Distância (m) entre [point] e a rua [_eastbound] (latitude -27.1).
 double _metersFromRoad(LatLng point) =>
     MapUtils.distanceInKm(point, LatLng(-27.1, point.longitude)) * 1000;
+
+/// Diferença (graus, 0 a 180) entre dois rumos.
+double _angleBetween(double a, double b) =>
+    (((a - b) % 360 + 540) % 360 - 180).abs();
 
 void main() {
   group('MapUtils.offset', () {
@@ -27,30 +37,44 @@ void main() {
   });
 
   group('StopPlacement.roadside', () {
-    test('parada no meio da rua vai para a direita do sentido da linha', () {
-      final LatLng placed =
+    test('parada no meio da rua vai para a direita, de frente para a rua',
+        () {
+      final StopDisplay placed =
           StopPlacement.roadside(const LatLng(-27.1, -52.615), _eastbound);
-      // Indo para o leste, a direita é o sul.
-      expect(placed.latitude, lessThan(-27.1));
-      expect(_metersFromRoad(placed), closeTo(10, 0.1));
+      // Indo para o leste, a direita é o sul; o abrigo olha para o norte.
+      expect(placed.position.latitude, lessThan(-27.1));
+      expect(_metersFromRoad(placed.position), closeTo(10, 0.1));
+      expect(_angleBetween(placed.facing, 0), lessThan(0.5));
+    });
+
+    test('rua indo para o norte: abrigo a leste, olhando para o oeste', () {
+      final StopDisplay placed =
+          StopPlacement.roadside(const LatLng(-27.105, -52.615), _northbound);
+      expect(placed.position.longitude, greaterThan(-52.615));
+      expect(_angleBetween(placed.facing, 270), lessThan(0.5));
     });
 
     test('parada perto da rua continua do lado em que foi cadastrada', () {
       final LatLng north = MapUtils.offset(const LatLng(-27.1, -52.615), 0, 5);
-      final LatLng placed = StopPlacement.roadside(north, _eastbound);
-      expect(placed.latitude, greaterThan(-27.1));
-      expect(_metersFromRoad(placed), closeTo(10, 0.1));
+      final StopDisplay placed = StopPlacement.roadside(north, _eastbound);
+      expect(placed.position.latitude, greaterThan(-27.1));
+      expect(_metersFromRoad(placed.position), closeTo(10, 0.1));
+      expect(_angleBetween(placed.facing, 180), lessThan(0.5));
     });
 
-    test('parada já na calçada não sai do lugar', () {
+    test('parada já na calçada não sai do lugar e olha para a rua', () {
       final LatLng sidewalk =
           MapUtils.offset(const LatLng(-27.1, -52.615), 180, 15);
-      expect(StopPlacement.roadside(sidewalk, _eastbound), sidewalk);
+      final StopDisplay placed = StopPlacement.roadside(sidewalk, _eastbound);
+      expect(placed.position, sidewalk);
+      expect(_angleBetween(placed.facing, 0), lessThan(0.5));
     });
 
     test('sem traçado, a parada fica na coordenada cadastrada', () {
       const LatLng stop = LatLng(-27.1, -52.615);
-      expect(StopPlacement.roadside(stop, const <LatLng>[]), stop);
+      final StopDisplay placed =
+          StopPlacement.roadside(stop, const <LatLng>[]);
+      expect(placed.position, stop);
     });
   });
 }

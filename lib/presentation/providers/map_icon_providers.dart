@@ -12,12 +12,19 @@ const String kBus3dAsset = 'assets/images/bus_3d.png';
 /// do ônibus no chão (calculado na renderização do modelo 3D).
 const Offset kBus3dAnchor = Offset(0.5, 0.66);
 
-/// Abrigo de ônibus 3D usado como marcador dos pontos de parada.
-const String kStop3dAsset = 'assets/images/bus_stop_3d.png';
+/// Quantidade de ângulos em que o abrigo 3D das paradas foi renderizado
+/// (um a cada 22,5°).
+const int kStopDirectionCount = 16;
 
-/// Ponto da imagem [kStop3dAsset] que fica sobre a coordenada da parada
-/// (o centro do abrigo no chão).
-const Offset kStop3dAnchor = Offset(0.41, 0.74);
+/// Abrigo 3D com a frente aberta virada para o rumo [index] × 22,5° (0 =
+/// norte, 4 = leste, 8 = sul, ...), visto por uma câmera inclinada 45°
+/// olhando para o norte.
+String stopDirectionAsset(int index) =>
+    'assets/images/stop_dir/stop_${index.toString().padLeft(2, '0')}.png';
+
+/// Ponto das imagens [stopDirectionAsset] que fica sobre a posição da
+/// parada: o centro do abrigo no chão (igual em todos os ângulos).
+const Offset kStop3dAnchor = Offset(0.435, 0.705);
 
 /// Quantidade de ângulos em que o ônibus 3D foi renderizado para os mapas
 /// do passageiro (um a cada 22,5°).
@@ -37,7 +44,7 @@ class MapMarkerIcons {
     required this.bus,
     required this.bus3d,
     required this.busDirections,
-    required this.stop,
+    required this.stopDirections,
   });
 
   /// Ícone circular do ônibus (reserva, caso o 3D não carregue).
@@ -51,19 +58,35 @@ class MapMarkerIcons {
   /// junto com o ônibus (mapa inicial e detalhes da linha do passageiro).
   final List<BitmapDescriptor> busDirections;
 
-  /// Abrigo de ônibus 3D dos pontos de parada (âncora: [stopAnchor]).
-  final BitmapDescriptor stop;
+  /// Abrigo 3D das paradas em [kStopDirectionCount] direções (âncora:
+  /// [stopAnchor]).
+  final List<BitmapDescriptor> stopDirections;
 
-  /// Âncora do ícone [stop].
+  /// Âncora dos ícones de parada.
   Offset get stopAnchor => kStop3dAnchor;
+
+  /// Abrigo com a frente aberta virada para [facing] (graus, 0 = norte),
+  /// num mapa cuja câmera aponta para [cameraBearing]. Com a frente virada
+  /// para a rua, o abrigo fica de lado, alinhado com a calçada.
+  BitmapDescriptor stopFacing(double facing, {double cameraBearing = 0}) =>
+      _facing(stopDirections, facing, cameraBearing);
 
   /// Ônibus 3D virado para [heading] (graus, 0 = norte), num mapa cuja
   /// câmera aponta para [cameraBearing].
-  BitmapDescriptor busFacing(double heading, {double cameraBearing = 0}) {
-    final double relative = ((heading - cameraBearing) % 360 + 360) % 360;
-    final double step = 360 / busDirections.length;
-    final int index = (relative / step).round() % busDirections.length;
-    return busDirections[index];
+  BitmapDescriptor busFacing(double heading, {double cameraBearing = 0}) =>
+      _facing(busDirections, heading, cameraBearing);
+
+  /// Imagem de [images] (renderizadas a cada 360 / length graus) mais
+  /// próxima do rumo [angle] visto por uma câmera virada para [bearing].
+  static BitmapDescriptor _facing(
+    List<BitmapDescriptor> images,
+    double angle,
+    double bearing,
+  ) {
+    final double relative = ((angle - bearing) % 360 + 360) % 360;
+    final double step = 360 / images.length;
+    final int index = (relative / step).round() % images.length;
+    return images[index];
   }
 }
 
@@ -87,14 +110,18 @@ final FutureProvider<MapMarkerIcons> markerIconsProvider =
           MarkerIconUtils.fromAsset(busDirectionAsset(index), width: 56),
     ),
   );
-  final BitmapDescriptor stop = await MarkerIconUtils.fromAsset(
-    kStop3dAsset,
-    width: 28,
+  final List<BitmapDescriptor> stopDirections =
+      await Future.wait<BitmapDescriptor>(
+    List<Future<BitmapDescriptor>>.generate(
+      kStopDirectionCount,
+      (int index) =>
+          MarkerIconUtils.fromAsset(stopDirectionAsset(index), width: 28),
+    ),
   );
   return MapMarkerIcons(
     bus: bus,
     bus3d: bus3d,
     busDirections: busDirections,
-    stop: stop,
+    stopDirections: stopDirections,
   );
 });

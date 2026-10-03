@@ -46,29 +46,29 @@ class DriverTripPage extends ConsumerWidget {
     return nearest;
   }
 
-  /// Abrigos 3D das paradas, desenhados na calçada ao lado do traçado.
+  /// Abrigos 3D das paradas, desenhados na calçada ao lado do traçado e
+  /// de frente para a rua. [cameraBearing]
+  /// é para onde a câmera do mapa aponta (ela gira junto com o ônibus).
   Set<Marker> _buildStopMarkers(
     List<Stop> stops,
     List<LatLng> route,
-    MapMarkerIcons? icons,
-  ) {
-    return stops
-        .map(
-          (Stop stop) => Marker(
-            markerId: MarkerId('stop_${stop.id}'),
-            position: StopPlacement.roadside(
-              LatLng(stop.latitude, stop.longitude),
-              route,
-            ),
-            anchor: icons?.stopAnchor ?? const Offset(0.5, 1),
-            icon: icons?.stop ??
-                BitmapDescriptor.defaultMarkerWithHue(
-                  BitmapDescriptor.hueAzure,
-                ),
-            infoWindow: InfoWindow(title: stop.name),
-          ),
-        )
-        .toSet();
+    MapMarkerIcons? icons, {
+    double cameraBearing = 0,
+  }) {
+    return stops.map((Stop stop) {
+      final StopDisplay display = StopPlacement.roadside(
+        LatLng(stop.latitude, stop.longitude),
+        route,
+      );
+      return Marker(
+        markerId: MarkerId('stop_${stop.id}'),
+        position: display.position,
+        anchor: icons?.stopAnchor ?? const Offset(0.5, 1),
+        icon: icons?.stopFacing(display.facing, cameraBearing: cameraBearing) ??
+            BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueAzure),
+        infoWindow: InfoWindow(title: stop.name),
+      );
+    }).toSet();
   }
 
   @override
@@ -121,7 +121,12 @@ class DriverTripPage extends ConsumerWidget {
             mode: TripMode.driver,
             busPosition: busPosition,
             route: routePoints,
-            extraMarkers: _buildStopMarkers(stops, routePoints, icons),
+            extraMarkers: _buildStopMarkers(
+              stops,
+              routePoints,
+              icons,
+              cameraBearing: state.heading,
+            ),
             heading: state.heading,
             // Ônibus 3D visto de trás: a câmera do motorista gira junto com
             // o ônibus, então ele aparece sempre de costas, em pé na tela.
