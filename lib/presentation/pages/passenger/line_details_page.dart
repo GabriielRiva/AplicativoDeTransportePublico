@@ -20,6 +20,7 @@ import '../../widgets/lines/schedule_tile.dart';
 import '../../widgets/lines/stop_tile.dart';
 import '../../widgets/map/bus_map.dart';
 import '../../widgets/map/stop_arrival_banner.dart';
+import '../../widgets/map/stop_placement.dart';
 import '../../widgets/map/trip_camera_config.dart';
 import '../../widgets/map/trip_map_view.dart';
 
@@ -96,7 +97,7 @@ class _LineDetailsPageState extends ConsumerState<LineDetailsPage> {
             child: activeBus == null
                 ? BusMap(
                     polylines: _buildPolylines(routePoints),
-                    markers: _buildStopMarkers(stops, icons),
+                    markers: _buildStopMarkers(stops, routePoints, icons),
                     onMapCreated: (GoogleMapController controller) {
                       _mapController = controller;
                       _fitRoute(routePoints);
@@ -113,7 +114,11 @@ class _LineDetailsPageState extends ConsumerState<LineDetailsPage> {
                         ),
                         route: routePoints,
                         follow: false,
-                        extraMarkers: _buildStopMarkers(stops, icons),
+                        extraMarkers: _buildStopMarkers(
+                          stops,
+                          routePoints,
+                          icons,
+                        ),
                         // Ônibus 3D virado na direção em que está andando.
                         busIcon: icons?.bus,
                         busIconForHeading: icons?.busFacing,
@@ -200,12 +205,20 @@ class _LineDetailsPageState extends ConsumerState<LineDetailsPage> {
     };
   }
 
-  Set<Marker> _buildStopMarkers(List<Stop> stops, MapMarkerIcons? icons) {
+  /// Abrigos 3D das paradas, desenhados na calçada ao lado do traçado.
+  Set<Marker> _buildStopMarkers(
+    List<Stop> stops,
+    List<LatLng> route,
+    MapMarkerIcons? icons,
+  ) {
     return stops
         .map(
           (Stop stop) => Marker(
             markerId: MarkerId('stop_${stop.id}'),
-            position: LatLng(stop.latitude, stop.longitude),
+            position: StopPlacement.roadside(
+              LatLng(stop.latitude, stop.longitude),
+              route,
+            ),
             anchor: icons?.stopAnchor ?? const Offset(0.5, 1),
             icon: icons?.stop ??
                 BitmapDescriptor.defaultMarkerWithHue(

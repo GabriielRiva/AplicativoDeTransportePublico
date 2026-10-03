@@ -17,6 +17,7 @@ import '../providers/map_icon_providers.dart';
 import '../providers/service_providers.dart';
 import '../providers/usecase_providers.dart';
 import '../widgets/map/route_progress.dart';
+import '../widgets/map/stop_placement.dart';
 
 /// Ônibus selecionado no mapa do passageiro (id do trajeto), ou nulo.
 final StateProvider<String?> selectedBusIdProvider =
@@ -126,14 +127,15 @@ class PassengerMapController extends Notifier<PassengerMapState> {
         : ref.watch(lineRouteProvider(selectedTrip.lineId)).valueOrNull ??
             const <LatLng>[];
 
+    // Traçado de todas as linhas: vira o ícone de cada ônibus e põe os
+    // abrigos das paradas na calçada.
     final Map<String, List<LatLng>> routesByLine = <String, List<LatLng>>{
-      for (final Trip trip in trips)
-        trip.lineId:
-            ref.watch(lineRouteProvider(trip.lineId)).valueOrNull ??
-                const <LatLng>[],
+      for (final Line line in lines)
+        line.id: ref.watch(lineRouteProvider(line.id)).valueOrNull ??
+            const <LatLng>[],
     };
     final Set<Marker> stopMarkers =
-        _buildStopMarkers(stopsByLine, linesById, icons);
+        _buildStopMarkers(stopsByLine, linesById, routesByLine, icons);
 
     return PassengerMapState(
       markers: <Marker>{
@@ -251,33 +253,59 @@ class PassengerMapController extends Notifier<PassengerMapState> {
     }).toSet();
   }
 
+  /// Posição de desenho de cada parada, calculada uma vez por traçado
+  /// (o estado é recalculado a cada posição nova dos ônibus).
+  final Map<String, ({int routeLength, LatLng position})> _stopPositions =
+      <String, ({int routeLength, LatLng position})>{};
+
+  LatLng _stopDisplayPosition(String key, Stop stop, List<LatLng> route) {
+    final ({int routeLength, LatLng position})? cached = _stopPositions[key];
+    if (cached != null && cached.routeLength == route.length) {
+      return cached.position;
+    }
+    final LatLng position = StopPlacement.roadside(
+      LatLng(stop.latitude, stop.longitude),
+      route,
+    );
+    _stopPositions[key] = (routeLength: route.length, position: position);
+    return position;
+  }
+
   /// Pontos de parada de todas as linhas. Pontos compartilhados (ex.:
   /// Terminal Urbano) viram um único marcador com as linhas que param ali.
   Set<Marker> _buildStopMarkers(
     Map<String, List<Stop>> stopsByLine,
     Map<String, Line> linesById,
+    Map<String, List<LatLng>> routesByLine,
     MapMarkerIcons? icons,
   ) {
-    final Map<String, Stop> byPlace = <String, Stop>{};
+    final Map<String, ({Stop stop, String lineId})> byPlace =
+        <String, ({Stop stop, String lineId})>{};
     final Map<String, Set<String>> linesByPlace = <String, Set<String>>{};
     for (final MapEntry<String, List<Stop>> entry in stopsByLine.entries) {
       for (final Stop stop in entry.value) {
         // ~11 m de precisão: o mesmo ponto físico em linhas diferentes.
         final String key = '${stop.latitude.toStringAsFixed(4)},'
             '${stop.longitude.toStringAsFixed(4)}';
-        byPlace.putIfAbsent(key, () => stop);
+        byPlace.putIfAbsent(key, () => (stop: stop, lineId: entry.key));
         linesByPlace
             .putIfAbsent(key, () => <String>{})
             .add(linesById[entry.key]?.number ?? entry.key);
       }
     }
 
-    return byPlace.entries.map((MapEntry<String, Stop> entry) {
-      final Stop stop = entry.value;
+    return byPlace.entries
+        .map((MapEntry<String, ({Stop stop, String lineId})> entry) {
+      final Stop stop = entry.value.stop;
       final List<String> numbers = linesByPlace[entry.key]!.toList()..sort();
       return Marker(
         markerId: MarkerId('stop_${entry.key}'),
-        position: LatLng(stop.latitude, stop.longitude),
+        // Abrigo na calçada, ao lado do traçado da linha.
+        position: _stopDisplayPosition(
+          entry.key,
+          stop,
+          routesByLine[entry.value.lineId] ?? const <LatLng>[],
+        ),
         zIndex: 1,
         anchor: icons?.stopAnchor ?? const Offset(0.5, 1),
         icon: icons?.stop ??

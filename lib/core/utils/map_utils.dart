@@ -30,6 +30,22 @@ abstract final class MapUtils {
     return (math.atan2(y, x) * 180 / math.pi + 360) % 360;
   }
 
+  /// Ponto a [meters] metros de [from] no rumo [bearingDegrees] (0 = norte,
+  /// sentido horário). Aproximação plana, precisa para poucas dezenas de
+  /// metros (ex.: afastar o ícone de uma parada para a calçada).
+  static LatLng offset(LatLng from, double bearingDegrees, double meters) {
+    const double earthRadiusMeters = 6371000;
+    final double rad = bearingDegrees * math.pi / 180;
+    final double dLat = meters * math.cos(rad) / earthRadiusMeters;
+    final double dLng = meters *
+        math.sin(rad) /
+        (earthRadiusMeters * math.cos(from.latitude * math.pi / 180));
+    return LatLng(
+      from.latitude + dLat * 180 / math.pi,
+      from.longitude + dLng * 180 / math.pi,
+    );
+  }
+
   /// Calcula os limites (bounds) que englobam todos os [points],
   /// usado para enquadrar uma rota inteira na câmera.
   static LatLngBounds boundsFromPoints(List<LatLng> points) {

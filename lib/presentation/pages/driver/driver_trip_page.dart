@@ -17,6 +17,7 @@ import '../../widgets/common/app_button.dart';
 import '../../widgets/common/empty_state.dart';
 import '../../widgets/map/bus_info_card.dart';
 import '../../widgets/map/stop_arrival_banner.dart';
+import '../../widgets/map/stop_placement.dart';
 import '../../widgets/map/trip_camera_config.dart';
 import '../../widgets/map/trip_map_view.dart';
 
@@ -45,13 +46,20 @@ class DriverTripPage extends ConsumerWidget {
     return nearest;
   }
 
-  /// Pontos de parada da linha, mostrados no mapa como abrigos 3D.
-  Set<Marker> _buildStopMarkers(List<Stop> stops, MapMarkerIcons? icons) {
+  /// Abrigos 3D das paradas, desenhados na calçada ao lado do traçado.
+  Set<Marker> _buildStopMarkers(
+    List<Stop> stops,
+    List<LatLng> route,
+    MapMarkerIcons? icons,
+  ) {
     return stops
         .map(
           (Stop stop) => Marker(
             markerId: MarkerId('stop_${stop.id}'),
-            position: LatLng(stop.latitude, stop.longitude),
+            position: StopPlacement.roadside(
+              LatLng(stop.latitude, stop.longitude),
+              route,
+            ),
             anchor: icons?.stopAnchor ?? const Offset(0.5, 1),
             icon: icons?.stop ??
                 BitmapDescriptor.defaultMarkerWithHue(
@@ -113,7 +121,7 @@ class DriverTripPage extends ConsumerWidget {
             mode: TripMode.driver,
             busPosition: busPosition,
             route: routePoints,
-            extraMarkers: _buildStopMarkers(stops, icons),
+            extraMarkers: _buildStopMarkers(stops, routePoints, icons),
             heading: state.heading,
             // Ônibus 3D visto de trás: a câmera do motorista gira junto com
             // o ônibus, então ele aparece sempre de costas, em pé na tela.

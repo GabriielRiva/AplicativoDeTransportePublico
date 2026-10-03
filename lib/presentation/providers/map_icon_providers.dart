@@ -89,7 +89,7 @@ final FutureProvider<MapMarkerIcons> markerIconsProvider =
   );
   final BitmapDescriptor stop = await MarkerIconUtils.fromAsset(
     kStop3dAsset,
-    width: 40,
+    width: 28,
   );
   return MapMarkerIcons(
     bus: bus,
