@@ -7,6 +7,7 @@ import '../../../domain/entities/enums/user_role.dart';
 import '../../../domain/entities/user.dart';
 import '../../controllers/auth_controller.dart';
 import '../../routes/app_router.dart';
+import '../../widgets/auth/auth_layout.dart';
 import '../../widgets/auth/profile_selector.dart';
 import '../../widgets/common/app_button.dart';
 import '../../widgets/common/app_logo.dart';
@@ -80,85 +81,85 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
     final bool isDriver = _selectedRole == UserRole.driver;
 
     return Scaffold(
+      // O fundo fica parado quando o teclado abre; o AuthLayout rola o
+      // conteúdo por cima dele.
+      resizeToAvoidBottomInset: false,
       body: LoadingOverlay(
         isLoading: isLoading,
-        child: SafeArea(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.all(24),
-            child: Form(
-              key: _formKey,
-              child: Column(
-                children: <Widget>[
-                  const AppLogo(),
-                  const SizedBox(height: 8),
-                  const Text('Crie sua conta', style: AppTextStyles.title),
-                  const SizedBox(height: 16),
-                  const Align(
-                    alignment: Alignment.centerLeft,
-                    child: Text(
-                      'Selecione seu Perfil',
-                      style: AppTextStyles.body,
-                    ),
+        child: AuthLayout(
+          header: const AppLogo(fontSize: 40),
+          card: Form(
+            key: _formKey,
+            child: Column(
+              children: <Widget>[
+                const Text('Crie sua conta', style: AppTextStyles.title),
+                const SizedBox(height: 16),
+                const Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    'Selecione seu Perfil',
+                    style: AppTextStyles.body,
                   ),
-                  const SizedBox(height: 8),
-                  ProfileSelector(
-                    selected: _selectedRole,
-                    onChanged: (UserRole role) =>
-                        setState(() => _selectedRole = role),
+                ),
+                const SizedBox(height: 8),
+                ProfileSelector(
+                  selected: _selectedRole,
+                  onChanged: (UserRole role) =>
+                      setState(() => _selectedRole = role),
+                ),
+                const SizedBox(height: 16),
+                AppTextField(
+                  controller: _nameController,
+                  hint: 'Nome Completo',
+                  icon: Icons.person_outline,
+                  validator: Validators.fullName,
+                ),
+                const SizedBox(height: 16),
+                AppTextField(
+                  controller: _emailController,
+                  hint: 'E-mail',
+                  icon: Icons.mail_outline,
+                  keyboardType: TextInputType.emailAddress,
+                  validator: Validators.email,
+                ),
+                const SizedBox(height: 16),
+                PasswordField(
+                  controller: _passwordController,
+                  validator: Validators.password,
+                  textInputAction: TextInputAction.next,
+                ),
+                const SizedBox(height: 16),
+                PasswordField(
+                  controller: _confirmController,
+                  hint: 'Confirmar Senha',
+                  validator: (String? value) => Validators.confirmPassword(
+                    value,
+                    _passwordController.text,
                   ),
+                  textInputAction:
+                      isDriver ? TextInputAction.next : TextInputAction.done,
+                ),
+                if (isDriver) ...<Widget>[
                   const SizedBox(height: 16),
                   AppTextField(
-                    controller: _nameController,
-                    hint: 'Nome Completo',
-                    icon: Icons.person_outline,
-                    validator: Validators.fullName,
-                  ),
-                  const SizedBox(height: 16),
-                  AppTextField(
-                    controller: _emailController,
-                    hint: 'E-mail',
-                    icon: Icons.mail_outline,
-                    keyboardType: TextInputType.emailAddress,
-                    validator: Validators.email,
-                  ),
-                  const SizedBox(height: 16),
-                  PasswordField(
-                    controller: _passwordController,
-                    validator: Validators.password,
-                    textInputAction: TextInputAction.next,
-                  ),
-                  const SizedBox(height: 16),
-                  PasswordField(
-                    controller: _confirmController,
-                    hint: 'Confirmar Senha',
-                    validator: (String? value) => Validators.confirmPassword(
-                      value,
-                      _passwordController.text,
-                    ),
-                    textInputAction:
-                        isDriver ? TextInputAction.next : TextInputAction.done,
-                  ),
-                  if (isDriver) ...<Widget>[
-                    const SizedBox(height: 16),
-                    AppTextField(
-                      controller: _cnhController,
-                      hint: 'Número da CNH',
-                      icon: Icons.badge_outlined,
-                      keyboardType: TextInputType.number,
-                      textInputAction: TextInputAction.done,
-                      validator: Validators.cnh,
-                    ),
-                  ],
-                  const SizedBox(height: 24),
-                  AppButton(label: 'Cadastrar', onPressed: _submit),
-                  const SizedBox(height: 8),
-                  TextButton(
-                    onPressed: () => Navigator.of(context).pop(),
-                    child: const Text('Já possui conta? Fazer Login'),
+                    controller: _cnhController,
+                    hint: 'Número da CNH',
+                    icon: Icons.badge_outlined,
+                    keyboardType: TextInputType.number,
+                    textInputAction: TextInputAction.done,
+                    validator: Validators.cnh,
                   ),
                 ],
-              ),
+                const SizedBox(height: 24),
+                AppButton(label: 'Cadastrar', onPressed: _submit),
+                const SizedBox(height: 12),
+              ],
             ),
+          ),
+          footer: AuthFooterLink(
+            question: 'Já possui conta?',
+            action: 'Fazer Login',
+            onPressed: () => Navigator.of(context).pop(),
           ),
         ),
       ),

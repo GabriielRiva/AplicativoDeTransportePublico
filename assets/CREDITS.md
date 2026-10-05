@@ -18,3 +18,10 @@ em vista inclinada) para uso como marcador no mapa.
 
 Modelo original criado para o TranCity (Blender), sem uso de material de
 terceiros, renderizado em 16 ângulos em vista inclinada.
+
+## Foto de fundo do login e do cadastro (`assets/images/auth_background.jpg`)
+
+Fotografia de ônibus em ponte estaiada, redimensionada para o app.
+**Origem e licença: a preencher** (informar o site/banco de imagens e a
+licença de uso antes da entrega do TCC).
+

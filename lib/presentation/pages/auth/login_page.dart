@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/theme/app_colors.dart';
 import '../../../core/utils/validators.dart';
 import '../../../domain/entities/user.dart';
 import '../../controllers/auth_controller.dart';
 import '../../routes/app_router.dart';
 import '../../routes/app_routes.dart';
+import '../../widgets/auth/auth_layout.dart';
 import '../../widgets/common/app_button.dart';
 import '../../widgets/common/app_logo.dart';
 import '../../widgets/common/app_snackbar.dart';
@@ -62,50 +64,70 @@ class _LoginPageState extends ConsumerState<LoginPage> {
     final bool isLoading = ref.watch(authControllerProvider).isLoading;
 
     return Scaffold(
+      // O fundo fica parado quando o teclado abre; o AuthLayout rola o
+      // conteúdo por cima dele.
+      resizeToAvoidBottomInset: false,
       body: LoadingOverlay(
         isLoading: isLoading,
-        child: SafeArea(
-          child: Center(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.all(24),
-              child: Form(
-                key: _formKey,
-                child: Column(
-                  children: <Widget>[
-                    const AppLogo(),
-                    const SizedBox(height: 48),
-                    AppTextField(
-                      controller: _emailController,
-                      hint: 'E-mail',
-                      icon: Icons.mail_outline,
-                      keyboardType: TextInputType.emailAddress,
-                      validator: Validators.email,
-                    ),
-                    const SizedBox(height: 16),
-                    PasswordField(
-                      controller: _passwordController,
-                      validator: Validators.password,
-                    ),
-                    const SizedBox(height: 24),
-                    AppButton(label: 'Entrar', onPressed: _submit),
-                    TextButton(
-                      onPressed: () => Navigator.of(context)
-                          .pushNamed(kForgotPasswordRoute),
-                      child: const Text('Esqueci minha senha'),
-                    ),
-                    const SizedBox(height: 24),
-                    TextButton(
-                      onPressed: () =>
-                          Navigator.of(context).pushNamed(kRegisterRoute),
-                      child: const Text('Criar Conta'),
-                    ),
-                  ],
+        child: AuthLayout(
+          header: const _LoginHeader(),
+          card: Form(
+            key: _formKey,
+            child: Column(
+              children: <Widget>[
+                AppTextField(
+                  controller: _emailController,
+                  hint: 'E-mail',
+                  icon: Icons.mail_outline,
+                  keyboardType: TextInputType.emailAddress,
+                  validator: Validators.email,
                 ),
-              ),
+                const SizedBox(height: 16),
+                PasswordField(
+                  controller: _passwordController,
+                  validator: Validators.password,
+                ),
+                const SizedBox(height: 24),
+                AppButton(label: 'Entrar', onPressed: _submit),
+                TextButton(
+                  onPressed: () =>
+                      Navigator.of(context).pushNamed(kForgotPasswordRoute),
+                  child: const Text('Esqueci minha senha'),
+                ),
+              ],
             ),
+          ),
+          footer: AuthFooterLink(
+            question: 'Não tem conta?',
+            action: 'Criar conta',
+            onPressed: () => Navigator.of(context).pushNamed(kRegisterRoute),
           ),
         ),
       ),
+    );
+  }
+}
+
+/// Logo e frase de apresentação sobre o céu da foto de fundo.
+class _LoginHeader extends StatelessWidget {
+  const _LoginHeader();
+
+  @override
+  Widget build(BuildContext context) {
+    return const Column(
+      children: <Widget>[
+        SizedBox(height: 24),
+        AppLogo(fontSize: 44),
+        SizedBox(height: 4),
+        Text(
+          'Seu ônibus em tempo real',
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.w500,
+            color: kTextPrimaryColor,
+          ),
+        ),
+      ],
     );
   }
 }
