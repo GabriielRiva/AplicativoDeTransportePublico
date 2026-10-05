@@ -27,9 +27,8 @@ import '../../widgets/map/trip_map_view.dart';
 ///
 /// Visão geral: mapa inclinado com prédios em 3D, os ônibus em tempo real
 /// (ícone 3D virado na direção em que andam), os pontos de parada e a lista
-/// de ônibus próximos. Ao tocar em um ônibus, o mapa passa a acompanhá-lo
-/// como na tela do motorista: câmera atrás do ônibus, girando com a rua, e
-/// o trajeto que ele ainda vai percorrer.
+/// de ônibus próximos. Ao tocar em um ônibus, o mapa mostra o trajeto
+/// completo da linha e onde o ônibus está nele, em tempo real.
 class PassengerMapPage extends ConsumerStatefulWidget {
   /// Cria a tela do mapa do passageiro.
   const PassengerMapPage({super.key});
@@ -93,25 +92,30 @@ class _PassengerMapPageState extends ConsumerState<PassengerMapPage> {
       child: Stack(
         children: <Widget>[
           if (selectedTrip != null && selectedLine != null)
-            // Acompanhamento do ônibus selecionado, igual à tela do
-            // motorista.
+            // Ônibus selecionado: trajeto completo da linha na tela, com o
+            // trecho já percorrido em cinza, o que falta em destaque e o
+            // ônibus andando em tempo real (igual aos detalhes da linha).
             TripMapView(
-              key: ValueKey<String>('follow_${selectedTrip.id}'),
-              mode: TripMode.driver,
+              key: ValueKey<String>('route_${selectedTrip.id}'),
+              mode: TripMode.passenger,
+              follow: false,
               busPosition: LatLng(
                 selectedTrip.currentLatitude,
                 selectedTrip.currentLongitude,
               ),
               route: state.selectedRoute,
               extraMarkers: state.stopMarkers,
-              busIcon: icons?.bus3d,
+              // Ônibus 3D virado na direção em que está andando.
+              busIcon: icons?.bus,
+              busIconForHeading: icons?.busFacing,
               rotateBusIcon: false,
-              busIconAnchor: kBus3dAnchor,
               showMyLocation: true,
               interpolationDuration: kGpsUpdateInterval,
+              // Espaço do card do ônibus embaixo, para o trajeto inteiro
+              // ficar visível acima dele.
               mapPadding: EdgeInsets.only(
-                top: MediaQuery.sizeOf(context).height * 0.30,
-                bottom: 280,
+                top: MediaQuery.paddingOf(context).top + 8,
+                bottom: 260,
               ),
             )
           else

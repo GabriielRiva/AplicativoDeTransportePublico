@@ -168,7 +168,11 @@ class _TripMapViewState extends State<TripMapView>
     } else if (widget.heading != null) {
       _heading = widget.heading!;
     }
-    if (routeChanged) _refresh(smoothHeading: false);
+    if (routeChanged) {
+      _refresh(smoothHeading: false);
+      // O traçado pode chegar depois do mapa (carregado do Firebase).
+      if (oldWidget.route.isEmpty) _fitRoute();
+    }
   }
 
   void _onTick() {
@@ -316,14 +320,22 @@ class _TripMapViewState extends State<TripMapView>
 
   void _onMapCreated(GoogleMapController controller) {
     _controller = controller;
-    if (!widget.follow && widget.route.isNotEmpty) {
-      controller.animateCamera(
-        CameraUpdate.newLatLngBounds(
-          MapUtils.boundsFromPoints(widget.route),
-          48,
-        ),
-      );
-    }
+    _fitRoute();
+  }
+
+  /// Sem acompanhar o ônibus ([TripMapView.follow] falso), enquadra o
+  /// trajeto inteiro e a posição do ônibus na tela.
+  void _fitRoute() {
+    if (widget.follow || widget.route.isEmpty) return;
+    _controller?.animateCamera(
+      CameraUpdate.newLatLngBounds(
+        MapUtils.boundsFromPoints(<LatLng>[
+          ...widget.route,
+          widget.busPosition,
+        ]),
+        48,
+      ),
+    );
   }
 
   @override

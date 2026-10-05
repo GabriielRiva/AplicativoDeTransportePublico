@@ -141,25 +141,13 @@ class PassengerMapController extends Notifier<PassengerMapState> {
       routesByLine,
       icons,
     );
-    // Visão geral: mapa sempre apontado para o norte.
-    final Set<Marker> overviewStops =
+    // Os dois mapas do passageiro ficam apontados para o norte.
+    final Set<Marker> stopMarkers =
         _buildStopMarkers(stopsByLine, linesById, routesByLine, icons);
-    // Acompanhando um ônibus: a câmera gira junto com ele, então o abrigo
-    // é escolhido em relação ao rumo do ônibus.
-    final double? followBearing =
-        selectedTrip == null ? null : _busHeadings[selectedTrip.id]?.heading;
 
     return PassengerMapState(
-      markers: <Marker>{...overviewStops, ...busMarkers},
-      stopMarkers: followBearing == null
-          ? overviewStops
-          : _buildStopMarkers(
-              stopsByLine,
-              linesById,
-              routesByLine,
-              icons,
-              cameraBearing: followBearing,
-            ),
+      markers: <Marker>{...stopMarkers, ...busMarkers},
+      stopMarkers: stopMarkers,
       nearbyBuses: _buildNearbyBuses(trips, lines, userPosition),
       userPosition: userPosition,
       isLoading: tripsAsync.isLoading || linesAsync.isLoading,
@@ -289,9 +277,8 @@ class PassengerMapController extends Notifier<PassengerMapState> {
     Map<String, List<Stop>> stopsByLine,
     Map<String, Line> linesById,
     Map<String, List<LatLng>> routesByLine,
-    MapMarkerIcons? icons, {
-    double cameraBearing = 0,
-  }) {
+    MapMarkerIcons? icons,
+  ) {
     final Map<String, ({Stop stop, String lineId})> byPlace =
         <String, ({Stop stop, String lineId})>{};
     final Map<String, Set<String>> linesByPlace = <String, Set<String>>{};
@@ -322,7 +309,7 @@ class PassengerMapController extends Notifier<PassengerMapState> {
         position: display.position,
         zIndex: 1,
         anchor: icons?.stopAnchor ?? const Offset(0.5, 1),
-        icon: icons?.stopFacing(display.facing, cameraBearing: cameraBearing) ??
+        icon: icons?.stopFacing(display.facing) ??
             BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueAzure),
         infoWindow: InfoWindow(
           title: stop.name,
