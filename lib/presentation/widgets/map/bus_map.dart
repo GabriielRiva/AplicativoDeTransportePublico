@@ -70,9 +70,10 @@ class BusMap extends StatelessWidget {
       // Trava a câmera dentro de Chapecó e limita o zoom.
       cameraTargetBounds: CameraTargetBounds(kChapecoBounds),
       minMaxZoomPreference: const MinMaxZoomPreference(kMinZoom, kMaxZoom),
+      // Zoom com os dedos (pinça e toque duplo), como em qualquer mapa;
+      // sem os botões +/-, que ficavam escondidos atrás dos cards.
       zoomGesturesEnabled: true,
-      // Botões +/- ajudam no zoom pelo emulador (sem pinça no mouse).
-      zoomControlsEnabled: true,
+      zoomControlsEnabled: false,
       mapToolbarEnabled: false,
     );
   }
