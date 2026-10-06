@@ -107,6 +107,10 @@ class DriverTripController extends Notifier<DriverTripState> {
   /// Escuta da conexão com o Firebase durante o trajeto (ônibus fantasma).
   StreamSubscription<bool>? _connectionSubscription;
 
+  /// Reenvia a última posição quando o GPS não manda leituras novas (ônibus
+  /// parado), para o passageiro não achar que o ônibus sumiu.
+  Timer? _heartbeat;
+
   /// Momento do último envio de posição ao Firebase (controle do RNF05).
   DateTime? _lastSentAt;
 
@@ -239,6 +243,11 @@ class DriverTripController extends Notifier<DriverTripState> {
   void _startTransmission(String driverId) {
     _positionSubscription?.cancel();
     _connectionSubscription?.cancel();
+    _heartbeat?.cancel();
+    _heartbeat = Timer.periodic(
+      kDriverHeartbeatInterval,
+      (_) => _sendHeartbeat(driverId),
+    );
     // Se a conexão cair, o servidor marca o motorista como offline e o
     // ônibus some do mapa do passageiro; ao reconectar, ele volta.
     bool wasConnected = false;
@@ -304,11 +313,37 @@ class DriverTripController extends Notifier<DriverTripState> {
     });
   }
 
+  /// Com o ônibus parado o GPS pode ficar sem leituras novas; reenvia a
+  /// última posição se nada foi enviado no último
+  /// [kDriverHeartbeatInterval].
+  Future<void> _sendHeartbeat(String driverId) async {
+    final Trip? trip = state.activeTrip;
+    final DateTime? lastSent = _lastSentAt;
+    if (trip == null) return;
+    if (lastSent != null &&
+        DateTime.now().difference(lastSent) < kDriverHeartbeatInterval) {
+      return;
+    }
+    _lastSentAt = DateTime.now();
+    try {
+      await ref.read(sendLocationProvider).call(
+            driverId: driverId,
+            latitude: trip.currentLatitude,
+            longitude: trip.currentLongitude,
+          );
+    } catch (error, stackTrace) {
+      _lastSentAt = lastSent;
+      AppLogger.error('Falha ao reenviar a posição', error, stackTrace);
+    }
+  }
+
   void _stopTransmission() {
     _positionSubscription?.cancel();
     _positionSubscription = null;
     _connectionSubscription?.cancel();
     _connectionSubscription = null;
+    _heartbeat?.cancel();
+    _heartbeat = null;
     _lastSentAt = null;
   }
 }

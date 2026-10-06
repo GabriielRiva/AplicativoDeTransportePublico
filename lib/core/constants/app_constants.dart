@@ -41,3 +41,8 @@ const Duration kBusStaleAfter = Duration(minutes: 2);
 /// De quanto em quanto tempo o app do passageiro confere se algum ônibus
 /// ficou sem atualização por mais de [kBusStaleAfter].
 const Duration kBusStaleCheckInterval = Duration(seconds: 15);
+
+/// Intervalo máximo entre dois envios de posição do motorista, mesmo com o
+/// ônibus parado (no ponto, no semáforo, no terminal). Mantém o ônibus
+/// visível para o passageiro, bem abaixo de [kBusStaleAfter].
+const Duration kDriverHeartbeatInterval = Duration(seconds: 30);

@@ -7,13 +7,21 @@ import '../../../domain/usecases/passenger/get_nearby_buses.dart';
 /// Painel "Ônibus próximos" da tela inicial do passageiro (RF13).
 class NearbyBusesSheet extends StatelessWidget {
   /// Cria o painel com a lista de [buses] próximos.
-  const NearbyBusesSheet({required this.buses, super.key, this.onSelect});
+  const NearbyBusesSheet({
+    required this.buses,
+    super.key,
+    this.onSelect,
+    this.emptyMessage = 'Nenhum ônibus em circulação no momento.',
+  });
 
   /// Ônibus próximos ordenados pela distância.
   final List<NearbyBus> buses;
 
   /// Toque em um ônibus da lista (mostra o trajeto dele no mapa).
   final ValueChanged<NearbyBus>? onSelect;
+
+  /// Texto exibido quando a lista está vazia.
+  final String emptyMessage;
 
   @override
   Widget build(BuildContext context) {
@@ -28,10 +36,7 @@ class NearbyBusesSheet extends StatelessWidget {
             const Text('Ônibus próximos', style: AppTextStyles.title),
             const SizedBox(height: 8),
             if (buses.isEmpty)
-              const Text(
-                'Nenhum ônibus em circulação no momento.',
-                style: AppTextStyles.caption,
-              )
+              Text(emptyMessage, style: AppTextStyles.caption)
             else
               ...buses.map(_buildRow),
           ],

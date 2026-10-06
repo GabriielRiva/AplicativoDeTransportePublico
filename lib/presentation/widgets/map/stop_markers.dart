@@ -17,12 +17,12 @@ abstract final class StopMarkers {
     MapMarkerIcons? icons,
     double cameraBearing = 0,
     String? snippet,
-    double zIndex = 0,
+    int zIndex = 0,
   }) {
     return Marker(
       markerId: MarkerId('stop_$id'),
       position: display.position,
-      zIndex: zIndex,
+      zIndexInt: zIndex,
       anchor: icons?.stopAnchor ?? const Offset(0.5, 1),
       icon: icons?.stopFacing(display.facing, cameraBearing: cameraBearing) ??
           BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueAzure),

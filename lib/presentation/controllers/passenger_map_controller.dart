@@ -30,6 +30,7 @@ class PassengerMapState {
   /// Cria o estado do mapa.
   const PassengerMapState({
     this.markers = const <Marker>{},
+    this.activeBusCount = 0,
     this.stopMarkers = const <Marker>{},
     this.nearbyBuses = const <NearbyBus>[],
     this.userPosition,
@@ -47,6 +48,9 @@ class PassengerMapState {
 
   /// Marcadores dos ônibus em circulação (RF12) e dos pontos de parada.
   final Set<Marker> markers;
+
+  /// Quantidade de ônibus em circulação agora (no mapa).
+  final int activeBusCount;
 
   /// Só os marcadores dos pontos de parada (usados no acompanhamento do
   /// ônibus selecionado).
@@ -228,6 +232,7 @@ class PassengerMapController extends Notifier<PassengerMapState> {
 
     return PassengerMapState(
       markers: <Marker>{...stopMarkers, ...busMarkers},
+      activeBusCount: trips.length,
       stopMarkers: stopMarkers,
       nearbyBuses:
           _buildNearbyBuses(trips, lines, userPosition, approaches),
@@ -384,7 +389,7 @@ class PassengerMapController extends Notifier<PassengerMapState> {
       return Marker(
         markerId: MarkerId('bus_${trip.id}'),
         position: LatLng(trip.currentLatitude, trip.currentLongitude),
-        zIndex: 2,
+        zIndexInt: 2,
         // Ônibus 3D "em pé", virado na direção em que está andando.
         anchor: const Offset(0.5, 0.5),
         icon: icons?.busFacing(heading) ??

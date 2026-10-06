@@ -47,10 +47,12 @@ Future<void> main(List<String> args) async {
 
   for (final MapEntry<String, dynamic> entry in lines.entries) {
     final List<List<double>> points = (entry.value as List<dynamic>)
-        .map((dynamic p) => <double>[
-              ((p as List<dynamic>)[0] as num).toDouble(),
-              (p[1] as num).toDouble(),
-            ])
+        .map(
+          (dynamic p) => <double>[
+            ((p as List<dynamic>)[0] as num).toDouble(),
+            (p[1] as num).toDouble(),
+          ],
+        )
         .toList();
     if (points.length < 2) {
       stderr.writeln('[${entry.key}] precisa de pelo menos 2 pontos.');

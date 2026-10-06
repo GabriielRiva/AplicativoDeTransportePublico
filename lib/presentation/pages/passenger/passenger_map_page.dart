@@ -164,6 +164,10 @@ class _PassengerMapPageState extends ConsumerState<PassengerMapPage> {
                   )
                 : NearbyBusesSheet(
                     buses: state.nearbyBuses,
+                    emptyMessage: state.activeBusCount == 0
+                        ? 'Nenhum ônibus em circulação no momento.'
+                        : 'Nenhum ônibus a caminho do seu ponto agora. '
+                            'Toque em um ônibus no mapa para acompanhá-lo.',
                     onSelect: (NearbyBus bus) =>
                         controller.selectBus(bus.trip.id),
                   ),

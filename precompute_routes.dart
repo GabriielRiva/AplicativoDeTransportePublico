@@ -52,10 +52,12 @@ Future<void> main(List<String> args) async {
   for (final entry in lines.entries) {
     final lineId = entry.key;
     final stops = (entry.value as List)
-        .map((s) => _LatLng(
-              (s['lat'] as num).toDouble(),
-              (s['lng'] as num).toDouble(),
-            ))
+        .map(
+          (s) => _LatLng(
+            (s['lat'] as num).toDouble(),
+            (s['lng'] as num).toDouble(),
+          ),
+        )
         .toList();
 
     if (stops.length < 2) {

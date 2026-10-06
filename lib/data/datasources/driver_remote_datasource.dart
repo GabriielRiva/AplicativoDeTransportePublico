@@ -60,8 +60,11 @@ class DriverRemoteDatasource {
             'updatedAt': ServerValue.timestamp,
           });
         } on FirebaseException catch (error, stackTrace) {
-          AppLogger.error('Falha ao registrar a queda de conexão',
-              error, stackTrace);
+          AppLogger.error(
+            'Falha ao registrar a queda de conexão',
+            error,
+            stackTrace,
+          );
         }
       }
       return connected;
