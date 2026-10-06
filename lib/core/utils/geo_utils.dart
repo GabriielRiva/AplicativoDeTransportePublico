@@ -33,7 +33,12 @@ abstract final class GeoUtils {
     double toLat,
     double toLng,
   ) {
-    final double km = distanceInKm(fromLat, fromLng, toLat, toLng);
+    return minutesForKm(distanceInKm(fromLat, fromLng, toLat, toLng));
+  }
+
+  /// Minutos para o ônibus percorrer [km] na velocidade média urbana
+  /// [kAverageBusSpeedKmh] (no mínimo 1 minuto).
+  static int minutesForKm(double km) {
     final double minutes = (km / kAverageBusSpeedKmh) * 60;
     return math.max(1, minutes.round());
   }

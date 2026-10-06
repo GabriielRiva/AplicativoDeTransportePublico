@@ -15,6 +15,16 @@ abstract final class Formatters {
     return '${distanceKm.toStringAsFixed(1).replaceAll('.', ',')} km';
   }
 
+  /// Formata uma distância em metros: até 1 km em metros, de 10 em 10
+  /// (ex.: "320 m"); a partir disso em km (ex.: "1,2 km").
+  static String distanceMeters(double meters) {
+    if (meters < 995) {
+      final int rounded = ((meters < 0 ? 0 : meters) / 10).round() * 10;
+      return '$rounded m';
+    }
+    return distanceKm(meters / 1000);
+  }
+
   /// Formata duração em minutos (ex.: "35 min").
   static String durationMinutes(int minutes) => '$minutes min';
 

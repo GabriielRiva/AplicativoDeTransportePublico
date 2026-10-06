@@ -17,6 +17,8 @@ import '../providers/map_icon_providers.dart';
 import '../providers/service_providers.dart';
 import '../providers/usecase_providers.dart';
 import '../widgets/map/route_progress.dart';
+import '../widgets/map/route_stops.dart';
+import '../widgets/map/stop_markers.dart';
 import '../widgets/map/stop_placement.dart';
 
 /// Ônibus selecionado no mapa do passageiro (id do trajeto), ou nulo.
@@ -37,6 +39,10 @@ class PassengerMapState {
     this.selectedRoute = const <LatLng>[],
     this.selectedStopHere,
     this.selectedEtaMinutes,
+    this.selectedNextStop,
+    this.selectedUserStop,
+    this.selectedUserStopMeters,
+    this.selectedPassedUserStop = false,
   });
 
   /// Marcadores dos ônibus em circulação (RF12) e dos pontos de parada.
@@ -67,8 +73,57 @@ class PassengerMapState {
   /// Ponto em que o ônibus selecionado está agora (embarque liberado).
   final Stop? selectedStopHere;
 
-  /// Estimativa de chegada do ônibus selecionado até o passageiro.
+  /// Estimativa de chegada do ônibus selecionado até o ponto do
+  /// passageiro, pela rota (ou em linha reta, sem rota ou paradas).
   final int? selectedEtaMinutes;
+
+  /// Próxima parada à frente do ônibus selecionado e a distância até ela.
+  final StopAhead? selectedNextStop;
+
+  /// Parada da linha do ônibus selecionado mais próxima do passageiro.
+  final Stop? selectedUserStop;
+
+  /// Distância (m) pela rota do ônibus selecionado até [selectedUserStop].
+  final double? selectedUserStopMeters;
+
+  /// O ônibus selecionado já passou pelo ponto do passageiro e não volta
+  /// a passar nele neste trajeto.
+  final bool selectedPassedUserStop;
+}
+
+/// Situação de um ônibus em relação às paradas e ao passageiro.
+class BusApproach {
+  /// Cria a situação do ônibus.
+  const BusApproach({
+    this.onRoute = false,
+    this.nextStop,
+    this.userStop,
+    this.userStopMeters,
+  });
+
+  /// O ônibus está sobre o traçado da linha (as distâncias pela rota
+  /// valem).
+  final bool onRoute;
+
+  /// Próxima parada à frente do ônibus e a distância até ela.
+  final StopAhead? nextStop;
+
+  /// Parada da linha mais próxima do passageiro.
+  final Stop? userStop;
+
+  /// Distância (m) pela rota até [userStop]; nula se o ônibus já passou.
+  final double? userStopMeters;
+
+  /// O ônibus já passou pelo ponto do passageiro e não volta a passar.
+  bool get passedUserStop =>
+      onRoute && userStop != null && userStopMeters == null;
+
+  /// Minutos até o ônibus chegar ao ponto do passageiro, pela rota.
+  int? get etaMinutes {
+    final double? meters = userStopMeters;
+    if (!onRoute || meters == null) return null;
+    return GeoUtils.minutesForKm(meters / 1000);
+  }
 }
 
 /// ViewModel do mapa do passageiro (RF07/RF12/RF13/RF18).
@@ -87,6 +142,16 @@ class PassengerMapController extends Notifier<PassengerMapState> {
   /// 3D na direção em que ele está andando.
   final Map<String, ({LatLng position, double heading})> _busHeadings =
       <String, ({LatLng position, double heading})>{};
+
+  /// Progresso de cada ônibus ao longo da rota da linha.
+  final Map<String, RouteTracker> _trackers = <String, RouteTracker>{};
+
+  /// Paradas posicionadas no traçado de cada linha, recalculadas só
+  /// quando a rota ou as paradas mudam.
+  final Map<String,
+          ({List<LatLng> route, List<Stop> stops, RouteStops value})>
+      _routeStops =
+      <String, ({List<LatLng> route, List<Stop> stops, RouteStops value})>{};
 
   @override
   PassengerMapState build() {
@@ -134,6 +199,22 @@ class PassengerMapController extends Notifier<PassengerMapState> {
         line.id: ref.watch(lineRouteProvider(line.id)).valueOrNull ??
             const <LatLng>[],
     };
+    // Esquece ônibus que encerraram o trajeto.
+    _trackers.removeWhere(
+      (String id, _) => !trips.any((Trip trip) => trip.id == id),
+    );
+    final Map<String, BusApproach> approaches = <String, BusApproach>{
+      for (final Trip trip in trips)
+        trip.id: _approach(
+          trip,
+          userPosition,
+          routesByLine[trip.lineId] ?? const <LatLng>[],
+          stopsByLine[trip.lineId] ?? const <Stop>[],
+        ),
+    };
+    final BusApproach? selectedApproach =
+        selectedTrip == null ? null : approaches[selectedTrip.id];
+
     final Set<Marker> busMarkers = _buildBusMarkers(
       trips,
       linesById,
@@ -148,7 +229,8 @@ class PassengerMapController extends Notifier<PassengerMapState> {
     return PassengerMapState(
       markers: <Marker>{...stopMarkers, ...busMarkers},
       stopMarkers: stopMarkers,
-      nearbyBuses: _buildNearbyBuses(trips, lines, userPosition),
+      nearbyBuses:
+          _buildNearbyBuses(trips, lines, userPosition, approaches),
       userPosition: userPosition,
       isLoading: tripsAsync.isLoading || linesAsync.isLoading,
       selectedTrip: selectedTrip,
@@ -159,12 +241,19 @@ class PassengerMapController extends Notifier<PassengerMapState> {
           : _stopHere(selectedTrip, stopsByLine),
       selectedEtaMinutes: selectedTrip == null || userPosition == null
           ? null
-          : GeoUtils.estimateArrivalMinutes(
-              userPosition.latitude,
-              userPosition.longitude,
-              selectedTrip.currentLatitude,
-              selectedTrip.currentLongitude,
-            ),
+          : selectedApproach?.etaMinutes ??
+              (selectedApproach?.passedUserStop ?? false
+                  ? null
+                  : GeoUtils.estimateArrivalMinutes(
+                      userPosition.latitude,
+                      userPosition.longitude,
+                      selectedTrip.currentLatitude,
+                      selectedTrip.currentLongitude,
+                    )),
+      selectedNextStop: selectedApproach?.nextStop,
+      selectedUserStop: selectedApproach?.userStop,
+      selectedUserStopMeters: selectedApproach?.userStopMeters,
+      selectedPassedUserStop: selectedApproach?.passedUserStop ?? false,
     );
   }
 
@@ -184,6 +273,67 @@ class PassengerMapController extends Notifier<PassengerMapState> {
       latitude: trip.currentLatitude,
       longitude: trip.currentLongitude,
     );
+  }
+
+  RouteStops _routeStopsFor(
+    String lineId,
+    List<LatLng> route,
+    List<Stop> stops,
+  ) {
+    final ({List<LatLng> route, List<Stop> stops, RouteStops value})? cached =
+        _routeStops[lineId];
+    if (cached != null &&
+        identical(cached.route, route) &&
+        identical(cached.stops, stops)) {
+      return cached.value;
+    }
+    final RouteStops value = RouteStops(route, stops);
+    _routeStops[lineId] = (route: route, stops: stops, value: value);
+    return value;
+  }
+
+  /// Onde o ônibus está em relação às paradas da linha e ao ponto do
+  /// passageiro (a parada da linha mais próxima dele), medindo pela rua.
+  BusApproach _approach(
+    Trip trip,
+    LatLng? userPosition,
+    List<LatLng> route,
+    List<Stop> stops,
+  ) {
+    if (route.length < 2 || stops.isEmpty) return const BusApproach();
+    final RouteSnap? snap = _trackers
+        .putIfAbsent(trip.id, RouteTracker.new)
+        .locate(route, LatLng(trip.currentLatitude, trip.currentLongitude));
+    final Stop? userStop =
+        userPosition == null ? null : _nearestStop(stops, userPosition);
+    if (snap == null) return BusApproach(userStop: userStop);
+
+    final RouteStops routeStops = _routeStopsFor(trip.lineId, route, stops);
+    final double busMeters = routeStops.metersAt(snap);
+    return BusApproach(
+      onRoute: true,
+      nextStop: routeStops.nextStop(busMeters),
+      userStop: userStop,
+      userStopMeters:
+          userStop == null ? null : routeStops.metersTo(userStop, busMeters),
+    );
+  }
+
+  /// Parada de [stops] mais próxima de [position], em linha reta.
+  Stop? _nearestStop(List<Stop> stops, LatLng position) {
+    Stop? nearest;
+    double nearestKm = double.infinity;
+    for (final Stop stop in stops) {
+      final double km = MapUtils.distanceInKm(
+        position,
+        LatLng(stop.latitude, stop.longitude),
+      );
+      if (km < nearestKm) {
+        nearestKm = km;
+        nearest = stop;
+      }
+    }
+    return nearest;
   }
 
   /// Rumo do ônibus: pelo deslocamento desde a última posição; antes do
@@ -299,39 +449,59 @@ class PassengerMapController extends Notifier<PassengerMapState> {
       final Stop stop = entry.value.stop;
       final List<String> numbers = linesByPlace[entry.key]!.toList()..sort();
       // Abrigo na calçada, ao lado do traçado e de frente para a rua.
-      final StopDisplay display = _stopDisplay(
-        entry.key,
-        stop,
-        routesByLine[entry.value.lineId] ?? const <LatLng>[],
-      );
-      return Marker(
-        markerId: MarkerId('stop_${entry.key}'),
-        position: display.position,
-        zIndex: 1,
-        anchor: icons?.stopAnchor ?? const Offset(0.5, 1),
-        icon: icons?.stopFacing(display.facing) ??
-            BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueAzure),
-        infoWindow: InfoWindow(
-          title: stop.name,
-          snippet: 'Ponto de embarque — ${numbers.join(', ')}',
+      return StopMarkers.of(
+        id: entry.key,
+        stop: stop,
+        display: _stopDisplay(
+          entry.key,
+          stop,
+          routesByLine[entry.value.lineId] ?? const <LatLng>[],
         ),
+        icons: icons,
+        snippet: 'Ponto de embarque — ${numbers.join(', ')}',
+        zIndex: 1,
       );
     }).toSet();
   }
 
+  /// Lista "Ônibus próximos" (RF13): ônibus que ainda vão passar no ponto
+  /// do passageiro, do que chega primeiro ao que chega por último. A
+  /// estimativa é pela rota quando o ônibus está sobre ela; senão, em
+  /// linha reta. Ônibus que já passaram pelo ponto ficam de fora.
   List<NearbyBus> _buildNearbyBuses(
     List<Trip> trips,
     List<Line> lines,
     LatLng? userPosition,
+    Map<String, BusApproach> approaches,
   ) {
     if (userPosition == null) return const <NearbyBus>[];
-    return ref.read(getNearbyBusesProvider).call(
+    final List<NearbyBus> all = ref.read(getNearbyBusesProvider).call(
           userLatitude: userPosition.latitude,
           userLongitude: userPosition.longitude,
           trips: trips,
           lines: lines,
-          maxResults: kMaxNearbyBuses,
+          maxResults: trips.length,
         );
+    final List<NearbyBus> coming = <NearbyBus>[];
+    for (final NearbyBus bus in all) {
+      final BusApproach? approach = approaches[bus.trip.id];
+      if (approach != null && approach.passedUserStop) continue;
+      final int? routeEta = approach?.etaMinutes;
+      coming.add(
+        routeEta == null
+            ? bus
+            : NearbyBus(
+                trip: bus.trip,
+                line: bus.line,
+                distanceKm: bus.distanceKm,
+                etaMinutes: routeEta,
+              ),
+      );
+    }
+    coming.sort(
+      (NearbyBus a, NearbyBus b) => a.etaMinutes.compareTo(b.etaMinutes),
+    );
+    return coming.take(kMaxNearbyBuses).toList();
   }
 }
 

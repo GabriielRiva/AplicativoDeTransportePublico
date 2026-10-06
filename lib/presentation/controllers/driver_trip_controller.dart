@@ -27,6 +27,7 @@ class DriverTripState {
     this.activeTrip,
     this.heading = 0,
     this.isLoading = false,
+    this.isOnline = true,
     this.errorMessage,
   });
 
@@ -52,6 +53,10 @@ class DriverTripState {
   /// Indica operação em andamento (exibe Loading na tela).
   final bool isLoading;
 
+  /// Indica se o aparelho está conectado ao Firebase durante o trajeto.
+  /// Sem conexão, o ônibus aparece offline para os passageiros.
+  final bool isOnline;
+
   /// Mensagem de erro a exibir em Snackbar (nula quando não há erro).
   final String? errorMessage;
 
@@ -72,6 +77,7 @@ class DriverTripState {
     Trip? activeTrip,
     double? heading,
     bool? isLoading,
+    bool? isOnline,
     String? errorMessage,
     bool clearBus = false,
     bool clearTrip = false,
@@ -85,6 +91,7 @@ class DriverTripState {
       activeTrip: clearTrip ? null : (activeTrip ?? this.activeTrip),
       heading: heading ?? this.heading,
       isLoading: isLoading ?? this.isLoading,
+      isOnline: isOnline ?? this.isOnline,
       errorMessage: clearError ? null : (errorMessage ?? this.errorMessage),
     );
   }
@@ -96,6 +103,9 @@ class DriverTripState {
 /// trajeto e o loop de transmissão de GPS a cada 1 segundo (RNF05: até 5 s).
 class DriverTripController extends Notifier<DriverTripState> {
   StreamSubscription<Position>? _positionSubscription;
+
+  /// Escuta da conexão com o Firebase durante o trajeto (ônibus fantasma).
+  StreamSubscription<bool>? _connectionSubscription;
 
   /// Momento do último envio de posição ao Firebase (controle do RNF05).
   DateTime? _lastSentAt;
@@ -181,6 +191,7 @@ class DriverTripController extends Notifier<DriverTripState> {
       state = state.copyWith(
         isLoading: false,
         status: DriverStatus.tripStarted,
+        isOnline: true,
         activeTrip: trip,
         heading: position.heading >= 0 ? position.heading : 0,
       );
@@ -209,6 +220,7 @@ class DriverTripController extends Notifier<DriverTripState> {
       state = state.copyWith(
         isLoading: false,
         status: DriverStatus.tripFinished,
+        isOnline: true,
         clearTrip: true,
       );
       AppLogger.info('Trajeto encerrado.');
@@ -226,6 +238,27 @@ class DriverTripController extends Notifier<DriverTripState> {
 
   void _startTransmission(String driverId) {
     _positionSubscription?.cancel();
+    _connectionSubscription?.cancel();
+    // Se a conexão cair, o servidor marca o motorista como offline e o
+    // ônibus some do mapa do passageiro; ao reconectar, ele volta.
+    bool wasConnected = false;
+    _connectionSubscription = ref
+        .read(driverRepositoryProvider)
+        .keepTripAlive(driverId)
+        .listen(
+      (bool connected) {
+        // O Firebase avisa "desconectado" antes da primeira conexão; o
+        // aviso só aparece depois de o aparelho já ter estado online.
+        if (connected) wasConnected = true;
+        if (!wasConnected) return;
+        if (state.isOnline != connected) {
+          state = state.copyWith(isOnline: connected);
+        }
+      },
+      onError: (Object error, StackTrace stackTrace) {
+        AppLogger.error('Falha ao acompanhar a conexão', error, stackTrace);
+      },
+    );
     // A posição inicial acabou de ser gravada pelo StartTrip.
     _lastSentAt = DateTime.now();
     _positionSubscription = ref
@@ -274,6 +307,8 @@ class DriverTripController extends Notifier<DriverTripState> {
   void _stopTransmission() {
     _positionSubscription?.cancel();
     _positionSubscription = null;
+    _connectionSubscription?.cancel();
+    _connectionSubscription = null;
     _lastSentAt = null;
   }
 }

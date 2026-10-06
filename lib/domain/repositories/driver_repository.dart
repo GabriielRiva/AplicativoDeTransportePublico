@@ -25,6 +25,11 @@ abstract interface class DriverRepository {
   /// Atualiza apenas o status do motorista.
   Future<void> updateStatus(String driverId, DriverStatus status);
 
+  /// Enquanto escutada, marca o motorista como offline no servidor se a
+  /// conexão cair e volta o trajeto para ativo ao reconectar. Emite se o
+  /// aparelho está conectado ao banco.
+  Stream<bool> keepTripAlive(String driverId);
+
   /// Stream com todos os motoristas presentes no nó drivers/,
   /// emitida a cada alteração no banco (base do tempo real).
   Stream<List<Trip>> watchActiveDrivers();

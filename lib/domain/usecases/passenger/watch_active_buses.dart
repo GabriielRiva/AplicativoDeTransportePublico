@@ -1,3 +1,4 @@
+import '../../../core/constants/app_constants.dart';
 import '../../entities/trip.dart';
 import '../../repositories/driver_repository.dart';
 
@@ -17,5 +18,20 @@ class WatchActiveBuses {
           (List<Trip> trips) =>
               trips.where((Trip trip) => trip.status.isActive).toList(),
         );
+  }
+
+  /// Remove os ônibus sem posição nova há mais de [maxAge] em relação a
+  /// [now] ("ônibus fantasma": o app do motorista fechou, ficou sem
+  /// bateria ou sem sinal sem encerrar o trajeto). Trajetos ainda sem
+  /// horário de atualização são mantidos.
+  static List<Trip> withoutStale(
+    List<Trip> trips,
+    DateTime now, {
+    Duration maxAge = kBusStaleAfter,
+  }) {
+    return trips.where((Trip trip) {
+      final DateTime? updatedAt = trip.updatedAt;
+      return updatedAt == null || now.difference(updatedAt) <= maxAge;
+    }).toList();
   }
 }

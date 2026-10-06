@@ -49,5 +49,9 @@ final class DriverRepositoryImpl implements DriverRepository {
       _datasource.updateStatus(driverId, status);
 
   @override
+  Stream<bool> keepTripAlive(String driverId) =>
+      _datasource.keepTripAlive(driverId);
+
+  @override
   Stream<List<Trip>> watchActiveDrivers() => _datasource.watchDrivers();
 }

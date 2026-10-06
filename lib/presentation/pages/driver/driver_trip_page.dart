@@ -16,63 +16,84 @@ import '../../providers/map_icon_providers.dart';
 import '../../widgets/common/app_button.dart';
 import '../../widgets/common/empty_state.dart';
 import '../../widgets/map/bus_info_card.dart';
+import '../../widgets/map/route_progress.dart';
+import '../../widgets/map/route_stops.dart';
 import '../../widgets/map/stop_arrival_banner.dart';
-import '../../widgets/map/stop_placement.dart';
+import '../../widgets/map/stop_markers.dart';
 import '../../widgets/map/trip_camera_config.dart';
 import '../../widgets/map/trip_map_view.dart';
 
 /// Tela de Trajeto do motorista: navegação turn-by-turn com a rota da linha,
-/// a posição do veículo seguindo o traçado e o card do trajeto ativo.
-class DriverTripPage extends ConsumerWidget {
+/// a posição do veículo seguindo o traçado e o card do trajeto ativo, com a
+/// próxima parada à frente e a distância até ela pela rua.
+class DriverTripPage extends ConsumerStatefulWidget {
   /// Cria a tela do trajeto ativo.
   const DriverTripPage({super.key});
 
-  /// Retorna a parada mais próxima da posição atual do veículo,
-  /// exibida como "Próximo Ponto" no card do trajeto.
-  Stop? _nearestStop(List<Stop> stops, LatLng position) {
+  @override
+  ConsumerState<DriverTripPage> createState() => _DriverTripPageState();
+}
+
+class _DriverTripPageState extends ConsumerState<DriverTripPage> {
+  /// Progresso do ônibus ao longo da rota (só avança, ver RouteProgress).
+  RouteTracker _tracker = RouteTracker();
+  String? _trackedTripId;
+
+  /// Paradas posicionadas no traçado, recalculadas só quando a rota ou as
+  /// paradas mudam.
+  RouteStops? _routeStops;
+  List<LatLng>? _routeStopsRoute;
+  List<Stop>? _routeStopsStops;
+
+  RouteStops _routeStopsFor(List<LatLng> route, List<Stop> stops) {
+    final RouteStops? cached = _routeStops;
+    if (cached != null &&
+        identical(route, _routeStopsRoute) &&
+        identical(stops, _routeStopsStops)) {
+      return cached;
+    }
+    _routeStopsRoute = route;
+    _routeStopsStops = stops;
+    return _routeStops = RouteStops(route, stops);
+  }
+
+  /// Próxima parada à frente do ônibus e a distância pela rota. Fora da
+  /// rota (ex.: ainda indo para o início), usa a parada mais próxima em
+  /// linha reta.
+  StopAhead? _nextStop(
+    String tripId,
+    List<LatLng> route,
+    List<Stop> stops,
+    LatLng position,
+  ) {
     if (stops.isEmpty) return null;
+    if (_trackedTripId != tripId) {
+      _trackedTripId = tripId;
+      _tracker = RouteTracker();
+    }
+    final RouteSnap? snap = _tracker.locate(route, position);
+    if (snap != null) {
+      final RouteStops routeStops = _routeStopsFor(route, stops);
+      return routeStops.nextStop(routeStops.metersAt(snap));
+    }
+
     Stop nearest = stops.first;
-    double nearestDistance = double.infinity;
+    double nearestKm = double.infinity;
     for (final Stop stop in stops) {
-      final double distance = MapUtils.distanceInKm(
+      final double km = MapUtils.distanceInKm(
         position,
         LatLng(stop.latitude, stop.longitude),
       );
-      if (distance < nearestDistance) {
-        nearestDistance = distance;
+      if (km < nearestKm) {
+        nearestKm = km;
         nearest = stop;
       }
     }
-    return nearest;
-  }
-
-  /// Abrigos 3D das paradas, desenhados na calçada ao lado do traçado e
-  /// de frente para a rua. [cameraBearing]
-  /// é para onde a câmera do mapa aponta (ela gira junto com o ônibus).
-  Set<Marker> _buildStopMarkers(
-    List<Stop> stops,
-    List<LatLng> route,
-    MapMarkerIcons? icons, {
-    double cameraBearing = 0,
-  }) {
-    return stops.map((Stop stop) {
-      final StopDisplay display = StopPlacement.roadside(
-        LatLng(stop.latitude, stop.longitude),
-        route,
-      );
-      return Marker(
-        markerId: MarkerId('stop_${stop.id}'),
-        position: display.position,
-        anchor: icons?.stopAnchor ?? const Offset(0.5, 1),
-        icon: icons?.stopFacing(display.facing, cameraBearing: cameraBearing) ??
-            BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueAzure),
-        infoWindow: InfoWindow(title: stop.name),
-      );
-    }).toSet();
+    return (stop: nearest, meters: nearestKm * 1000);
   }
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     final DriverTripState state = ref.watch(driverTripControllerProvider);
     final Trip? trip = state.activeTrip;
 
@@ -107,7 +128,8 @@ class DriverTripPage extends ConsumerWidget {
 
     final LatLng busPosition =
         LatLng(trip.currentLatitude, trip.currentLongitude);
-    final Stop? nextStop = _nearestStop(stops, busPosition);
+    final StopAhead? nextStop =
+        _nextStop(trip.id, routePoints, stops, busPosition);
     final Stop? stopHere = const FindStopAtPosition()(
       stops: stops,
       latitude: trip.currentLatitude,
@@ -121,7 +143,7 @@ class DriverTripPage extends ConsumerWidget {
             mode: TripMode.driver,
             busPosition: busPosition,
             route: routePoints,
-            extraMarkers: _buildStopMarkers(
+            extraMarkers: StopMarkers.forLine(
               stops,
               routePoints,
               icons,
@@ -137,22 +159,30 @@ class DriverTripPage extends ConsumerWidget {
             // como nos apps de navegação: mais rua à frente na tela.
             mapPadding: EdgeInsets.only(
               top: MediaQuery.sizeOf(context).height * 0.32,
-              bottom: 210,
+              bottom: 240,
             ),
             // Mesma duração da leitura do GPS: o ônibus termina um trecho
             // quando chega a próxima posição, sem paradas entre leituras.
             interpolationDuration: kGpsSampleInterval,
           ),
-          if (stopHere != null)
-            SafeArea(
-              child: Align(
-                alignment: Alignment.topCenter,
-                child: Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: StopArrivalBanner(stopName: stopHere.name),
+          SafeArea(
+            child: Align(
+              alignment: Alignment.topCenter,
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    if (!state.isOnline) const _OfflineBanner(),
+                    if (!state.isOnline && stopHere != null)
+                      const SizedBox(height: 8),
+                    if (stopHere != null)
+                      StopArrivalBanner(stopName: stopHere.name),
+                  ],
                 ),
               ),
             ),
+          ),
           Align(
             alignment: Alignment.bottomCenter,
             child: BusInfoCard(
@@ -161,7 +191,10 @@ class DriverTripPage extends ConsumerWidget {
               estimatedTime: line == null
                   ? null
                   : Formatters.durationMinutes(line.averageDuration),
-              nextStop: nextStop?.name,
+              nextStop: nextStop?.stop.name,
+              nextStopDistance: nextStop == null
+                  ? null
+                  : Formatters.distanceMeters(nextStop.meters),
               action: AppButton(
                 label: 'Encerrar Trajeto',
                 color: kErrorColor,
@@ -172,6 +205,37 @@ class DriverTripPage extends ConsumerWidget {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+/// Aviso de que o aparelho do motorista perdeu a conexão com a internet.
+class _OfflineBanner extends StatelessWidget {
+  const _OfflineBanner();
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: const Color(0xFFFFF4E5),
+      elevation: 3,
+      borderRadius: BorderRadius.circular(12),
+      child: const Padding(
+        padding: EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            Icon(Icons.wifi_off, color: Color(0xFFB45309)),
+            SizedBox(width: 10),
+            Flexible(
+              child: Text(
+                'Sem conexão. Os passageiros voltam a ver o ônibus '
+                'quando a internet voltar.',
+                style: TextStyle(fontSize: 14, color: Color(0xFF7C2D12)),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

@@ -20,6 +20,11 @@ class SelectedBusCard extends StatelessWidget {
     super.key,
     this.etaMinutes,
     this.stopName,
+    this.nextStopName,
+    this.nextStopMeters,
+    this.userStopName,
+    this.userStopMeters,
+    this.passedUserStop = false,
   });
 
   /// Linha do ônibus.
@@ -31,11 +36,44 @@ class SelectedBusCard extends StatelessWidget {
   /// Ponto em que o ônibus está agora (nulo se estiver em movimento).
   final String? stopName;
 
+  /// Próxima parada à frente do ônibus.
+  final String? nextStopName;
+
+  /// Distância (m) pela rua do ônibus até [nextStopName].
+  final double? nextStopMeters;
+
+  /// Ponto da linha mais próximo do passageiro.
+  final String? userStopName;
+
+  /// Distância (m) pela rua do ônibus até [userStopName].
+  final double? userStopMeters;
+
+  /// O ônibus já passou pelo ponto do passageiro neste trajeto.
+  final bool passedUserStop;
+
   /// Fecha o card e volta para a lista de ônibus próximos.
   final VoidCallback onClose;
 
   /// Abre a tela de detalhes da linha.
   final VoidCallback onOpenDetails;
+
+  String get _nextStopText {
+    final String? name = nextStopName;
+    if (name == null) return '—';
+    final double? meters = nextStopMeters;
+    return meters == null
+        ? name
+        : '$name (${Formatters.distanceMeters(meters)})';
+  }
+
+  String get _busToUserText {
+    if (passedUserStop) return 'já passou pelo seu ponto';
+    final List<String> parts = <String>[
+      if (userStopMeters != null) Formatters.distanceMeters(userStopMeters!),
+      if (etaMinutes != null) Formatters.durationMinutes(etaMinutes!),
+    ];
+    return parts.isEmpty ? '—' : parts.join(' · ');
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -79,15 +117,38 @@ class SelectedBusCard extends StatelessWidget {
             const SizedBox(height: 8),
             Padding(
               padding: const EdgeInsets.only(right: 8),
-              child: stopName != null
-                  ? StopArrivalBanner(stopName: stopName!)
-                  : InfoRow(
+              child: Column(
+                children: <Widget>[
+                  if (stopName != null) ...<Widget>[
+                    StopArrivalBanner(stopName: stopName!),
+                    const SizedBox(height: 8),
+                  ],
+                  InfoRow(
+                    icon: Icons.flag_outlined,
+                    label: 'Próxima parada:',
+                    value: _nextStopText,
+                  ),
+                  if (userStopName != null) ...<Widget>[
+                    InfoRow(
+                      icon: Icons.person_pin_circle_outlined,
+                      label: 'Seu ponto:',
+                      value: userStopName!,
+                    ),
+                    InfoRow(
+                      icon: Icons.directions_bus_outlined,
+                      label: 'Ônibus a:',
+                      value: _busToUserText,
+                    ),
+                  ] else
+                    InfoRow(
                       icon: Icons.access_time,
                       label: 'Chega até você em:',
                       value: etaMinutes == null
                           ? '—'
                           : Formatters.durationMinutes(etaMinutes!),
                     ),
+                ],
+              ),
             ),
             const SizedBox(height: 12),
             Padding(

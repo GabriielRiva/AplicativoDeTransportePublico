@@ -15,11 +15,13 @@ class TripModel extends Trip {
     required super.currentLatitude,
     required super.currentLongitude,
     super.finishedAt,
+    super.updatedAt,
   });
 
   /// Constrói o trajeto a partir do JSON do nó drivers/{uid}.
   factory TripModel.fromJson(String driverId, Map<String, dynamic> json) {
     final num? finishedAt = json['finishedAt'] as num?;
+    final num? updatedAt = json['updatedAt'] as num?;
     return TripModel(
       id: driverId,
       driverId: driverId,
@@ -34,6 +36,9 @@ class TripModel extends Trip {
       status: DriverStatus.fromValue(json['status'] as String? ?? 'offline'),
       currentLatitude: (json['latitude'] as num?)?.toDouble() ?? 0,
       currentLongitude: (json['longitude'] as num?)?.toDouble() ?? 0,
+      updatedAt: updatedAt == null
+          ? null
+          : DateTime.fromMillisecondsSinceEpoch(updatedAt.toInt()),
     );
   }
 

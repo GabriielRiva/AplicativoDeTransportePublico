@@ -13,6 +13,7 @@ class BusInfoCard extends StatelessWidget {
     super.key,
     this.estimatedTime,
     this.nextStop,
+    this.nextStopDistance,
     this.action,
   });
 
@@ -25,8 +26,11 @@ class BusInfoCard extends StatelessWidget {
   /// Tempo estimado exibido (ex.: "15 min").
   final String? estimatedTime;
 
-  /// Próximo ponto de parada.
+  /// Próximo ponto de parada à frente do ônibus.
   final String? nextStop;
+
+  /// Distância até o próximo ponto pela rua (ex.: "320 m").
+  final String? nextStopDistance;
 
   /// Ação opcional (ex.: botão Encerrar Trajeto).
   final Widget? action;
@@ -54,6 +58,12 @@ class BusInfoCard extends StatelessWidget {
                 icon: Icons.location_on_outlined,
                 label: 'Próximo Ponto:',
                 value: nextStop!,
+              ),
+            if (nextStopDistance != null)
+              InfoRow(
+                icon: Icons.straighten,
+                label: 'Distância até o ponto:',
+                value: nextStopDistance!,
               ),
             if (action != null) ...<Widget>[
               const SizedBox(height: 12),

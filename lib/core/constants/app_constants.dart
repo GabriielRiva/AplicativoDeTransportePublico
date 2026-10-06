@@ -32,3 +32,12 @@ const int kMaxNearbyBuses = 3;
 /// lista "Ônibus próximos". A posição do passageiro só é usada no próprio
 /// aparelho e nunca é enviada ao Firebase.
 const int kPassengerDistanceFilterMeters = 25;
+
+/// Tempo sem atualização de posição a partir do qual um ônibus deixa de
+/// aparecer para o passageiro ("ônibus fantasma": app do motorista fechado,
+/// sem bateria ou sem sinal antes de encerrar o trajeto).
+const Duration kBusStaleAfter = Duration(minutes: 2);
+
+/// De quanto em quanto tempo o app do passageiro confere se algum ônibus
+/// ficou sem atualização por mais de [kBusStaleAfter].
+const Duration kBusStaleCheckInterval = Duration(seconds: 15);

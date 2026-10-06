@@ -18,6 +18,7 @@ class Trip {
     required this.currentLatitude,
     required this.currentLongitude,
     this.finishedAt,
+    this.updatedAt,
   });
 
   /// Identificador do trajeto (igual ao UID do motorista, pois cada
@@ -48,6 +49,10 @@ class Trip {
   /// Longitude mais recente do veículo.
   final double currentLongitude;
 
+  /// Momento (horário do servidor) da última posição recebida. Nulo antes
+  /// da primeira gravação no banco.
+  final DateTime? updatedAt;
+
   /// Retorna uma cópia do trajeto alterando apenas os campos informados.
   Trip copyWith({
     DriverStatus? status,
@@ -65,6 +70,7 @@ class Trip {
       status: status ?? this.status,
       currentLatitude: currentLatitude ?? this.currentLatitude,
       currentLongitude: currentLongitude ?? this.currentLongitude,
+      updatedAt: updatedAt,
     );
   }
 

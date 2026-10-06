@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../core/utils/validators.dart';
 import '../../../domain/entities/user.dart';
 import '../../controllers/auth_controller.dart';
+import '../../widgets/auth/auth_layout.dart';
 import '../../widgets/common/app_button.dart';
 import '../../widgets/common/app_logo.dart';
 import '../../widgets/common/app_snackbar.dart';
@@ -59,38 +61,55 @@ class _ForgotPasswordPageState extends ConsumerState<ForgotPasswordPage> {
     final bool isLoading = ref.watch(authControllerProvider).isLoading;
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Recuperar Senha')),
+      // A foto ocupa a tela inteira, por trás da barra com o botão voltar.
+      extendBodyBehindAppBar: true,
+      resizeToAvoidBottomInset: false,
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        scrolledUnderElevation: 0,
+        foregroundColor: kTextPrimaryColor,
+      ),
       body: LoadingOverlay(
         isLoading: isLoading,
-        child: SafeArea(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.all(24),
-            child: Form(
-              key: _formKey,
-              child: Column(
-                children: <Widget>[
-                  const AppLogo(),
-                  const SizedBox(height: 16),
-                  const Text(
-                    'Informe seu e-mail cadastrado para receber o link '
-                    'de redefinição de senha.',
-                    style: AppTextStyles.body,
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: 24),
-                  AppTextField(
-                    controller: _emailController,
-                    hint: 'E-mail',
-                    icon: Icons.mail_outline,
-                    keyboardType: TextInputType.emailAddress,
-                    textInputAction: TextInputAction.done,
-                    validator: Validators.email,
-                  ),
-                  const SizedBox(height: 24),
-                  AppButton(label: 'Enviar', onPressed: _submit),
-                ],
-              ),
+        child: AuthLayout(
+          header: const Column(
+            children: <Widget>[
+              SizedBox(height: 24),
+              AppLogo(fontSize: 40),
+            ],
+          ),
+          card: Form(
+            key: _formKey,
+            child: Column(
+              children: <Widget>[
+                const Text('Recuperar senha', style: AppTextStyles.title),
+                const SizedBox(height: 8),
+                const Text(
+                  'Informe seu e-mail cadastrado para receber o link '
+                  'de redefinição de senha.',
+                  style: AppTextStyles.body,
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 20),
+                AppTextField(
+                  controller: _emailController,
+                  hint: 'E-mail',
+                  icon: Icons.mail_outline,
+                  keyboardType: TextInputType.emailAddress,
+                  textInputAction: TextInputAction.done,
+                  validator: Validators.email,
+                ),
+                const SizedBox(height: 24),
+                AppButton(label: 'Enviar', onPressed: _submit),
+                const SizedBox(height: 12),
+              ],
             ),
+          ),
+          footer: AuthFooterLink(
+            question: 'Lembrou a senha?',
+            action: 'Voltar ao login',
+            onPressed: () => Navigator.of(context).pop(),
           ),
         ),
       ),

@@ -36,9 +36,43 @@ class DriverRemoteDatasource {
     }
   }
 
+  /// Mantém o status do trajeto de acordo com a conexão do aparelho.
+  ///
+  /// A cada (re)conexão com o Firebase: registra no servidor que, se a
+  /// conexão cair (app fechado, sem bateria, sem sinal), o motorista passa
+  /// a "offline" sozinho, e volta o status para trip_started. Assim o
+  /// ônibus some do mapa do passageiro quando o motorista desconecta e
+  /// reaparece quando ele volta. Emite `true`/`false` conforme a conexão.
+  Stream<bool> keepTripAlive(String driverId) {
+    final DatabaseReference driverRef = _driverRef(driverId);
+    return _database
+        .ref('.info/connected')
+        .onValue
+        .asyncMap((DatabaseEvent event) async {
+      final bool connected = event.snapshot.value == true;
+      if (connected) {
+        try {
+          await driverRef.onDisconnect().update(<String, Object?>{
+            'status': DriverStatus.offline.value,
+          });
+          await driverRef.update(<String, Object?>{
+            'status': DriverStatus.tripStarted.value,
+            'updatedAt': ServerValue.timestamp,
+          });
+        } on FirebaseException catch (error, stackTrace) {
+          AppLogger.error('Falha ao registrar a queda de conexão',
+              error, stackTrace);
+        }
+      }
+      return connected;
+    });
+  }
+
   /// Encerra o trajeto, gravando status trip_finished e o horário.
   Future<void> finishTrip(String driverId) async {
     try {
+      // O trajeto acabou: a queda de conexão não deve mais mudar o status.
+      await _driverRef(driverId).onDisconnect().cancel();
       await _driverRef(driverId).update(<String, dynamic>{
         'status': DriverStatus.tripFinished.value,
         'finishedAt': ServerValue.timestamp,

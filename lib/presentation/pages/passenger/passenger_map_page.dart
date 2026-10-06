@@ -115,7 +115,7 @@ class _PassengerMapPageState extends ConsumerState<PassengerMapPage> {
               // ficar visível acima dele.
               mapPadding: EdgeInsets.only(
                 top: MediaQuery.paddingOf(context).top + 8,
-                bottom: 260,
+                bottom: 320,
               ),
             )
           else
@@ -151,6 +151,11 @@ class _PassengerMapPageState extends ConsumerState<PassengerMapPage> {
                     line: selectedLine,
                     etaMinutes: state.selectedEtaMinutes,
                     stopName: state.selectedStopHere?.name,
+                    nextStopName: state.selectedNextStop?.stop.name,
+                    nextStopMeters: state.selectedNextStop?.meters,
+                    userStopName: state.selectedUserStop?.name,
+                    userStopMeters: state.selectedUserStopMeters,
+                    passedUserStop: state.selectedPassedUserStop,
                     onClose: () {
                       _mapController = null;
                       controller.clearSelection();

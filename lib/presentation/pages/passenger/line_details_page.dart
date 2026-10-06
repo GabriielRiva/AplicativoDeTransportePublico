@@ -20,7 +20,7 @@ import '../../widgets/lines/schedule_tile.dart';
 import '../../widgets/lines/stop_tile.dart';
 import '../../widgets/map/bus_map.dart';
 import '../../widgets/map/stop_arrival_banner.dart';
-import '../../widgets/map/stop_placement.dart';
+import '../../widgets/map/stop_markers.dart';
 import '../../widgets/map/trip_camera_config.dart';
 import '../../widgets/map/trip_map_view.dart';
 
@@ -97,7 +97,7 @@ class _LineDetailsPageState extends ConsumerState<LineDetailsPage> {
             child: activeBus == null
                 ? BusMap(
                     polylines: _buildPolylines(routePoints),
-                    markers: _buildStopMarkers(stops, routePoints, icons),
+                    markers: StopMarkers.forLine(stops, routePoints, icons),
                     onMapCreated: (GoogleMapController controller) {
                       _mapController = controller;
                       _fitRoute(routePoints);
@@ -114,7 +114,7 @@ class _LineDetailsPageState extends ConsumerState<LineDetailsPage> {
                         ),
                         route: routePoints,
                         follow: false,
-                        extraMarkers: _buildStopMarkers(
+                        extraMarkers: StopMarkers.forLine(
                           stops,
                           routePoints,
                           icons,
@@ -203,28 +203,5 @@ class _LineDetailsPageState extends ConsumerState<LineDetailsPage> {
         points: points,
       ),
     };
-  }
-
-  /// Abrigos 3D das paradas, desenhados na calçada ao lado do traçado e
-  /// de frente para a rua (o mapa desta tela fica apontado para o norte).
-  Set<Marker> _buildStopMarkers(
-    List<Stop> stops,
-    List<LatLng> route,
-    MapMarkerIcons? icons,
-  ) {
-    return stops.map((Stop stop) {
-      final StopDisplay display = StopPlacement.roadside(
-        LatLng(stop.latitude, stop.longitude),
-        route,
-      );
-      return Marker(
-        markerId: MarkerId('stop_${stop.id}'),
-        position: display.position,
-        anchor: icons?.stopAnchor ?? const Offset(0.5, 1),
-        icon: icons?.stopFacing(display.facing) ??
-            BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueAzure),
-        infoWindow: InfoWindow(title: stop.name),
-      );
-    }).toSet();
   }
 }
