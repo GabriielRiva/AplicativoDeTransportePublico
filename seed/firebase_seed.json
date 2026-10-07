@@ -21,20 +21,20 @@
     "line_103": {
       "number": "L103",
       "name": "H. Regional",
-      "description": "Centro → Hospital Regional",
-      "distance": 5.4,
-      "averageDuration": 20,
+      "description": "Terminal Urbano → Hospital Regional",
+      "distance": 2.1,
+      "averageDuration": 8,
       "color": "#E5484D",
-      "routePolyline": "vqkdDx~c`ImEr@qFdAUkB]kB[wC@EnCa@zAWR`B~@fGqFdAUkB]kB[wC@QIMM@EFeAPkB`@q@gFE_@w@P_AyG]yBDGCGIB?BcEt@iDr@_BX}@sG_CVcBXbBY~BWkBoLY{BHEAMIEIH?DoGfAsBd@w@T_@tD"
+      "routePolyline": "ndmdDfwb`IAKCKKw@MeAOcAIq@CQ?A?Av@Mx@Ox@OLCh@KHCHAp@MLCv@MFAfAU`@M?@@??@@?@??@@??A@?@?@??A@??A?A@??A?A?A?AA??A?AA??AA?[eC]kCMY[sBS{AEc@?A@?@??A@??A?A@??A?A?ARElB_@nB]t@Oj@KlCg@lCi@l@OMaAMcAIi@Gi@Ga@Ga@AIEWEc@[gBYgBGg@Eg@AIQwAIq@Is@DAo@kFIu@Ie@Gg@Ig@AO]gCCKi@_EACQoACQE]aBXYF"
     },
     "line_104": {
       "number": "L104",
       "name": "Unochapecó",
-      "description": "Terminal Urbano ⇄ Unochapecó (circular)",
-      "distance": 19.2,
-      "averageDuration": 72,
+      "description": "Terminal Urbano → Unochapecó",
+      "distance": 6.8,
+      "averageDuration": 27,
       "color": "#F2994A",
-      "routePolyline": "lfmdDvbc`I_ANc@HE@eBZKBsBf@C?A?A?A?A?A??@A??@A??@[DYDc@He@FOBgARYFYFc@Hc@JIBI@cAPcAPo@Jq@JI@IBuAVsAV_@Fa@FSDuCn@UD_APi@J?@oAP{AXMFOF?AA??AA?A?AAA?A?A?A?A@A?A@A@A@?@A??@?@k@Hi@HaANcAPG@E@I@G@OBeAT_@Fe@Hy@PQF?AA??AA?AAA?A?A?A?A?A??@A?A@CDc@Fa@H?@WFa@Ha@HOB_@DO?A?AAA?A?A?A?A?A?A@A??@A??@A??@?@A??@?@?@?@k@Dm@Fo@Jq@Le@HeAN_@H_AR@PBPPrATdBf@vD@J@JPlAHd@@J\\~B?H@F\\dC\\bCBLBLJt@D^Dd@VnBZrBb@hDJ`@Nb@RPbAtAdArA~@jADFp@lAPr@Pr@Z`AX~@V~@BJLb@DLF^H\\Cj@El@A@A??@A?A@A@?@A@A@?@?@?@A@?@?@?@?@?@?@@@?@?@@@?@@@?@@?@@?@@?@@?^APG`@Qp@YbAYbA]bA[bAUhAShASjASlAShAShAQlAQnAE`AAl@?D@b@Dn@Hr@@?Pn@Rl@A@A@A@?@A@A@?@?@A@?@?@?@?@?@?B?@?@?@@??B?@@@?@@@@@@@?@@@@?@@@??@@?@?@?@@@?B?@?T~@?BLb@Jd@XjAFRFPVdA@?HZBHXjALb@^|AFRFVZpA@@DLDPRr@lBfHlBfHXdAXfAH\\HZNl@Ph@Nt@@?FXFZHn@JbADl@B\\@jA?bAA~@E|AANUhECVSxBCh@?FSfECf@GnA[jGCPCLCLA@A?A@A@A@A@?BA@?B?@?@?BA@@B?B?D@B@B?B@@@BBD?F@HInACf@MnBARIbBCf@Ab@OzCItAGvA?RUhECf@O~CC`@q@dMq@K}@Qc@Ia@GGAEA}Ba@GA}@QK?LvB?F?DD`AB\\?@?D@b@?DA?Eh@AHAFSfAAD?@QjAAJc@`BCFCFOd@EHCPA?AF?DADCXA`@ADCZAZAJ?H@F@BFFJLlChAv@\\RHtDfBGtAGtAGhAEhAGhAEhAGfAG~@ARGlAElAEp@En@C^A\\M~BAVATGx@MzAC^KhA?DG`AAx@C|@E|@MtDKjBCh@?@MpCKpBEl@ANMvCOfAGhA[rDA@A@A@A@A@ABA@?@AB?@?B?@?B?@?@?B?@@B@B?@@??B@@@@@@@@@?B@@@GfAKvC?DEt@Ob@U^EF[l@IRELEPAh@@d@?HHh@@BF\\Jd@@F@R?R?JAVANEj@GjAN@pAF`@BjBJdBJdBJjBLXBbCPjBHbBHfBJdBJF_AD_AF}@?AD}@F_AD_A@?@{@By@DaADaAD_AJwBFmABa@Bg@DgADgAFiAFiAHuA@CHoAFoABg@Bg@DkADmAB[@g@@EDkAHwAFoA?C?CEEEAEAeAEk@CgAEkCO}@G_@CsBMgBUIAuEU_AIc@CkBOD}@D}@Fu@FcA@CFoABg@HuADw@@S@QLeC@]@]Fq@Dq@DkAB]Bs@FgAFqAFiAFiAFiAFiAJiDB[XqFJyBB]l@uLLeCp@cMJwBPaDHoC@a@LeCBg@P_D@_@@CBg@HwB\\mFDS@A@?@C@A@A?A?A@A?A?A?A@??A?C?A?AAC?A?A?A?AAA?A?A?AAAACAM?I?KPeDLsBNmCBq@Dg@DeA@QLkC@]d@mI?kA@kA?_@?_@Cs@Cu@SkAWeASy@Su@]mAMe@]kAEUK_@CS{AsFmBiH[iA]iA[oA]oAs@uCMe@Ka@GYy@cDWoA@A?A@A?A?A@A?C@A?A?AAC?A?A?CAA?AACAA?AAAAAAAAAA?AAA?AAA?A?C?A?c@sAIo@Gi@Cq@?A?g@@UDa@B]Hs@RoARkATmARkAPkA@?PiATeAXiA\\cA\\cA^cAR_ADYFo@@??A@??A@??A@??A@A?A@A?A@A?A?A?A?A?A?A?A?A?A?A?AAA?AAA?AAAAA?AA?Im@Go@I]G_@EMMc@CKW_AY_A[aAQs@Qs@q@mAEG_AkAeAsAcAuASQOc@Ka@c@iD[sBWoBEe@E_@Ku@CMCM]cC]eCpBWFAtAWlB_@zAUj@Mz@Q?AbAM?A`AO?@@?@?@@@?@?@??A@?@?@A@A@??A?A@?`@I`@Kb@Id@KVGdAU@??@@?@?@?@?@?@A@??A@??ArB[PEn@Kp@KHAHAz@O|@Qd@I^Ij@K?@@?@@@?@?@?@?@?@??A@?@??A@??A@A?A@Ap@Ip@K`AS~@S?AJAJAn@Kp@K`@I`@IbAS?@@?@@@?@?@?@?@?@A@??A@??A@??Ax@Ox@Qv@Ov@OFAHCn@InCc@hAQdAO@??@@?@?@?@?@?@?@?@A@??A@??A@?|A[HAtAWXGXG?Aj@Mj@I@?@@@?@?@?@A@?@A@??A?A@??A?A@A?A?AAA?A?AAA?AA??AA?A??AA?ScCA?CWAEE]A?Ec@Gc@AIAIOeAOgAEe@Gc@QqAQqACQCQ?A"
+      "routePolyline": "lfmdDvbc`IBPBRb@bDFb@Fd@N`A@HD`@F^?H@FDZHj@J|@N~@N~@A??@A?A@?@A?aAVG@aAR_BT}ATAAA?A??AA?A?A@A?A??@A?A@A@?@A??@?@?@A??@?@?@?@@??@?@?@@??@@@@??@@??@N|@N~@Jx@Lz@?H@HN~@P`AHt@BJBXHf@Hj@BPDTFd@@HFf@BLJ~@BJ@HBNJp@N`AHn@BNN|@@J@HJXf@nD?DXtBPlAyAXyAXsARsATK@IBqB^sB^IBK@uAVwAX]F[FE@G@E@C@sB^I@a@HeARw@NC@q@JYF[FaAPiBZC@oDn@]JODOHMHYT]d@g@~@A@U\\SXg@|@Wb@MVg@|@e@t@a@l@OPKLc@\\i@@K?OCIIa@]?A?A?A?A?A?A?AAA?AAA?AAAAA?AA?AAAAA?AAA?A?A?A?A?A?A?A?A?A@A@A??@A?A@A@?@A@A@?@?@?@A@?@?@?@?@?@?@@@?@?@@@?@@@?@@?@@?@@??@@??^APG`@Qp@YbAYbA]bA[bAUhAShASjASlAShAShAQlAQnAE`AAl@?D@b@Dn@Hr@Rn@Rl@A@A@A@?@A@A@?@?@AB?@?@?@?@?B?@?@@@?B?@@@?@@@@@@@?@@@@?@@@??@@?@?@?@@@?BA@@T~@?BLb@Jd@XjAFRFPVdAJZBHXjALb@^|AFRFVZpA@@DLDPRr@lBfHlBfHXdAXfAH\\HZNl@Ph@Pt@FXFZHn@JbADl@B\\@jA?bAA~@E|AANUhECVSxBAh@AFSfECf@GnA[jGCPCLCLA@A??@A?A@A@A@?BA@?B?@?@?BA@@B?B?D@B?B@B@@@BBD?F@HInACf@MnBARIbBCf@Ab@OzCItAGvA?RUhECf@O~CC`@q@dMq@K}@Qc@Ia@GGAEA}Ba@GA}@QK?LvB?F?DD`AB\\?@?D@b@ADEh@AHAFSfAAFQjAAJc@`BCFCFOd@EHCPCF?DADCXA`@ADCZAZAJ?H"
     },
     "line_105": {
       "number": "L105",
@@ -47,6 +47,41 @@
     }
   },
   "stops": {
+    "line_101_stop_01": {
+      "lineId": "line_101",
+      "name": "Terminal Urbano",
+      "latitude": -27.10627,
+      "longitude": -52.61254,
+      "order": 1
+    },
+    "line_101_stop_02": {
+      "lineId": "line_101",
+      "name": "Parada 02",
+      "latitude": -27.10137,
+      "longitude": -52.61155,
+      "order": 2
+    },
+    "line_101_stop_03": {
+      "lineId": "line_101",
+      "name": "Parada 03",
+      "latitude": -27.09531,
+      "longitude": -52.61331,
+      "order": 3
+    },
+    "line_101_stop_04": {
+      "lineId": "line_101",
+      "name": "Parada 04",
+      "latitude": -27.09306,
+      "longitude": -52.61744,
+      "order": 4
+    },
+    "line_101_stop_05": {
+      "lineId": "line_101",
+      "name": "Ecoparque",
+      "latitude": -27.08694,
+      "longitude": -52.61914,
+      "order": 5
+    },
     "line_102_stop_01": {
       "lineId": "line_102",
       "name": "Terminal Urbano Centro",
@@ -98,129 +133,150 @@
     },
     "line_103_stop_01": {
       "lineId": "line_103",
-      "name": "Terminal Urbano Centro",
-      "latitude": -27.098,
-      "longitude": -52.618,
+      "name": "Terminal Urbano",
+      "latitude": -27.106259,
+      "longitude": -52.612008,
       "order": 1
     },
     "line_103_stop_02": {
       "lineId": "line_103",
-      "name": "Catedral Santo Antônio",
-      "latitude": -27.0965,
-      "longitude": -52.6172,
+      "name": "R. Rui Barbosa",
+      "latitude": -27.106489,
+      "longitude": -52.610341,
       "order": 2
     },
     "line_103_stop_03": {
       "lineId": "line_103",
-      "name": "R. Clevelândia",
-      "latitude": -27.094,
-      "longitude": -52.616,
+      "name": "R. Rui Barbosa",
+      "latitude": -27.107828,
+      "longitude": -52.609988,
       "order": 3
     },
     "line_103_stop_04": {
       "lineId": "line_103",
       "name": "R. Lauro Müller",
-      "latitude": -27.0915,
-      "longitude": -52.6145,
+      "latitude": -27.108237,
+      "longitude": -52.608982,
       "order": 4
     },
     "line_103_stop_05": {
       "lineId": "line_103",
-      "name": "R. Florianópolis",
-      "latitude": -27.0895,
-      "longitude": -52.6132,
+      "name": "R. Condá",
+      "latitude": -27.108002,
+      "longitude": -52.606948,
       "order": 5
     },
     "line_103_stop_06": {
       "lineId": "line_103",
-      "name": "Hospital Regional",
-      "latitude": -27.0872,
-      "longitude": -52.6118,
+      "name": "R. Condá",
+      "latitude": -27.110927,
+      "longitude": -52.606114,
       "order": 6
+    },
+    "line_103_stop_07": {
+      "lineId": "line_103",
+      "name": "R. São Marcos",
+      "latitude": -27.110603,
+      "longitude": -52.603469,
+      "order": 7
+    },
+    "line_103_stop_08": {
+      "lineId": "line_103",
+      "name": "R. São Marcos",
+      "latitude": -27.109857,
+      "longitude": -52.599765,
+      "order": 8
+    },
+    "line_103_stop_09": {
+      "lineId": "line_103",
+      "name": "Hospital Regional",
+      "latitude": -27.108642,
+      "longitude": -52.597449,
+      "order": 9
     },
     "line_104_stop_01": {
       "lineId": "line_104",
       "name": "Terminal Urbano",
-      "latitude": -27.10627,
-      "longitude": -52.61254,
+      "latitude": -27.106466,
+      "longitude": -52.613718,
       "order": 1
     },
     "line_104_stop_02": {
       "lineId": "line_104",
-      "name": "Parada 02",
-      "latitude": -27.09355,
-      "longitude": -52.61731,
+      "name": "Av. Porto Alegre",
+      "latitude": -27.106885,
+      "longitude": -52.617199,
       "order": 2
     },
     "line_104_stop_03": {
       "lineId": "line_104",
-      "name": "Parada 03",
-      "latitude": -27.09592,
-      "longitude": -52.63001,
+      "name": "R. Mal. Floriano Peixoto",
+      "latitude": -27.105572,
+      "longitude": -52.618546,
       "order": 3
     },
     "line_104_stop_04": {
       "lineId": "line_104",
-      "name": "Parada 04",
-      "latitude": -27.09733,
-      "longitude": -52.64425,
+      "name": "R. Antônio Morandini",
+      "latitude": -27.106757,
+      "longitude": -52.625322,
       "order": 4
     },
     "line_104_stop_05": {
       "lineId": "line_104",
-      "name": "Parada 05",
-      "latitude": -27.09703,
-      "longitude": -52.65927,
+      "name": "R. Antônio Morandini",
+      "latitude": -27.099751,
+      "longitude": -52.627299,
       "order": 5
     },
     "line_104_stop_06": {
       "lineId": "line_104",
-      "name": "Parada 06",
-      "latitude": -27.09601,
-      "longitude": -52.6693,
+      "name": "R. Marques de Cavala",
+      "latitude": -27.096819,
+      "longitude": -52.630264,
       "order": 6
     },
     "line_104_stop_07": {
       "lineId": "line_104",
-      "name": "Unochapecó",
-      "latitude": -27.09418,
-      "longitude": -52.68625,
+      "name": "Av. São Pedro",
+      "latitude": -27.094618,
+      "longitude": -52.634351,
       "order": 7
     },
-    "line_101_stop_01": {
-      "lineId": "line_101",
-      "name": "Terminal Urbano",
-      "latitude": -27.10627,
-      "longitude": -52.61254,
-      "order": 1
+    "line_104_stop_08": {
+      "lineId": "line_104",
+      "name": "Av. São Pedro",
+      "latitude": -27.095154,
+      "longitude": -52.63848,
+      "order": 8
     },
-    "line_101_stop_02": {
-      "lineId": "line_101",
-      "name": "Parada 02",
-      "latitude": -27.10137,
-      "longitude": -52.61155,
-      "order": 2
+    "line_104_stop_09": {
+      "lineId": "line_104",
+      "name": "Av. Sen. Attílio Fontana",
+      "latitude": -27.097774,
+      "longitude": -52.651536,
+      "order": 9
     },
-    "line_101_stop_03": {
-      "lineId": "line_101",
-      "name": "Parada 03",
-      "latitude": -27.09531,
-      "longitude": -52.61331,
-      "order": 3
+    "line_104_stop_10": {
+      "lineId": "line_104",
+      "name": "Av. Sen. Attílio Fontana",
+      "latitude": -27.096668,
+      "longitude": -52.662249,
+      "order": 10
     },
-    "line_101_stop_04": {
-      "lineId": "line_101",
-      "name": "Parada 04",
-      "latitude": -27.09306,
-      "longitude": -52.61744,
-      "order": 4
+    "line_104_stop_11": {
+      "lineId": "line_104",
+      "name": "R. Itaboraí",
+      "latitude": -27.094623,
+      "longitude": -52.662535,
+      "order": 11
     },
-    "line_101_stop_05": {
-      "lineId": "line_101",
-      "name": "Ecoparque",
-      "latitude": -27.08694,
-      "longitude": -52.61914,
-      "order": 5
+    "line_104_stop_12": {
+      "lineId": "line_104",
+      "name": "Unochapecó",
+      "latitude": -27.09404,
+      "longitude": -52.666446,
+      "order": 12
     },
     "line_105_stop_01": {
       "lineId": "line_105",

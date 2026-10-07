@@ -1,0 +1,47 @@
+{
+  "line_101": {
+    "number": "L101",
+    "name": "Centro/Ecoparque",
+    "description": "Terminal Urbano → Ecoparque",
+    "distance": 2.8,
+    "averageDuration": 11,
+    "color": "#4A9EBF",
+    "routePolyline": "ndmdDfwb`IAKCKKw@MeAOcAIq@CQ?A?A@A?A?AAA?A?AA??AA??AA??AA?A?A?A?A@A??@A??@A??@?@eALiAN[H[FgAReAVA??AA?A??AA?A?A@A?A??@A??@A??@A@iAPkARyAV{AVA?AAA?A?A?A?A?A??@A?A@A??@A??@?@A??@?@?@_BRw@Lu@LS@M@WB?@QD}@R_ATa@Jc@JAAA??AA?A?AAA?A@A?A?A@A??@A??@A??@?@A?wCh@I@_AR?AA??AA??AA?A??AA?A?A??@A?A?A@A@A@?@A@?@gBZYFm@J{@NQDu@NUDMBcATQBQBQBIBA?A?A@A@A?C@A@A?AAA?AAA?A?A??@A?A??@A??@A??@A@?@?@?@?@?@_@Dy@NUDuB\\G@G@PbAPdALfALhADTNjAL|@NvAFb@F`@BRBN@HBFBHCDc@Fa@H?@WFa@Ha@HOB_@DO?A?AAA?A?A?A?A?A?A@A??@A??@A??@?@A??@?@?@?@k@Dm@Fo@Jq@Le@HeAN_@H_ARiAPiCd@eB\\gB\\s@Nu@Lq@Js@JcB\\C@aB\\c@J_@Bu@PG@}@N"
+  },
+  "line_102": {
+    "number": "L102",
+    "name": "Efapi",
+    "description": "Centro → Efapi",
+    "distance": 10.2,
+    "averageDuration": 40,
+    "color": "#2E9E4F",
+    "routePolyline": "vqkdDx~c`ImEr@kNnCAP|@~GfBa@dC]l@jETpA^~@d@xDzAY{AXIj@[nAmA~BiElHgAhB]l@dArAp@lAb@fBlA`EJ^\\zAIxAMN?RHP@^Ir@eAxDy@fCqAlHy@`FQnAE`AAr@FrAHr@f@|AKR@TJNRDNIHWEUMMMAOHIR@TLNPBpAlFbDhMIVOJeBp@HPWvEoAzOGDBH@@WhDI`AcGm@cAK}@zK@LoC^s@EaBM_ABcEj@}@NMV@ZJVrB[\\NJTA\\[d@kA`A}FhE]\\rArAf@l@dB~CL^NbANlJFzIfFM~CAj@ALu@Mt@aCDiAA@|HxA?}EjFkApAODy@?}CIPzP?lED`BCx@FlDEn@A`AKzA?f@H|@HV\\@JEJM?a@^U`@GLILMJQ`BmB`@ONAnAf@t@^q@iBIKKEPa@"
+  },
+  "line_103": {
+    "number": "L103",
+    "name": "H. Regional",
+    "description": "Terminal Urbano → Hospital Regional",
+    "distance": 2.1,
+    "averageDuration": 8,
+    "color": "#E5484D",
+    "routePolyline": "ndmdDfwb`IAKCKKw@MeAOcAIq@CQ?A?Av@Mx@Ox@OLCh@KHCHAp@MLCv@MFAfAU`@M?@@??@@?@??@@??A@?@?@??A@??A?A@??A?A?A?AA??A?AA??AA?[eC]kCMY[sBS{AEc@?A@?@??A@??A?A@??A?A?ARElB_@nB]t@Oj@KlCg@lCi@l@OMaAMcAIi@Gi@Ga@Ga@AIEWEc@[gBYgBGg@Eg@AIQwAIq@Is@DAo@kFIu@Ie@Gg@Ig@AO]gCCKi@_EACQoACQE]aBXYF"
+  },
+  "line_104": {
+    "number": "L104",
+    "name": "Unochapecó",
+    "description": "Terminal Urbano → Unochapecó",
+    "distance": 6.8,
+    "averageDuration": 27,
+    "color": "#F2994A",
+    "routePolyline": "lfmdDvbc`IBPBRb@bDFb@Fd@N`A@HD`@F^?H@FDZHj@J|@N~@N~@A??@A?A@?@A?aAVG@aAR_BT}ATAAA?A??AA?A?A@A?A??@A?A@A@?@A??@?@?@A??@?@?@?@@??@?@?@@??@@@@??@@??@N|@N~@Jx@Lz@?H@HN~@P`AHt@BJBXHf@Hj@BPDTFd@@HFf@BLJ~@BJ@HBNJp@N`AHn@BNN|@@J@HJXf@nD?DXtBPlAyAXyAXsARsATK@IBqB^sB^IBK@uAVwAX]F[FE@G@E@C@sB^I@a@HeARw@NC@q@JYF[FaAPiBZC@oDn@]JODOHMHYT]d@g@~@A@U\\SXg@|@Wb@MVg@|@e@t@a@l@OPKLc@\\i@@K?OCIIa@]?A?A?A?A?A?A?AAA?AAA?AAAAA?AA?AAAAA?AAA?A?A?A?A?A?A?A?A?A@A@A??@A?A@A@?@A@A@?@?@?@A@?@?@?@?@?@?@@@?@?@@@?@@@?@@?@@?@@??@@??^APG`@Qp@YbAYbA]bA[bAUhAShASjASlAShAShAQlAQnAE`AAl@?D@b@Dn@Hr@Rn@Rl@A@A@A@?@A@A@?@?@AB?@?@?@?@?B?@?@@@?B?@@@?@@@@@@@?@@@@?@@@??@@?@?@?@@@?BA@@T~@?BLb@Jd@XjAFRFPVdAJZBHXjALb@^|AFRFVZpA@@DLDPRr@lBfHlBfHXdAXfAH\\HZNl@Ph@Pt@FXFZHn@JbADl@B\\@jA?bAA~@E|AANUhECVSxBAh@AFSfECf@GnA[jGCPCLCLA@A??@A?A@A@A@?BA@?B?@?@?BA@@B?B?D@B?B@B@@@BBD?F@HInACf@MnBARIbBCf@Ab@OzCItAGvA?RUhECf@O~CC`@q@dMq@K}@Qc@Ia@GGAEA}Ba@GA}@QK?LvB?F?DD`AB\\?@?D@b@ADEh@AHAFSfAAFQjAAJc@`BCFCFOd@EHCPCF?DADCXA`@ADCZAZAJ?H"
+  },
+  "line_105": {
+    "number": "L105",
+    "name": "Rota Teste",
+    "description": "Circuito de teste - R. Israel (circular)",
+    "distance": 2.0,
+    "averageDuration": 8,
+    "color": "#8E44AD",
+    "routePolyline": "`undDd```I@HLbANdANdARjBThBBNBNmAnDQb@a@|@GFEFIHe@j@eDrDgDtDq@z@k@r@B?B?HAF?FANAPCNClASHA?ATG~Bc@JCdCg@~@Qd@KfB]tAK?AlF_AQqAAKCWACMaAM_AO_AM_AMaAA?ScBUeBWkBWkB_@gC_@iCoB\\E?_BX"
+  }
+}

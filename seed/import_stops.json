@@ -1,0 +1,261 @@
+{
+  "line_101_stop_01": {
+    "lineId": "line_101",
+    "name": "Terminal Urbano",
+    "latitude": -27.10627,
+    "longitude": -52.61254,
+    "order": 1
+  },
+  "line_101_stop_02": {
+    "lineId": "line_101",
+    "name": "Parada 02",
+    "latitude": -27.10137,
+    "longitude": -52.61155,
+    "order": 2
+  },
+  "line_101_stop_03": {
+    "lineId": "line_101",
+    "name": "Parada 03",
+    "latitude": -27.09531,
+    "longitude": -52.61331,
+    "order": 3
+  },
+  "line_101_stop_04": {
+    "lineId": "line_101",
+    "name": "Parada 04",
+    "latitude": -27.09306,
+    "longitude": -52.61744,
+    "order": 4
+  },
+  "line_101_stop_05": {
+    "lineId": "line_101",
+    "name": "Ecoparque",
+    "latitude": -27.08694,
+    "longitude": -52.61914,
+    "order": 5
+  },
+  "line_102_stop_01": {
+    "lineId": "line_102",
+    "name": "Terminal Urbano Centro",
+    "latitude": -27.098,
+    "longitude": -52.618,
+    "order": 1
+  },
+  "line_102_stop_02": {
+    "lineId": "line_102",
+    "name": "Av. Fernando Machado",
+    "latitude": -27.0972,
+    "longitude": -52.623,
+    "order": 2
+  },
+  "line_102_stop_03": {
+    "lineId": "line_102",
+    "name": "R. Marechal Bormann",
+    "latitude": -27.096,
+    "longitude": -52.629,
+    "order": 3
+  },
+  "line_102_stop_04": {
+    "lineId": "line_102",
+    "name": "Bairro São Cristóvão",
+    "latitude": -27.0948,
+    "longitude": -52.637,
+    "order": 4
+  },
+  "line_102_stop_05": {
+    "lineId": "line_102",
+    "name": "Arena Condá",
+    "latitude": -27.0935,
+    "longitude": -52.646,
+    "order": 5
+  },
+  "line_102_stop_06": {
+    "lineId": "line_102",
+    "name": "Bairro Efapi",
+    "latitude": -27.092,
+    "longitude": -52.656,
+    "order": 6
+  },
+  "line_102_stop_07": {
+    "lineId": "line_102",
+    "name": "Terminal Efapi",
+    "latitude": -27.091,
+    "longitude": -52.665,
+    "order": 7
+  },
+  "line_103_stop_01": {
+    "lineId": "line_103",
+    "name": "Terminal Urbano",
+    "latitude": -27.106259,
+    "longitude": -52.612008,
+    "order": 1
+  },
+  "line_103_stop_02": {
+    "lineId": "line_103",
+    "name": "R. Rui Barbosa",
+    "latitude": -27.106489,
+    "longitude": -52.610341,
+    "order": 2
+  },
+  "line_103_stop_03": {
+    "lineId": "line_103",
+    "name": "R. Rui Barbosa",
+    "latitude": -27.107828,
+    "longitude": -52.609988,
+    "order": 3
+  },
+  "line_103_stop_04": {
+    "lineId": "line_103",
+    "name": "R. Lauro Müller",
+    "latitude": -27.108237,
+    "longitude": -52.608982,
+    "order": 4
+  },
+  "line_103_stop_05": {
+    "lineId": "line_103",
+    "name": "R. Condá",
+    "latitude": -27.108002,
+    "longitude": -52.606948,
+    "order": 5
+  },
+  "line_103_stop_06": {
+    "lineId": "line_103",
+    "name": "R. Condá",
+    "latitude": -27.110927,
+    "longitude": -52.606114,
+    "order": 6
+  },
+  "line_103_stop_07": {
+    "lineId": "line_103",
+    "name": "R. São Marcos",
+    "latitude": -27.110603,
+    "longitude": -52.603469,
+    "order": 7
+  },
+  "line_103_stop_08": {
+    "lineId": "line_103",
+    "name": "R. São Marcos",
+    "latitude": -27.109857,
+    "longitude": -52.599765,
+    "order": 8
+  },
+  "line_103_stop_09": {
+    "lineId": "line_103",
+    "name": "Hospital Regional",
+    "latitude": -27.108642,
+    "longitude": -52.597449,
+    "order": 9
+  },
+  "line_104_stop_01": {
+    "lineId": "line_104",
+    "name": "Terminal Urbano",
+    "latitude": -27.106466,
+    "longitude": -52.613718,
+    "order": 1
+  },
+  "line_104_stop_02": {
+    "lineId": "line_104",
+    "name": "Av. Porto Alegre",
+    "latitude": -27.106885,
+    "longitude": -52.617199,
+    "order": 2
+  },
+  "line_104_stop_03": {
+    "lineId": "line_104",
+    "name": "R. Mal. Floriano Peixoto",
+    "latitude": -27.105572,
+    "longitude": -52.618546,
+    "order": 3
+  },
+  "line_104_stop_04": {
+    "lineId": "line_104",
+    "name": "R. Antônio Morandini",
+    "latitude": -27.106757,
+    "longitude": -52.625322,
+    "order": 4
+  },
+  "line_104_stop_05": {
+    "lineId": "line_104",
+    "name": "R. Antônio Morandini",
+    "latitude": -27.099751,
+    "longitude": -52.627299,
+    "order": 5
+  },
+  "line_104_stop_06": {
+    "lineId": "line_104",
+    "name": "R. Marques de Cavala",
+    "latitude": -27.096819,
+    "longitude": -52.630264,
+    "order": 6
+  },
+  "line_104_stop_07": {
+    "lineId": "line_104",
+    "name": "Av. São Pedro",
+    "latitude": -27.094618,
+    "longitude": -52.634351,
+    "order": 7
+  },
+  "line_104_stop_08": {
+    "lineId": "line_104",
+    "name": "Av. São Pedro",
+    "latitude": -27.095154,
+    "longitude": -52.63848,
+    "order": 8
+  },
+  "line_104_stop_09": {
+    "lineId": "line_104",
+    "name": "Av. Sen. Attílio Fontana",
+    "latitude": -27.097774,
+    "longitude": -52.651536,
+    "order": 9
+  },
+  "line_104_stop_10": {
+    "lineId": "line_104",
+    "name": "Av. Sen. Attílio Fontana",
+    "latitude": -27.096668,
+    "longitude": -52.662249,
+    "order": 10
+  },
+  "line_104_stop_11": {
+    "lineId": "line_104",
+    "name": "R. Itaboraí",
+    "latitude": -27.094623,
+    "longitude": -52.662535,
+    "order": 11
+  },
+  "line_104_stop_12": {
+    "lineId": "line_104",
+    "name": "Unochapecó",
+    "latitude": -27.09404,
+    "longitude": -52.666446,
+    "order": 12
+  },
+  "line_105_stop_01": {
+    "lineId": "line_105",
+    "name": "Início - R. Israel",
+    "latitude": -27.11393,
+    "longitude": -52.59795,
+    "order": 1
+  },
+  "line_105_stop_02": {
+    "lineId": "line_105",
+    "name": "Parada 02",
+    "latitude": -27.11346,
+    "longitude": -52.60199,
+    "order": 2
+  },
+  "line_105_stop_03": {
+    "lineId": "line_105",
+    "name": "Parada 03",
+    "latitude": -27.11299,
+    "longitude": -52.60393,
+    "order": 3
+  },
+  "line_105_stop_04": {
+    "lineId": "line_105",
+    "name": "Parada 04",
+    "latitude": -27.11596,
+    "longitude": -52.60146,
+    "order": 4
+  }
+}
