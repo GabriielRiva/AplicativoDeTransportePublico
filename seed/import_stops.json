@@ -64,52 +64,80 @@
   },
   "line_102_stop_01": {
     "lineId": "line_102",
-    "name": "Terminal Urbano Centro",
-    "latitude": -27.098,
-    "longitude": -52.618,
+    "name": "Terminal Urbano",
+    "latitude": -27.106466,
+    "longitude": -52.613718,
     "order": 1
   },
   "line_102_stop_02": {
     "lineId": "line_102",
-    "name": "Av. Fernando Machado",
-    "latitude": -27.0972,
-    "longitude": -52.623,
+    "name": "R. Antônio Morandini",
+    "latitude": -27.106818,
+    "longitude": -52.62532,
     "order": 2
   },
   "line_102_stop_03": {
     "lineId": "line_102",
-    "name": "R. Marechal Bormann",
-    "latitude": -27.096,
-    "longitude": -52.629,
+    "name": "R. Antônio Morandini",
+    "latitude": -27.103746,
+    "longitude": -52.626167,
     "order": 3
   },
   "line_102_stop_04": {
     "lineId": "line_102",
-    "name": "Bairro São Cristóvão",
-    "latitude": -27.0948,
-    "longitude": -52.637,
+    "name": "R. Antônio Morandini",
+    "latitude": -27.099743,
+    "longitude": -52.627266,
     "order": 4
   },
   "line_102_stop_05": {
     "lineId": "line_102",
-    "name": "Arena Condá",
-    "latitude": -27.0935,
-    "longitude": -52.646,
+    "name": "Av. São Pedro",
+    "latitude": -27.094949,
+    "longitude": -52.633186,
     "order": 5
   },
   "line_102_stop_06": {
     "lineId": "line_102",
-    "name": "Bairro Efapi",
-    "latitude": -27.092,
-    "longitude": -52.656,
+    "name": "Av. São Pedro",
+    "latitude": -27.095147,
+    "longitude": -52.638478,
     "order": 6
   },
   "line_102_stop_07": {
     "lineId": "line_102",
-    "name": "Terminal Efapi",
-    "latitude": -27.091,
-    "longitude": -52.665,
+    "name": "Av. Sen. Attílio Fontana",
+    "latitude": -27.097427,
+    "longitude": -52.654905,
     "order": 7
+  },
+  "line_102_stop_08": {
+    "lineId": "line_102",
+    "name": "Av. Sen. Attílio Fontana",
+    "latitude": -27.095993,
+    "longitude": -52.669004,
+    "order": 8
+  },
+  "line_102_stop_09": {
+    "lineId": "line_102",
+    "name": "Av. Sen. Attílio Fontana",
+    "latitude": -27.094719,
+    "longitude": -52.680775,
+    "order": 9
+  },
+  "line_102_stop_10": {
+    "lineId": "line_102",
+    "name": "Av. Sen. Attílio Fontana",
+    "latitude": -27.094532,
+    "longitude": -52.690886,
+    "order": 10
+  },
+  "line_102_stop_11": {
+    "lineId": "line_102",
+    "name": "UFFS",
+    "latitude": -27.109983,
+    "longitude": -52.709796,
+    "order": 11
   },
   "line_103_stop_01": {
     "lineId": "line_103",
