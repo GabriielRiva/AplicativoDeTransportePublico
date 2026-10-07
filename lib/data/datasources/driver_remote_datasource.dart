@@ -91,6 +91,11 @@ class DriverRemoteDatasource {
   }
 
   /// Sobrescreve a posição atual do veículo em drivers/{uid}.
+  ///
+  /// Também reafirma o status trip_started a cada envio: se um aviso de
+  /// queda de conexão antigo (de outro aparelho ou de uma sessão anterior
+  /// com a mesma conta) marcar o motorista como offline, a próxima posição
+  /// corrige o status em até 1 segundo.
   Future<void> sendLocation({
     required String driverId,
     required double latitude,
@@ -100,6 +105,7 @@ class DriverRemoteDatasource {
       await _driverRef(driverId).update(<String, dynamic>{
         'latitude': latitude,
         'longitude': longitude,
+        'status': DriverStatus.tripStarted.value,
         'updatedAt': ServerValue.timestamp,
       });
     } on FirebaseException catch (error, stackTrace) {
