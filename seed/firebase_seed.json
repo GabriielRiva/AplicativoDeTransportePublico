@@ -7,7 +7,7 @@
       "distance": 2.8,
       "averageDuration": 11,
       "color": "#4A9EBF",
-      "routePolyline": "ndmdDfwb`IAKCKKw@MeAOcAIq@CQ?A?A@A?A?AAA?A?AA??AA??AA??AA?A?A?A?A@A??@A??@A??@?@eALiAN[H[FgAReAVA??AA?A??AA?A?A@A?A??@A??@A??@A@iAPkARyAV{AVA?AAA?A?A?A?A?A??@A?A@A??@A??@?@A??@?@?@_BRw@Lu@LS@M@WB?@QD}@R_ATa@Jc@JAAA??AA?A?AAA?A@A?A?A@A??@A??@A??@?@A?wCh@I@_AR?AA??AA??AA?A??AA?A?A??@A?A?A@A@A@?@A@?@gBZYFm@J{@NQDu@NUDMBcATQBQBQBIBA?A?A@A@A?C@A@A?AAA?AAA?A?A??@A?A??@A??@A??@A@?@?@?@?@?@_@Dy@NUDuB\\G@G@PbAPdALfALhADTNjAL|@NvAFb@F`@BRBN@HBFBHCDc@Fa@H?@WFa@Ha@HOB_@DO?A?AAA?A?A?A?A?A?A@A??@A??@A??@?@A??@?@?@?@k@Dm@Fo@Jq@Le@HeAN_@H_ARiAPiCd@eB\\gB\\s@Nu@Lq@Js@JcB\\C@aB\\c@J_@Bu@PG@}@N"
+      "routePolyline": "ndmdDfwb`IAKCKKw@MeAOcAIq@CQ?A?A@A?A?A?AA??A?AA??AA??AA??AA?A?A?A?A??@A??@A??@A??@eANiAN[H[FgAReAVA??AA?A??AA?A?A??@A?A??@A??@A??@A??@iAPkARyAV{AVA??AA?A?A?A?A?A?A??@A?A??@A??@A??@?@A??@?@?@_BRw@Lu@LS@M@WBQF}@R_ATa@Jc@JAAA??AA?A??AA?A?A?A@A?A??@A??@A??@A??@?@A?wCh@I@_AR?AA??AA??AA?A??AA?A?A??@A?A?A@A@A@?@A@?@gBZYFm@J{@NQDu@NUDMBcATQBQBQBIBC?A@A@A?C@A@A?AAA?AAA?A?A??@A?A??@A??@A??@A??@?@?@?@A??@@@_@Dy@NUDuB\\G@G?PdAPdALfALhADTNjAL|@NvAFb@F`@BRBN@HBFBHCDc@Fa@HWHa@Ha@HOB_@DO?A?AAA?A?A?A?A?A?A@A??@A??@A??@?@A??@?@?@?@k@Dm@Fo@Jq@Le@HeAN_@H_ARiAPiCd@eB\\gB\\s@Nu@Lq@Js@JcB\\C@aB\\c@J_@Bu@PG@w@L"
     },
     "line_102": {
       "number": "L102",
@@ -50,37 +50,65 @@
     "line_101_stop_01": {
       "lineId": "line_101",
       "name": "Terminal Urbano",
-      "latitude": -27.10627,
-      "longitude": -52.61254,
+      "latitude": -27.106259,
+      "longitude": -52.612008,
       "order": 1
     },
     "line_101_stop_02": {
       "lineId": "line_101",
-      "name": "Parada 02",
-      "latitude": -27.10137,
-      "longitude": -52.61155,
+      "name": "R. Rui Barbosa",
+      "latitude": -27.105349,
+      "longitude": -52.610399,
       "order": 2
     },
     "line_101_stop_03": {
       "lineId": "line_101",
-      "name": "Parada 03",
-      "latitude": -27.09531,
-      "longitude": -52.61331,
+      "name": "R. Rui Barbosa",
+      "latitude": -27.101665,
+      "longitude": -52.611401,
       "order": 3
     },
     "line_101_stop_04": {
       "lineId": "line_101",
-      "name": "Parada 04",
-      "latitude": -27.09306,
-      "longitude": -52.61744,
+      "name": "R. Rui Barbosa",
+      "latitude": -27.098788,
+      "longitude": -52.612229,
       "order": 4
     },
     "line_101_stop_05": {
       "lineId": "line_101",
-      "name": "Ecoparque",
-      "latitude": -27.08694,
-      "longitude": -52.61914,
+      "name": "R. Rui Barbosa",
+      "latitude": -27.094813,
+      "longitude": -52.613377,
       "order": 5
+    },
+    "line_101_stop_06": {
+      "lineId": "line_101",
+      "name": "R. Sete de Setembro",
+      "latitude": -27.095062,
+      "longitude": -52.616357,
+      "order": 6
+    },
+    "line_101_stop_07": {
+      "lineId": "line_101",
+      "name": "Av. Getúlio Vargas",
+      "latitude": -27.092523,
+      "longitude": -52.617466,
+      "order": 7
+    },
+    "line_101_stop_08": {
+      "lineId": "line_101",
+      "name": "Av. Getúlio Vargas",
+      "latitude": -27.090369,
+      "longitude": -52.618065,
+      "order": 8
+    },
+    "line_101_stop_09": {
+      "lineId": "line_101",
+      "name": "Ecoparque",
+      "latitude": -27.086985,
+      "longitude": -52.619,
+      "order": 9
     },
     "line_102_stop_01": {
       "lineId": "line_102",
