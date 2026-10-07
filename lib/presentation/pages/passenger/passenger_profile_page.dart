@@ -75,6 +75,17 @@ class PassengerProfilePage extends ConsumerWidget {
                 const SizedBox(height: 8),
                 Chip(label: Text(user.role.label)),
                 const Spacer(),
+                // Medição do RNF05 para o teste do protótipo.
+                SizedBox(
+                  width: double.infinity,
+                  child: OutlinedButton.icon(
+                    onPressed: () => Navigator.of(context)
+                        .pushNamed(kUpdateMetricsRoute),
+                    icon: const Icon(Icons.speed),
+                    label: const Text('Medição de atualização (RNF05)'),
+                  ),
+                ),
+                const SizedBox(height: 12),
                 AppButton(
                   label: 'Sair da Conta',
                   color: kErrorColor,

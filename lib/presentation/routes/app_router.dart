@@ -8,6 +8,7 @@ import '../pages/auth/register_page.dart';
 import '../pages/driver/driver_home_page.dart';
 import '../pages/passenger/line_details_page.dart';
 import '../pages/passenger/passenger_home_page.dart';
+import '../pages/passenger/update_metrics_page.dart';
 import '../pages/splash/splash_page.dart';
 import '../widgets/common/empty_state.dart';
 import 'app_routes.dart';
@@ -34,6 +35,8 @@ abstract final class AppRouter {
         return _page(const PassengerHomePage(), settings);
       case kDriverHomeRoute:
         return _page(const DriverHomePage(), settings);
+      case kUpdateMetricsRoute:
+        return _page(const UpdateMetricsPage(), settings);
       case kLineDetailsRoute:
         final Object? args = settings.arguments;
         if (args is Line) {

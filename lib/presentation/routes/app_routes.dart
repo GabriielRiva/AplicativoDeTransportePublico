@@ -21,3 +21,6 @@ const String kLineDetailsRoute = '/line-details';
 
 /// Home do motorista com Bottom Navigation (RF14).
 const String kDriverHomeRoute = '/driver';
+
+/// Medição do intervalo de atualização da posição dos ônibus (RNF05).
+const String kUpdateMetricsRoute = '/update-metrics';

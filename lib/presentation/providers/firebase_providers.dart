@@ -9,3 +9,17 @@ final Provider<FirebaseAuth> firebaseAuthProvider =
 /// Instância única do Firebase Realtime Database.
 final Provider<FirebaseDatabase> firebaseDatabaseProvider =
     Provider<FirebaseDatabase>((Ref ref) => FirebaseDatabase.instance);
+
+/// Diferença (ms) entre o relógio do servidor do Firebase e o do aparelho,
+/// usada para medir o atraso de entrega das posições (RNF05).
+final StreamProvider<int> serverTimeOffsetProvider =
+    StreamProvider<int>((Ref ref) {
+  return ref
+      .watch(firebaseDatabaseProvider)
+      .ref('.info/serverTimeOffset')
+      .onValue
+      .map(
+        (DatabaseEvent event) =>
+            (event.snapshot.value as num?)?.toInt() ?? 0,
+      );
+});
