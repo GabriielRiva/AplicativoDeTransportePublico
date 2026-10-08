@@ -21,19 +21,36 @@ class LocationService {
     distanceFilter: kPassengerDistanceFilterMeters,
   );
 
-  /// Obtém a posição atual do dispositivo uma única vez.
+  /// Tempo máximo esperando o GPS na leitura inicial. Sem limite, a tela
+  /// ficaria carregando para sempre quando o aparelho não tem sinal novo.
+  static const Duration _fixTimeout = Duration(seconds: 10);
+
+  /// Obtém a posição atual do dispositivo uma única vez. Se o GPS não
+  /// responder em [_fixTimeout], usa a última posição conhecida.
   Future<Position> getCurrentPosition() async {
     try {
       return await Geolocator.getCurrentPosition(
         locationSettings: const LocationSettings(
           accuracy: LocationAccuracy.high,
+          timeLimit: _fixTimeout,
         ),
       );
     } catch (error, stackTrace) {
       AppLogger.error('Falha ao obter posição atual', error, stackTrace);
+      final Position? last = await _lastKnownPosition();
+      if (last != null) return last;
       throw const LocationException(
-        'Não foi possível obter sua localização atual.',
+        'Não foi possível obter sua localização. Confira se o GPS está '
+        'ligado e tente novamente.',
       );
+    }
+  }
+
+  Future<Position?> _lastKnownPosition() async {
+    try {
+      return await Geolocator.getLastKnownPosition();
+    } catch (_) {
+      return null;
     }
   }
 

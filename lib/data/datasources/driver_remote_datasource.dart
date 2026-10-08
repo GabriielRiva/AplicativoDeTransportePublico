@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
 
@@ -18,6 +20,9 @@ class DriverRemoteDatasource {
 
   final FirebaseDatabase _database;
 
+  /// Tempo máximo esperando o servidor confirmar o início do trajeto.
+  static const Duration _writeTimeout = Duration(seconds: 15);
+
   DatabaseReference _driverRef(String driverId) =>
       _database.ref('$kDriversPath/$driverId');
 
@@ -26,8 +31,15 @@ class DriverRemoteDatasource {
     try {
       final Map<String, dynamic> json = trip.toJson()
         ..['updatedAt'] = ServerValue.timestamp;
-      await _driverRef(trip.driverId).set(json);
+      // Sem conexão a gravação fica na fila e nunca confirma; o limite
+      // evita que a tela fique carregando para sempre.
+      await _driverRef(trip.driverId).set(json).timeout(_writeTimeout);
       AppLogger.info('Trajeto iniciado pelo motorista ${trip.driverId}');
+    } on TimeoutException catch (error, stackTrace) {
+      AppLogger.error('Sem resposta do servidor ao iniciar', error, stackTrace);
+      throw const DatabaseException(
+        'Sem conexão com o servidor. Verifique a internet e tente de novo.',
+      );
     } on FirebaseException catch (error, stackTrace) {
       AppLogger.error('Falha ao iniciar trajeto', error, stackTrace);
       throw const DatabaseException(

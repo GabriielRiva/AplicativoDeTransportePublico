@@ -109,26 +109,62 @@ class _TripMapViewState extends State<TripMapView>
   /// marcador girarem suavemente nas curvas em vez de "pularem".
   static const double _headingSmoothing = 0.15;
 
+  /// A animação dura um pouco mais que o intervalo entre posições: a nova
+  /// posição chega antes de o ônibus terminar o trecho, então ele nunca
+  /// fica parado esperando por ela (eram essas paradas as "travadinhas").
+  static const double _durationSlack = 1.2;
+
+  /// Recuo (m) ignorado: o GPS oscila e às vezes manda uma posição um pouco
+  /// atrás da anterior; o ônibus espera no lugar em vez de andar de ré.
+  static const double _backwardToleranceMeters = 30;
+
+  /// Salto (m) a partir do qual o ônibus é reposicionado sem animação (GPS
+  /// reposicionado, nova volta em linha circular).
+  static const double _jumpMeters = 1000;
+
+  /// Distância (m) à frente usada para calcular o rumo: o ônibus começa a
+  /// virar um pouco antes da esquina, como um veículo de verdade.
+  static const double _headingLookAheadMeters = 15;
+
   GoogleMapController? _controller;
   late final AnimationController _animation;
+
+  /// Animação livre (ônibus fora da rota ou linha sem traçado).
   late LatLng _from;
   late LatLng _to;
   double _heading = 0;
 
-  /// Último índice da rota alcançado pelo ônibus. Mantido entre os quadros
-  /// para que a divisão percorrido/restante só avance (ver [RouteProgress]).
+  /// Animação pela rua (ônibus sobre a rota): distância (m) do início do
+  /// traçado de onde o ônibus sai e aonde ele vai. Nulas fora da rota.
+  /// Andar pela distância, e não em linha reta entre duas posições, faz o
+  /// ônibus contornar as curvas da rua sem cortar caminho nem dar trancos.
+  double? _fromMeters;
+  double? _toMeters;
+
+  /// Distância (m) do início do traçado até cada ponto dele.
+  List<double> _cumulative = const <double>[];
+
+  /// Trecho em que o ônibus foi desenhado no último quadro (acelera a
+  /// busca do próximo quadro).
+  int _segmentHint = 0;
+
+  /// Último índice da rota alcançado pelo ônibus. Mantido entre as posições
+  /// para que o progresso só avance (ver [RouteProgress]).
   int _progressIndex = 0;
 
-  /// Posição desenhada: projetada sobre a rua quando o ônibus está na rota,
-  /// ou a posição do GPS quando está fora dela.
+  /// Posição desenhada no quadro atual.
   late LatLng _display;
 
   /// Rumo desenhado (marcador e câmera), suavizado entre quadros.
   double _displayHeading = 0;
 
+  /// Intervalo médio (ms) entre as posições recebidas, medido no aparelho.
+  /// Define a duração da animação, mesmo se o GPS ou a rede atrasarem.
+  late double _intervalMs;
+  DateTime? _lastUpdateAt;
+
   /// Polylines atuais. Só são recriadas quando o ônibus muda de trecho da
-  /// rota, e não a cada quadro da animação: reenviar centenas de pontos ao
-  /// mapa nativo 60 vezes por segundo deixava o mapa travado.
+  /// rota, e não a cada quadro da animação.
   Set<Polyline> _polylines = const <Polyline>{};
 
   /// Trecho usado para montar [_polylines] (-1 = ônibus fora da rota;
@@ -138,6 +174,7 @@ class _TripMapViewState extends State<TripMapView>
   @override
   void initState() {
     super.initState();
+    _intervalMs = widget.interpolationDuration.inMilliseconds.toDouble();
     _from = widget.busPosition;
     _to = widget.busPosition;
     _heading = widget.heading ?? 0;
@@ -146,32 +183,30 @@ class _TripMapViewState extends State<TripMapView>
       vsync: this,
       duration: widget.interpolationDuration,
     )..addListener(_onTick);
+    _measureRoute();
+    _retarget(widget.busPosition, jump: true);
     _refresh(smoothHeading: false);
   }
 
   @override
   void didUpdateWidget(covariant TripMapView oldWidget) {
     super.didUpdateWidget(oldWidget);
-    final bool routeChanged = _routeChanged(oldWidget.route, widget.route);
-    if (routeChanged) {
+    if (_routeChanged(oldWidget.route, widget.route)) {
       _progressIndex = 0;
       _polylineKey = null;
-    }
-    if (oldWidget.busPosition != widget.busPosition) {
-      final LatLng start = _currentPosition();
-      _heading = widget.heading ?? _bearing(start, widget.busPosition);
-      _from = start;
-      _to = widget.busPosition;
+      _measureRoute();
+      _retarget(widget.busPosition, jump: true);
+      _refresh(smoothHeading: false);
+      // O traçado pode chegar depois do mapa (carregado do Firebase).
+      if (oldWidget.route.isEmpty) _fitRoute();
+    } else if (oldWidget.busPosition != widget.busPosition) {
+      _animation.duration = _nextDuration();
+      _retarget(widget.busPosition);
       _animation
         ..reset()
         ..forward();
     } else if (widget.heading != null) {
       _heading = widget.heading!;
-    }
-    if (routeChanged) {
-      _refresh(smoothHeading: false);
-      // O traçado pode chegar depois do mapa (carregado do Firebase).
-      if (oldWidget.route.isEmpty) _fitRoute();
     }
   }
 
@@ -190,49 +225,136 @@ class _TripMapViewState extends State<TripMapView>
     }
   }
 
-  LatLng _currentPosition() {
-    final double t = _animation.value;
-    return LatLng(
-      _from.latitude + (_to.latitude - _from.latitude) * t,
-      _from.longitude + (_to.longitude - _from.longitude) * t,
+  /// Atualiza o intervalo médio com o tempo desde a posição anterior e
+  /// devolve a duração da próxima animação.
+  Duration _nextDuration() {
+    final DateTime now = DateTime.now();
+    final DateTime? last = _lastUpdateAt;
+    _lastUpdateAt = now;
+    if (last != null) {
+      final int measured = now.difference(last).inMilliseconds;
+      // Pausas longas (ônibus parado, app em segundo plano) não entram.
+      if (measured >= 200 && measured <= 6000) {
+        _intervalMs = _intervalMs * 0.7 + measured * 0.3;
+      }
+    }
+    return Duration(milliseconds: (_intervalMs * _durationSlack).round());
+  }
+
+  /// Prepara a animação do ponto desenhado agora até [target]. Com
+  /// [jump], o ônibus vai direto para [target].
+  void _retarget(LatLng target, {bool jump = false}) {
+    final List<LatLng> route = widget.route;
+    final double? startMeters = jump ? null : _currentMeters();
+    if (route.length >= 2) {
+      final int index = RouteProgress.advance(
+        route,
+        target,
+        fromIndex: _progressIndex,
+      );
+      final RouteSnap snap = RouteProgress.snap(route, target, index);
+      if (MapUtils.distanceInKm(target, snap.point) <= _maxSnapDistanceKm) {
+        _progressIndex = index;
+        double toMeters = _metersAt(snap);
+        double fromMeters = startMeters ?? toMeters;
+        final double delta = toMeters - fromMeters;
+        if (delta < 0 && -delta <= _backwardToleranceMeters) {
+          toMeters = fromMeters;
+        } else if (delta < 0 || delta > _jumpMeters) {
+          fromMeters = toMeters;
+        }
+        _fromMeters = fromMeters;
+        _toMeters = toMeters;
+        return;
+      }
+    }
+    final LatLng start = jump ? target : _display;
+    _fromMeters = null;
+    _toMeters = null;
+    _from = start;
+    _to = target;
+    _heading = widget.heading ?? _bearing(start, target);
+  }
+
+  /// Distância (m) do início do traçado na animação pela rua, ou nula se o
+  /// ônibus está fora da rota.
+  double? _currentMeters() {
+    final double? from = _fromMeters;
+    final double? to = _toMeters;
+    if (from == null || to == null) return null;
+    return from + (to - from) * _animation.value;
+  }
+
+  void _measureRoute() {
+    final List<LatLng> route = widget.route;
+    final List<double> cumulative = List<double>.filled(route.length, 0);
+    for (int i = 1; i < route.length; i++) {
+      cumulative[i] = cumulative[i - 1] +
+          MapUtils.distanceInKm(route[i - 1], route[i]) * 1000;
+    }
+    _cumulative = cumulative;
+    _segmentHint = 0;
+  }
+
+  double _metersAt(RouteSnap snap) {
+    return _cumulative[snap.segmentStart] +
+        MapUtils.distanceInKm(widget.route[snap.segmentStart], snap.point) *
+            1000;
+  }
+
+  /// Ponto do traçado a [meters] do início e o trecho em que ele está.
+  ({LatLng point, int segment}) _pointAt(double meters) {
+    final List<LatLng> route = widget.route;
+    final List<double> c = _cumulative;
+    final int last = c.length - 2;
+    int i = math.max(0, math.min(_segmentHint, last));
+    while (i > 0 && c[i] > meters) {
+      i--;
+    }
+    while (i < last && c[i + 1] <= meters) {
+      i++;
+    }
+    final double length = c[i + 1] - c[i];
+    final double t =
+        length <= 0 ? 0 : ((meters - c[i]) / length).clamp(0.0, 1.0);
+    final LatLng a = route[i];
+    final LatLng b = route[i + 1];
+    return (
+      point: LatLng(
+        a.latitude + (b.latitude - a.latitude) * t,
+        a.longitude + (b.longitude - a.longitude) * t,
+      ),
+      segment: i,
     );
   }
 
-  /// Recalcula posição desenhada, rumo e (se o trecho mudou) as polylines a
-  /// partir da posição interpolada atual.
+  /// Recalcula posição desenhada, rumo e (se o trecho mudou) as polylines
+  /// para o quadro atual da animação.
   void _refresh({bool smoothHeading = true}) {
-    final LatLng raw = _currentPosition();
-    final List<LatLng> route = widget.route;
+    final double? meters = _currentMeters();
     double targetHeading = _heading;
 
-    if (route.length < 2) {
-      _display = raw;
-      _setPolylines(null);
-    } else {
-      final int index = RouteProgress.advance(
-        route,
-        raw,
-        fromIndex: _progressIndex,
-      );
-      final RouteSnap snap = RouteProgress.snap(route, raw, index);
-      final bool onRoute =
-          MapUtils.distanceInKm(raw, snap.point) <= _maxSnapDistanceKm;
-      if (onRoute) {
-        // Sobre a rota: o ônibus é desenhado em cima da rua e aponta na
-        // direção do trecho em que está.
-        _progressIndex = index;
-        _display = snap.point;
-        targetHeading = _bearing(
-          route[snap.segmentStart],
-          route[snap.segmentStart + 1],
-        );
-        _setPolylines(snap.segmentStart);
+    if (meters != null &&
+        widget.route.length >= 2 &&
+        _cumulative.length == widget.route.length) {
+      final ({LatLng point, int segment}) here = _pointAt(meters);
+      _segmentHint = here.segment;
+      _display = here.point;
+      final LatLng ahead = _pointAt(meters + _headingLookAheadMeters).point;
+      if (MapUtils.distanceInKm(here.point, ahead) * 1000 > 1) {
+        targetHeading = _bearing(here.point, ahead);
       } else {
-        // Fora da rota: mostra a posição real e a rota inteira como
-        // "restante", mantendo o último progresso conhecido.
-        _display = raw;
-        _setPolylines(null);
+        // Fim do traçado: mantém o rumo atual.
+        targetHeading = _displayHeading;
       }
+      _setPolylines(here.segment);
+    } else {
+      final double t = _animation.value;
+      _display = LatLng(
+        _from.latitude + (_to.latitude - _from.latitude) * t,
+        _from.longitude + (_to.longitude - _from.longitude) * t,
+      );
+      _setPolylines(null);
     }
 
     _displayHeading = smoothHeading
@@ -240,6 +362,9 @@ class _TripMapViewState extends State<TripMapView>
         : targetHeading;
   }
 
+  /// O traçado inteiro fica sempre desenhado como "restante" e o trecho
+  /// percorrido é desenhado por cima. Assim, quando o ônibus muda de
+  /// trecho, só a linha cinza é reenviada ao mapa, não as duas.
   void _setPolylines(int? segmentStart) {
     final int key = segmentStart ?? -1;
     if (key == _polylineKey) return;
@@ -248,31 +373,28 @@ class _TripMapViewState extends State<TripMapView>
     final List<LatLng> route = widget.route;
     if (route.length < 2) {
       _polylines = const <Polyline>{};
-    } else if (segmentStart == null) {
-      _polylines = <Polyline>{
-        Polyline(
-          polylineId: const PolylineId('route_remaining'),
-          points: route,
-          color: widget.remainingColor,
-          width: 6,
-        ),
-      };
-    } else {
-      _polylines = <Polyline>{
-        Polyline(
-          polylineId: const PolylineId('route_traveled'),
-          points: route.sublist(0, segmentStart + 1),
-          color: widget.traveledColor,
-          width: 5,
-        ),
-        Polyline(
-          polylineId: const PolylineId('route_remaining'),
-          points: route.sublist(segmentStart),
-          color: widget.remainingColor,
-          width: 6,
-        ),
-      };
+      return;
     }
+    final Polyline remaining = Polyline(
+      polylineId: const PolylineId('route_remaining'),
+      points: route,
+      color: widget.remainingColor,
+      width: 6,
+    );
+    if (segmentStart == null || segmentStart < 1) {
+      _polylines = <Polyline>{remaining};
+      return;
+    }
+    _polylines = <Polyline>{
+      remaining,
+      Polyline(
+        polylineId: const PolylineId('route_traveled'),
+        points: route.sublist(0, segmentStart + 1),
+        color: widget.traveledColor,
+        width: 6,
+        zIndex: 1,
+      ),
+    };
   }
 
   double _bearing(LatLng a, LatLng b) {
