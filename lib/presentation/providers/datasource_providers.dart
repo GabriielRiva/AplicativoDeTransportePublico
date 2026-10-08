@@ -5,6 +5,7 @@ import '../../data/datasources/driver_remote_datasource.dart';
 import '../../data/datasources/firebase_auth_datasource.dart';
 import '../../data/datasources/line_remote_datasource.dart';
 import '../../data/datasources/schedule_remote_datasource.dart';
+import '../../data/datasources/speed_profile_remote_datasource.dart';
 import '../../data/datasources/stop_remote_datasource.dart';
 import '../../data/datasources/user_remote_datasource.dart';
 import 'firebase_providers.dart';
@@ -49,4 +50,12 @@ final Provider<StopRemoteDatasource> stopRemoteDatasourceProvider =
 final Provider<ScheduleRemoteDatasource> scheduleRemoteDatasourceProvider =
     Provider<ScheduleRemoteDatasource>(
   (Ref ref) => ScheduleRemoteDatasource(ref.watch(firebaseDatabaseProvider)),
+);
+
+/// Datasource do nó speedProfile/.
+final Provider<SpeedProfileRemoteDatasource>
+    speedProfileRemoteDatasourceProvider =
+    Provider<SpeedProfileRemoteDatasource>(
+  (Ref ref) =>
+      SpeedProfileRemoteDatasource(ref.watch(firebaseDatabaseProvider)),
 );

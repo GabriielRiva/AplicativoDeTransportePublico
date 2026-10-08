@@ -5,6 +5,7 @@ import '../../data/repositories/bus_repository_impl.dart';
 import '../../data/repositories/driver_repository_impl.dart';
 import '../../data/repositories/line_repository_impl.dart';
 import '../../data/repositories/schedule_repository_impl.dart';
+import '../../data/repositories/speed_profile_repository_impl.dart';
 import '../../data/repositories/stop_repository_impl.dart';
 import '../../data/repositories/user_repository_impl.dart';
 import '../../domain/repositories/auth_repository.dart';
@@ -12,6 +13,7 @@ import '../../domain/repositories/bus_repository.dart';
 import '../../domain/repositories/driver_repository.dart';
 import '../../domain/repositories/line_repository.dart';
 import '../../domain/repositories/schedule_repository.dart';
+import '../../domain/repositories/speed_profile_repository.dart';
 import '../../domain/repositories/stop_repository.dart';
 import '../../domain/repositories/user_repository.dart';
 import 'datasource_providers.dart';
@@ -59,4 +61,12 @@ final Provider<ScheduleRepository> scheduleRepositoryProvider =
     Provider<ScheduleRepository>(
   (Ref ref) =>
       ScheduleRepositoryImpl(ref.watch(scheduleRemoteDatasourceProvider)),
+);
+
+/// Repositório do perfil de velocidades por faixa de horário.
+final Provider<SpeedProfileRepository> speedProfileRepositoryProvider =
+    Provider<SpeedProfileRepository>(
+  (Ref ref) => SpeedProfileRepositoryImpl(
+    ref.watch(speedProfileRemoteDatasourceProvider),
+  ),
 );

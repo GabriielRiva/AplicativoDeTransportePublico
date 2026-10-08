@@ -87,6 +87,10 @@
       ".read": "auth != null",
       ".write": false,
       ".indexOn": ["lineId"]
+    },
+    "speedProfile": {
+      ".read": "auth != null",
+      ".write": false
     }
   }
 }

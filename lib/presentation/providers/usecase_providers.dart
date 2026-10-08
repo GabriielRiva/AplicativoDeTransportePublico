@@ -18,6 +18,7 @@ import '../../domain/usecases/passenger/get_line_stops.dart';
 import '../../domain/usecases/passenger/get_lines.dart';
 import '../../domain/usecases/passenger/get_nearby_buses.dart';
 import '../../domain/usecases/passenger/watch_active_buses.dart';
+import '../../domain/usecases/passenger/watch_speed_profile.dart';
 import 'repository_providers.dart';
 import 'service_providers.dart';
 
@@ -133,4 +134,10 @@ final Provider<GetNearbyBuses> getNearbyBusesProvider =
 /// Usecase de linhas favoritas.
 final Provider<FavoriteLine> favoriteLineProvider = Provider<FavoriteLine>(
   (Ref ref) => FavoriteLine(ref.watch(userRepositoryProvider)),
+);
+
+/// Usecase que observa o perfil de velocidades por faixa de horário.
+final Provider<WatchSpeedProfile> watchSpeedProfileProvider =
+    Provider<WatchSpeedProfile>(
+  (Ref ref) => WatchSpeedProfile(ref.watch(speedProfileRepositoryProvider)),
 );

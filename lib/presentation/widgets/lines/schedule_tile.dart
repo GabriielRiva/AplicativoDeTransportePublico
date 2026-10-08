@@ -7,10 +7,13 @@ import '../../../domain/entities/schedule.dart';
 /// Item de horário de saída de uma linha (RF10).
 class ScheduleTile extends StatelessWidget {
   /// Cria o item do horário [schedule].
-  const ScheduleTile({required this.schedule, super.key});
+  const ScheduleTile({required this.schedule, this.onTap, super.key});
 
   /// Horário exibido.
   final Schedule schedule;
+
+  /// Ação ao tocar no horário (ex.: ver a previsão em cada ponto).
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
@@ -22,6 +25,8 @@ class ScheduleTile extends StatelessWidget {
         Formatters.weekdayName(schedule.weekday),
         style: AppTextStyles.caption,
       ),
+      trailing: onTap == null ? null : const Icon(Icons.chevron_right),
+      onTap: onTap,
     );
   }
 }

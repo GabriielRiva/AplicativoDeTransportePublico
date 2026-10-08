@@ -18,3 +18,6 @@ const String kSchedulesPath = 'schedules';
 
 /// Nó de ônibus cadastrados.
 const String kBusesPath = 'buses';
+
+/// Nó do perfil de velocidades por faixa de horário (estimativas de tempo).
+const String kSpeedProfilePath = 'speedProfile';

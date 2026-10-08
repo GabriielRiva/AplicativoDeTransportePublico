@@ -82,6 +82,28 @@ class RouteStops {
   /// Comprimento total do traçado (m).
   double get totalMeters => _cumulative.isEmpty ? 0 : _cumulative.last;
 
+  /// Distância (m) pela rua do início do traçado até cada parada de
+  /// [stops], na mesma ordem.
+  List<double> get stopMeters => List<double>.unmodifiable(_stopMeters);
+
+  /// Quantos pontos o ônibus, a [busMeters] do início, ainda passa nos
+  /// próximos [distance] metros, sem contar o ponto em que já está nem o
+  /// ponto de destino (usado para somar o tempo parado em cada um).
+  int stopsOnTheWay(double busMeters, double distance) {
+    int count = 0;
+    for (final double stopAt in _stopMeters) {
+      double ahead = stopAt - busMeters;
+      if (ahead < -kStopArrivalRadiusMeters && isCircular) {
+        ahead += totalMeters;
+      }
+      if (ahead > kStopArrivalRadiusMeters &&
+          ahead < distance - kStopArrivalRadiusMeters) {
+        count++;
+      }
+    }
+    return count;
+  }
+
   /// Distância (m) do início do traçado até a posição [snap] do ônibus.
   double metersAt(RouteSnap snap) {
     return _cumulative[snap.segmentStart] +

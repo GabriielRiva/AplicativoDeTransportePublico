@@ -8,17 +8,22 @@ import '../../../core/theme/app_text_styles.dart';
 import '../../../core/utils/map_utils.dart';
 import '../../../domain/entities/line.dart';
 import '../../../domain/entities/schedule.dart';
+import '../../../domain/entities/speed_profile.dart';
 import '../../../domain/entities/stop.dart';
 import '../../../domain/entities/trip.dart';
 import '../../../domain/usecases/passenger/find_stop_at_position.dart';
+import '../../../domain/usecases/passenger/predict_stop_times.dart';
 import '../../controllers/lines_controller.dart';
 import '../../providers/bus_providers.dart';
 import '../../providers/line_providers.dart';
 import '../../providers/map_icon_providers.dart';
+import '../../providers/speed_profile_providers.dart';
 import '../../widgets/lines/route_info_card.dart';
 import '../../widgets/lines/schedule_tile.dart';
 import '../../widgets/lines/stop_tile.dart';
+import '../../widgets/lines/stop_times_sheet.dart';
 import '../../widgets/map/bus_map.dart';
+import '../../widgets/map/route_stops.dart';
 import '../../widgets/map/stop_arrival_banner.dart';
 import '../../widgets/map/stop_markers.dart';
 import '../../widgets/map/trip_camera_config.dart';
@@ -54,8 +59,32 @@ class _LineDetailsPageState extends ConsumerState<LineDetailsPage> {
     );
   }
 
+  /// Abre o horário previsto em cada ponto para a saída [schedule].
+  void _showStopTimes(
+    Schedule schedule,
+    List<LatLng> route,
+    List<Stop> stops,
+    SpeedProfile profile,
+  ) {
+    // Distância pela rua do início da linha até cada ponto.
+    final RouteStops routeStops = RouteStops(route, stops);
+    StopTimesSheet.show(
+      context,
+      schedule: schedule,
+      profile: profile,
+      times: const PredictStopTimes()(
+        schedule: schedule,
+        stops: routeStops.stops,
+        stopMeters: routeStops.stopMeters,
+        profile: profile,
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    final SpeedProfile profile =
+        ref.watch(speedProfileProvider).valueOrNull ?? SpeedProfile.fallback;
     final LinesState? state =
         ref.watch(linesControllerProvider).valueOrNull;
     final List<Stop> stops = state?.stops ?? <Stop>[];
@@ -155,6 +184,15 @@ class _LineDetailsPageState extends ConsumerState<LineDetailsPage> {
                           style: AppTextStyles.title,
                         ),
                       ),
+                      if (schedules.isNotEmpty && stops.isNotEmpty)
+                        const Padding(
+                          padding: EdgeInsets.fromLTRB(16, 2, 16, 0),
+                          child: Text(
+                            'Toque em um horário para ver a previsão de '
+                            'passagem em cada ponto.',
+                            style: AppTextStyles.caption,
+                          ),
+                        ),
                       if (schedules.isEmpty)
                         const Padding(
                           padding: EdgeInsets.all(16),
@@ -165,8 +203,17 @@ class _LineDetailsPageState extends ConsumerState<LineDetailsPage> {
                         )
                       else
                         ...schedules.map(
-                          (Schedule schedule) =>
-                              ScheduleTile(schedule: schedule),
+                          (Schedule schedule) => ScheduleTile(
+                            schedule: schedule,
+                            onTap: stops.isEmpty
+                                ? null
+                                : () => _showStopTimes(
+                                      schedule,
+                                      routePoints,
+                                      stops,
+                                      profile,
+                                    ),
+                          ),
                         ),
                       const Padding(
                         padding: EdgeInsets.symmetric(horizontal: 16),

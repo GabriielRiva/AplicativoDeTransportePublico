@@ -7,14 +7,18 @@ import '../../core/constants/app_constants.dart';
 import '../../core/utils/geo_utils.dart';
 import '../../core/utils/map_utils.dart';
 import '../../domain/entities/line.dart';
+import '../../domain/entities/speed_profile.dart';
 import '../../domain/entities/stop.dart';
 import '../../domain/entities/trip.dart';
+import '../../domain/usecases/passenger/bus_speed_tracker.dart';
+import '../../domain/usecases/passenger/estimate_arrival.dart';
 import '../../domain/usecases/passenger/find_stop_at_position.dart';
 import '../../domain/usecases/passenger/get_nearby_buses.dart';
 import '../providers/bus_providers.dart';
 import '../providers/line_providers.dart';
 import '../providers/map_icon_providers.dart';
 import '../providers/service_providers.dart';
+import '../providers/speed_profile_providers.dart';
 import '../providers/usecase_providers.dart';
 import '../widgets/map/route_progress.dart';
 import '../widgets/map/route_stops.dart';
@@ -103,6 +107,7 @@ class BusApproach {
     this.nextStop,
     this.userStop,
     this.userStopMeters,
+    this.etaMinutes,
   });
 
   /// O ônibus está sobre o traçado da linha (as distâncias pela rota
@@ -122,12 +127,10 @@ class BusApproach {
   bool get passedUserStop =>
       onRoute && userStop != null && userStopMeters == null;
 
-  /// Minutos até o ônibus chegar ao ponto do passageiro, pela rota.
-  int? get etaMinutes {
-    final double? meters = userStopMeters;
-    if (!onRoute || meters == null) return null;
-    return GeoUtils.minutesForKm(meters / 1000);
-  }
+  /// Minutos até o ônibus chegar ao ponto do passageiro, pela rota:
+  /// velocidade da faixa de horário, tempo parado nos pontos do caminho e
+  /// velocidade real do ônibus nos últimos minutos ([EstimateArrival]).
+  final int? etaMinutes;
 }
 
 /// ViewModel do mapa do passageiro (RF07/RF12/RF13/RF18).
@@ -150,6 +153,10 @@ class PassengerMapController extends Notifier<PassengerMapState> {
   /// Progresso de cada ônibus ao longo da rota da linha.
   final Map<String, RouteTracker> _trackers = <String, RouteTracker>{};
 
+  /// Velocidade real de cada ônibus nos últimos minutos (camada 2 da
+  /// estimativa de chegada).
+  final Map<String, BusSpeedTracker> _speeds = <String, BusSpeedTracker>{};
+
   /// Paradas posicionadas no traçado de cada linha, recalculadas só
   /// quando a rota ou as paradas mudam.
   final Map<String,
@@ -167,6 +174,10 @@ class PassengerMapController extends Notifier<PassengerMapState> {
     final MapMarkerIcons? icons =
         ref.watch(markerIconsProvider).valueOrNull;
     final String? selectedId = ref.watch(selectedBusIdProvider);
+    final EstimateArrival estimate = EstimateArrival(
+      ref.watch(speedProfileProvider).valueOrNull ?? SpeedProfile.fallback,
+    );
+    final DateTime now = DateTime.now();
 
     final List<Trip> trips = tripsAsync.valueOrNull ?? <Trip>[];
     final List<Line> lines = linesAsync.valueOrNull ?? <Line>[];
@@ -207,6 +218,9 @@ class PassengerMapController extends Notifier<PassengerMapState> {
     _trackers.removeWhere(
       (String id, _) => !trips.any((Trip trip) => trip.id == id),
     );
+    _speeds.removeWhere(
+      (String id, _) => !trips.any((Trip trip) => trip.id == id),
+    );
     final Map<String, BusApproach> approaches = <String, BusApproach>{
       for (final Trip trip in trips)
         trip.id: _approach(
@@ -214,6 +228,8 @@ class PassengerMapController extends Notifier<PassengerMapState> {
           userPosition,
           routesByLine[trip.lineId] ?? const <LatLng>[],
           stopsByLine[trip.lineId] ?? const <Stop>[],
+          estimate,
+          now,
         ),
     };
     final BusApproach? selectedApproach =
@@ -234,8 +250,14 @@ class PassengerMapController extends Notifier<PassengerMapState> {
       markers: <Marker>{...stopMarkers, ...busMarkers},
       activeBusCount: trips.length,
       stopMarkers: stopMarkers,
-      nearbyBuses:
-          _buildNearbyBuses(trips, lines, userPosition, approaches),
+      nearbyBuses: _buildNearbyBuses(
+        trips,
+        lines,
+        userPosition,
+        approaches,
+        estimate,
+        now,
+      ),
       userPosition: userPosition,
       isLoading: tripsAsync.isLoading || linesAsync.isLoading,
       selectedTrip: selectedTrip,
@@ -249,11 +271,17 @@ class PassengerMapController extends Notifier<PassengerMapState> {
           : selectedApproach?.etaMinutes ??
               (selectedApproach?.passedUserStop ?? false
                   ? null
-                  : GeoUtils.estimateArrivalMinutes(
-                      userPosition.latitude,
-                      userPosition.longitude,
-                      selectedTrip.currentLatitude,
-                      selectedTrip.currentLongitude,
+                  // Fora da rota: distância em linha reta, na velocidade
+                  // da faixa de horário.
+                  : estimate.minutes(
+                      meters: GeoUtils.distanceInKm(
+                            userPosition.latitude,
+                            userPosition.longitude,
+                            selectedTrip.currentLatitude,
+                            selectedTrip.currentLongitude,
+                          ) *
+                          1000,
+                      now: now,
                     )),
       selectedNextStop: selectedApproach?.nextStop,
       selectedUserStop: selectedApproach?.userStop,
@@ -304,6 +332,8 @@ class PassengerMapController extends Notifier<PassengerMapState> {
     LatLng? userPosition,
     List<LatLng> route,
     List<Stop> stops,
+    EstimateArrival estimate,
+    DateTime now,
   ) {
     if (route.length < 2 || stops.isEmpty) return const BusApproach();
     final RouteSnap? snap = _trackers
@@ -315,12 +345,28 @@ class PassengerMapController extends Notifier<PassengerMapState> {
 
     final RouteStops routeStops = _routeStopsFor(trip.lineId, route, stops);
     final double busMeters = routeStops.metersAt(snap);
+    // Horário do servidor de cada posição: mede a velocidade real sem
+    // depender do relógio do aparelho.
+    final BusSpeedTracker speed = _speeds.putIfAbsent(
+      trip.id,
+      BusSpeedTracker.new,
+    )..add(trip.updatedAt ?? now, busMeters);
+    final double? userStopMeters =
+        userStop == null ? null : routeStops.metersTo(userStop, busMeters);
     return BusApproach(
       onRoute: true,
       nextStop: routeStops.nextStop(busMeters),
       userStop: userStop,
-      userStopMeters:
-          userStop == null ? null : routeStops.metersTo(userStop, busMeters),
+      userStopMeters: userStopMeters,
+      etaMinutes: userStopMeters == null
+          ? null
+          : estimate.minutes(
+              meters: userStopMeters,
+              now: now,
+              stopsOnTheWay:
+                  routeStops.stopsOnTheWay(busMeters, userStopMeters),
+              observed: speed.speed,
+            ),
     );
   }
 
@@ -478,6 +524,8 @@ class PassengerMapController extends Notifier<PassengerMapState> {
     List<Line> lines,
     LatLng? userPosition,
     Map<String, BusApproach> approaches,
+    EstimateArrival estimate,
+    DateTime now,
   ) {
     if (userPosition == null) return const <NearbyBus>[];
     final List<NearbyBus> all = ref.read(getNearbyBusesProvider).call(
@@ -491,16 +539,17 @@ class PassengerMapController extends Notifier<PassengerMapState> {
     for (final NearbyBus bus in all) {
       final BusApproach? approach = approaches[bus.trip.id];
       if (approach != null && approach.passedUserStop) continue;
-      final int? routeEta = approach?.etaMinutes;
+      // Pela rota quando o ônibus está sobre ela; senão, em linha reta.
+      // Nos dois casos, na velocidade da faixa de horário.
+      final int eta = approach?.etaMinutes ??
+          estimate.minutes(meters: bus.distanceKm * 1000, now: now);
       coming.add(
-        routeEta == null
-            ? bus
-            : NearbyBus(
-                trip: bus.trip,
-                line: bus.line,
-                distanceKm: bus.distanceKm,
-                etaMinutes: routeEta,
-              ),
+        NearbyBus(
+          trip: bus.trip,
+          line: bus.line,
+          distanceKm: bus.distanceKm,
+          etaMinutes: eta,
+        ),
       );
     }
     coming.sort(
