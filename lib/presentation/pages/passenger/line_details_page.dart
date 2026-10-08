@@ -11,6 +11,7 @@ import '../../../domain/entities/schedule.dart';
 import '../../../domain/entities/speed_profile.dart';
 import '../../../domain/entities/stop.dart';
 import '../../../domain/entities/trip.dart';
+import '../../../domain/usecases/passenger/estimate_between_stops.dart';
 import '../../../domain/usecases/passenger/find_stop_at_position.dart';
 import '../../../domain/usecases/passenger/predict_stop_times.dart';
 import '../../controllers/lines_controller.dart';
@@ -21,6 +22,7 @@ import '../../providers/speed_profile_providers.dart';
 import '../../widgets/lines/route_info_card.dart';
 import '../../widgets/lines/schedule_tile.dart';
 import '../../widgets/lines/stop_tile.dart';
+import '../../widgets/lines/stop_to_stop_sheet.dart';
 import '../../widgets/lines/stop_times_sheet.dart';
 import '../../widgets/map/bus_map.dart';
 import '../../widgets/map/route_stops.dart';
@@ -46,6 +48,51 @@ class LineDetailsPage extends ConsumerStatefulWidget {
 class _LineDetailsPageState extends ConsumerState<LineDetailsPage> {
   GoogleMapController? _mapController;
 
+  /// Paradas posicionadas no traçado, recalculadas só quando a rota ou as
+  /// paradas mudam (a tela é reconstruída a cada posição do ônibus).
+  RouteStops? _routeStops;
+  List<LatLng>? _routeStopsRoute;
+  List<Stop>? _routeStopsStops;
+
+  RouteStops _routeStopsFor(List<LatLng> route, List<Stop> stops) {
+    final RouteStops? cached = _routeStops;
+    if (cached != null &&
+        identical(route, _routeStopsRoute) &&
+        identical(stops, _routeStopsStops)) {
+      return cached;
+    }
+    _routeStopsRoute = route;
+    _routeStopsStops = stops;
+    return _routeStops = RouteStops(route, stops);
+  }
+
+  /// Tempo estimado do ponto anterior até cada ponto, saindo agora
+  /// (texto exibido embaixo do nome de cada parada).
+  Map<String, String> _legTimes(RouteStops routeStops, SpeedProfile profile) {
+    final List<Stop> ordered = routeStops.stops;
+    final DateTime now = DateTime.now();
+    final Map<String, String> legs = <String, String>{};
+    for (int i = 0; i < ordered.length; i++) {
+      if (i == 0) {
+        legs[ordered[i].id] = 'Início da linha';
+        continue;
+      }
+      final StopToStop? leg = const EstimateBetweenStops()(
+        stopMeters: routeStops.stopMeters,
+        from: i - 1,
+        to: i,
+        isCircular: routeStops.isCircular,
+        totalMeters: routeStops.totalMeters,
+        profile: profile,
+        departure: now,
+      );
+      if (leg != null) {
+        legs[ordered[i].id] = '~${leg.minutes} min desde o ponto anterior';
+      }
+    }
+    return legs;
+  }
+
   @override
   void dispose() {
     _mapController?.dispose();
@@ -67,7 +114,7 @@ class _LineDetailsPageState extends ConsumerState<LineDetailsPage> {
     SpeedProfile profile,
   ) {
     // Distância pela rua do início da linha até cada ponto.
-    final RouteStops routeStops = RouteStops(route, stops);
+    final RouteStops routeStops = _routeStopsFor(route, stops);
     StopTimesSheet.show(
       context,
       schedule: schedule,
@@ -109,6 +156,11 @@ class _LineDetailsPageState extends ConsumerState<LineDetailsPage> {
         .where((Trip trip) => trip.lineId == widget.line.id)
         .toList();
     final Trip? activeBus = lineTrips.isNotEmpty ? lineTrips.first : null;
+    final RouteStops? routeStops =
+        stops.isEmpty ? null : _routeStopsFor(routePoints, stops);
+    final Map<String, String> legTimes = routeStops == null
+        ? const <String, String>{}
+        : _legTimes(routeStops, profile);
     final Stop? stopHere = activeBus == null
         ? null
         : const FindStopAtPosition()(
@@ -215,11 +267,27 @@ class _LineDetailsPageState extends ConsumerState<LineDetailsPage> {
                                     ),
                           ),
                         ),
-                      const Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 16),
-                        child: Text(
-                          'Pontos de Parada',
-                          style: AppTextStyles.title,
+                      Padding(
+                        padding: const EdgeInsets.only(left: 16, right: 8),
+                        child: Row(
+                          children: <Widget>[
+                            const Expanded(
+                              child: Text(
+                                'Pontos de Parada',
+                                style: AppTextStyles.title,
+                              ),
+                            ),
+                            if (routeStops != null && stops.length > 1)
+                              TextButton.icon(
+                                onPressed: () => StopToStopSheet.show(
+                                  context,
+                                  routeStops: routeStops,
+                                  profile: profile,
+                                ),
+                                icon: const Icon(Icons.timer_outlined),
+                                label: const Text('Tempo entre pontos'),
+                              ),
+                          ],
                         ),
                       ),
                       if (stops.isEmpty)
@@ -231,7 +299,12 @@ class _LineDetailsPageState extends ConsumerState<LineDetailsPage> {
                           ),
                         )
                       else
-                        ...stops.map((Stop stop) => StopTile(stop: stop)),
+                        ...stops.map(
+                          (Stop stop) => StopTile(
+                            stop: stop,
+                            subtitle: legTimes[stop.id],
+                          ),
+                        ),
                       const SizedBox(height: 16),
                     ],
                   ),

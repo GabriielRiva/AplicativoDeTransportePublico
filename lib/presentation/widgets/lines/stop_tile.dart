@@ -7,10 +7,13 @@ import '../../../domain/entities/stop.dart';
 /// Item de ponto de parada na rota detalhada (RF09).
 class StopTile extends StatelessWidget {
   /// Cria o item da parada [stop].
-  const StopTile({required this.stop, super.key});
+  const StopTile({required this.stop, this.subtitle, super.key});
 
   /// Parada exibida.
   final Stop stop;
+
+  /// Texto auxiliar (ex.: tempo estimado desde o ponto anterior).
+  final String? subtitle;
 
   @override
   Widget build(BuildContext context) {
@@ -25,6 +28,9 @@ class StopTile extends StatelessWidget {
         ),
       ),
       title: Text(stop.name, style: AppTextStyles.body),
+      subtitle: subtitle == null
+          ? null
+          : Text(subtitle!, style: AppTextStyles.caption),
     );
   }
 }
