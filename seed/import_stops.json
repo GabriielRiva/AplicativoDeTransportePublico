@@ -313,5 +313,47 @@
     "latitude": -27.11596,
     "longitude": -52.60146,
     "order": 4
+  },
+  "line_106_stop_01": {
+    "lineId": "line_106",
+    "name": "Início - R. Domingos Baldissera",
+    "latitude": -27.112551,
+    "longitude": -52.603116,
+    "order": 1
+  },
+  "line_106_stop_02": {
+    "lineId": "line_106",
+    "name": "Parada 02",
+    "latitude": -27.112553,
+    "longitude": -52.609876,
+    "order": 2
+  },
+  "line_106_stop_03": {
+    "lineId": "line_106",
+    "name": "Parada 03",
+    "latitude": -27.11166,
+    "longitude": -52.613556,
+    "order": 3
+  },
+  "line_106_stop_04": {
+    "lineId": "line_106",
+    "name": "Parada 04",
+    "latitude": -27.112322,
+    "longitude": -52.622479,
+    "order": 4
+  },
+  "line_106_stop_05": {
+    "lineId": "line_106",
+    "name": "Parada 05",
+    "latitude": -27.102436,
+    "longitude": -52.656247,
+    "order": 5
+  },
+  "line_106_stop_06": {
+    "lineId": "line_106",
+    "name": "Unochapecó",
+    "latitude": -27.093827,
+    "longitude": -52.666742,
+    "order": 6
   }
 }

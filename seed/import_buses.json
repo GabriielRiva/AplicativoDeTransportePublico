@@ -1,0 +1,58 @@
+{
+  "bus_1430": {
+    "number": "1430",
+    "plate": "CHA-4321",
+    "model": "Mercedes-Benz OF-1721",
+    "year": 2019,
+    "lineId": "line_101",
+    "status": "offline"
+  },
+  "bus_1431": {
+    "number": "1431",
+    "plate": "CHA-4388",
+    "model": "Mercedes-Benz OF-1721",
+    "year": 2020,
+    "lineId": "line_101",
+    "status": "offline"
+  },
+  "bus_1521": {
+    "number": "1521",
+    "plate": "CHA-5512",
+    "model": "Volvo B270F",
+    "year": 2021,
+    "lineId": "line_102",
+    "status": "offline"
+  },
+  "bus_1610": {
+    "number": "1610",
+    "plate": "CHA-6103",
+    "model": "Marcopolo Torino",
+    "year": 2022,
+    "lineId": "line_103",
+    "status": "offline"
+  },
+  "bus_1725": {
+    "number": "1725",
+    "plate": "CHA-7254",
+    "model": "Marcopolo Viale BRT",
+    "year": 2023,
+    "lineId": "line_104",
+    "status": "offline"
+  },
+  "bus_1810": {
+    "number": "1810",
+    "plate": "CHA-8105",
+    "model": "Volkswagen Volksbus 15.190",
+    "year": 2024,
+    "lineId": "line_105",
+    "status": "offline"
+  },
+  "bus_1906": {
+    "number": "1906",
+    "plate": "CHA-9106",
+    "model": "Mercedes-Benz OF-1721",
+    "year": 2024,
+    "lineId": "line_106",
+    "status": "offline"
+  }
+}
