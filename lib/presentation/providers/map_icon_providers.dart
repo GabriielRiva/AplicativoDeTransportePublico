@@ -37,6 +37,14 @@ const int kBusDirectionCount = 16;
 String busDirectionAsset(int index) =>
     'assets/images/bus_dir/bus_${index.toString().padLeft(2, '0')}.png';
 
+/// Imagem [busDirectionAsset] do ônibus indo para [heading] (graus, 0 =
+/// norte), vista por uma câmera virada para [cameraBearing].
+String busDirectionAssetFor(double heading, {double cameraBearing = 0}) {
+  final double relative = ((heading - cameraBearing) % 360 + 360) % 360;
+  final double step = 360 / kBusDirectionCount;
+  return busDirectionAsset((relative / step).round() % kBusDirectionCount);
+}
+
 /// Conjunto de ícones customizados usados nos mapas.
 class MapMarkerIcons {
   /// Cria o conjunto de ícones.

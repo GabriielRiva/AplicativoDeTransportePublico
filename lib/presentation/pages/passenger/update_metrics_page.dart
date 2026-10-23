@@ -68,6 +68,13 @@ class UpdateMetricsPage extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(title: const Text('Medição de atualização')),
+      // Os botões ficam fixos embaixo, fora da lista: em telas pequenas eles
+      // ficavam no fim da rolagem, às vezes atrás da barra de navegação do
+      // Android, e não dava para tocar neles.
+      bottomNavigationBar: _MetricsActions(
+        onCopy: samples.isEmpty ? null : () => _copyCsv(context, ref),
+        onReset: ref.read(updateMetricsProvider.notifier).reset,
+      ),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: <Widget>[
@@ -176,30 +183,58 @@ class UpdateMetricsPage extends ConsumerWidget {
               );
             }),
           ],
-          const SizedBox(height: 16),
-          Row(
+        ],
+      ),
+    );
+  }
+}
+
+/// Botões "Copiar dados" e "Zerar", fixos no rodapé da tela e acima da
+/// barra de navegação do Android, visíveis em qualquer tamanho de tela.
+class _MetricsActions extends StatelessWidget {
+  const _MetricsActions({required this.onCopy, required this.onReset});
+
+  /// Copia as amostras em CSV (nulo enquanto não há amostras).
+  final VoidCallback? onCopy;
+
+  /// Zera a medição.
+  final VoidCallback onReset;
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: kSurfaceColor,
+      elevation: 8,
+      child: SafeArea(
+        top: false,
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
+          child: Row(
             children: <Widget>[
               Expanded(
                 child: OutlinedButton.icon(
-                  onPressed: samples.isEmpty
-                      ? null
-                      : () => _copyCsv(context, ref),
+                  onPressed: onCopy,
                   icon: const Icon(Icons.copy),
-                  label: const Text('Copiar dados'),
+                  label: const FittedBox(
+                    fit: BoxFit.scaleDown,
+                    child: Text('Copiar dados'),
+                  ),
                 ),
               ),
               const SizedBox(width: 12),
               Expanded(
                 child: OutlinedButton.icon(
-                  onPressed:
-                      ref.read(updateMetricsProvider.notifier).reset,
+                  onPressed: onReset,
                   icon: const Icon(Icons.restart_alt),
-                  label: const Text('Zerar'),
+                  label: const FittedBox(
+                    fit: BoxFit.scaleDown,
+                    child: Text('Zerar'),
+                  ),
                 ),
               ),
             ],
           ),
-        ],
+        ),
       ),
     );
   }

@@ -39,6 +39,42 @@ class _DriverTripPageState extends ConsumerState<DriverTripPage> {
   RouteTracker _tracker = RouteTracker();
   String? _trackedTripId;
 
+  /// Visão de mapa (vista de cima, norte para cima) em vez da navegação 3D.
+  bool _northUp = false;
+
+  /// Se as imagens do ônibus já foram pré-carregadas (ver
+  /// [didChangeDependencies]).
+  bool _spritesPrecached = false;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (_spritesPrecached) return;
+    _spritesPrecached = true;
+    // Carrega antes as imagens do ônibus, para a troca de visão ou de
+    // direção não mostrar o ônibus "em branco" por um instante.
+    precacheImage(const AssetImage(kBus3dAsset), context);
+    for (int i = 0; i < kBusDirectionCount; i++) {
+      precacheImage(AssetImage(busDirectionAsset(i)), context);
+    }
+  }
+
+  /// Desenho do ônibus: 3D visto de trás na navegação (a câmera gira com
+  /// ele); na visão de mapa, a imagem virada para a direção em que ele vai.
+  BusSprite _busSprite(double heading, double cameraBearing) {
+    if (!_northUp) {
+      return const BusSprite(
+        asset: kBus3dAsset,
+        width: 40,
+        anchor: kBus3dAnchor,
+      );
+    }
+    return BusSprite(
+      asset: busDirectionAssetFor(heading, cameraBearing: cameraBearing),
+      width: 56,
+    );
+  }
+
   /// Paradas posicionadas no traçado, recalculadas só quando a rota ou as
   /// paradas mudam.
   RouteStops? _routeStops;
@@ -147,9 +183,13 @@ class _DriverTripPageState extends ConsumerState<DriverTripPage> {
               stops,
               routePoints,
               icons,
-              cameraBearing: state.heading,
+              cameraBearing: _northUp ? 0 : state.heading,
             ),
             heading: state.heading,
+            northUp: _northUp,
+            // O ônibus é desenhado por cima do mapa, e não como marcador,
+            // para não piscar a cada atualização (ver TripMapView).
+            busSpriteFor: _busSprite,
             // Ônibus 3D visto de trás: a câmera do motorista gira junto com
             // o ônibus, então ele aparece sempre de costas, em pé na tela.
             busIcon: icons?.bus3d,
@@ -173,6 +213,16 @@ class _DriverTripPageState extends ConsumerState<DriverTripPage> {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: <Widget>[
+                    Align(
+                      alignment: Alignment.centerRight,
+                      child: _ViewToggle(
+                        northUp: _northUp,
+                        onPressed: () =>
+                            setState(() => _northUp = !_northUp),
+                      ),
+                    ),
+                    if (!state.isOnline || stopHere != null)
+                      const SizedBox(height: 8),
                     if (!state.isOnline) const _OfflineBanner(),
                     if (!state.isOnline && stopHere != null)
                       const SizedBox(height: 8),
@@ -205,6 +255,53 @@ class _DriverTripPageState extends ConsumerState<DriverTripPage> {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+/// Botão que alterna entre a navegação 3D e a visão de mapa (vista de
+/// cima, norte para cima). Substitui a bússola do Google Maps, que brigava
+/// com a câmera que acompanha o ônibus.
+class _ViewToggle extends StatelessWidget {
+  const _ViewToggle({required this.northUp, required this.onPressed});
+
+  /// Se a visão atual é a de mapa.
+  final bool northUp;
+
+  /// Chamado ao tocar no botão.
+  final VoidCallback onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: kSurfaceColor,
+      elevation: 3,
+      shape: const StadiumBorder(),
+      child: InkWell(
+        customBorder: const StadiumBorder(),
+        onTap: onPressed,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              Icon(
+                northUp ? Icons.navigation_outlined : Icons.map_outlined,
+                size: 20,
+                color: kPrimaryColor,
+              ),
+              const SizedBox(width: 6),
+              Text(
+                northUp ? 'Ver em 3D' : 'Ver mapa',
+                style: const TextStyle(
+                  fontWeight: FontWeight.w600,
+                  color: kTextPrimaryColor,
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }

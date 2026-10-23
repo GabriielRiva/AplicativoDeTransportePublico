@@ -1,12 +1,15 @@
 import 'dart:async';
+import 'dart:math' as math;
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 import '../../core/constants/app_constants.dart';
 import '../../core/errors/app_exception.dart';
 import '../../core/errors/error_handler.dart';
 import '../../core/utils/app_logger.dart';
+import '../../core/utils/map_utils.dart';
 import '../../domain/entities/bus.dart';
 import '../../domain/entities/enums/driver_status.dart';
 import '../../domain/entities/line.dart';
@@ -114,6 +117,14 @@ class DriverTripController extends Notifier<DriverTripState> {
   /// Momento do último envio de posição ao Firebase (controle do RNF05).
   DateTime? _lastSentAt;
 
+  /// Última leitura do GPS considerada confiável (ver [_isReliable]) e
+  /// quando ela chegou. É a posição mostrada no mapa e enviada ao Firebase.
+  Position? _lastReliable;
+  DateTime? _lastReliableAt;
+
+  /// Quando chegou a última leitura com boa precisão (ver [_isReliable]).
+  DateTime? _lastAccurateAt;
+
   @override
   DriverTripState build() {
     // Reinicia o fluxo de trajeto a cada mudança de sessão, evitando
@@ -191,6 +202,9 @@ class DriverTripController extends Notifier<DriverTripState> {
             initialLongitude: position.longitude,
           );
 
+      _lastReliable = position;
+      _lastReliableAt = DateTime.now();
+      _lastAccurateAt = DateTime.now();
       _startTransmission(driverId);
       state = state.copyWith(
         isLoading: false,
@@ -274,18 +288,29 @@ class DriverTripController extends Notifier<DriverTripState> {
         .read(locationServiceProvider)
         .watchPosition()
         .listen((Position position) async {
-      // O mapa do próprio motorista acompanha toda leitura do GPS
+      // O mapa do próprio motorista acompanha toda leitura confiável do GPS
       // (a cada kGpsSampleInterval), para o ônibus andar de forma contínua.
+      // Leituras ruins (celular balançando, sinal fraco) são descartadas e
+      // o ônibus fica na última posição boa, sem pular para fora da rua.
       final Trip? trip = state.activeTrip;
-      if (trip != null) {
+      if (trip != null && _isReliable(position)) {
+        _lastReliable = position;
+        _lastReliableAt = DateTime.now();
+        // Parado ou devagar, o rumo do GPS é aleatório: mantém o anterior.
+        final bool moving = position.speed >= kGpsMovingSpeedMps;
         state = state.copyWith(
           activeTrip: trip.copyWith(
             currentLatitude: position.latitude,
             currentLongitude: position.longitude,
           ),
-          heading: position.heading >= 0 ? position.heading : state.heading,
+          heading: moving && position.heading >= 0
+              ? position.heading
+              : state.heading,
         );
       }
+      // O envio continua no mesmo ritmo (RNF05), sempre com a última
+      // posição confiável.
+      final Position sendPosition = _lastReliable ?? position;
 
       // Envio ao Firebase a cada kGpsUpdateInterval (1 s, dentro do limite
       // de 5 s do RNF05). A pequena folga absorve variações do GPS, para
@@ -301,8 +326,8 @@ class DriverTripController extends Notifier<DriverTripState> {
       try {
         await ref.read(sendLocationProvider).call(
               driverId: driverId,
-              latitude: position.latitude,
-              longitude: position.longitude,
+              latitude: sendPosition.latitude,
+              longitude: sendPosition.longitude,
             );
       } catch (error, stackTrace) {
         // Falha pontual de transmissão não interrompe o trajeto; a próxima
@@ -337,7 +362,48 @@ class DriverTripController extends Notifier<DriverTripState> {
     }
   }
 
+  /// Se a leitura [position] do GPS é confiável para mover o ônibus.
+  ///
+  /// Descarta leituras imprecisas, saltos impossíveis para um ônibus e a
+  /// oscilação do GPS com o ônibus parado. Se o sinal fica ruim por mais de
+  /// [kGpsStaleAfter], aceita leituras menos precisas para o ônibus não
+  /// ficar travado.
+  bool _isReliable(Position position) {
+    final DateTime now = DateTime.now();
+    if (position.accuracy <= kGpsMaxAccuracyMeters) {
+      _lastAccurateAt = now;
+    } else {
+      final DateTime? lastAccurate = _lastAccurateAt;
+      final bool poorSignal = lastAccurate == null ||
+          now.difference(lastAccurate) > kGpsStaleAfter;
+      if (!poorSignal || position.accuracy > kGpsMaxAccuracyStaleMeters) {
+        return false;
+      }
+    }
+
+    final Position? last = _lastReliable;
+    final DateTime? lastAt = _lastReliableAt;
+    if (last == null || lastAt == null) return true;
+
+    final double meters = MapUtils.distanceInKm(
+          LatLng(last.latitude, last.longitude),
+          LatLng(position.latitude, position.longitude),
+        ) *
+        1000;
+    final double seconds =
+        math.max(now.difference(lastAt).inMilliseconds / 1000, 0.5);
+    if (meters / seconds > kGpsMaxSpeedMps) return false;
+    if (meters < kGpsMinMoveMeters &&
+        position.speed < kGpsMovingSpeedMps) {
+      return false;
+    }
+    return true;
+  }
+
   void _stopTransmission() {
+    _lastReliable = null;
+    _lastReliableAt = null;
+    _lastAccurateAt = null;
     _positionSubscription?.cancel();
     _positionSubscription = null;
     _connectionSubscription?.cancel();

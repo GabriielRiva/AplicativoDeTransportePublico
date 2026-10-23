@@ -14,14 +14,27 @@ abstract final class TripCameraConfig {
   /// (assets/images), para o desenho combinar com a perspectiva do mapa.
   static const double _driverTilt = 60;
 
+  /// Zoom da visão de mapa do motorista (vista de cima, norte para cima).
+  static const double _driverMapZoom = 17;
+
   /// Monta a câmera para o [mode] centrada em [position]. [heading] é o
   /// rumo (bearing) em graus (0-360); só gira o mapa no modo motorista.
+  /// Com [northUp], o motorista vê o mapa de cima, com o norte para cima,
+  /// em vez da navegação 3D.
   static CameraPosition forMode(
     TripMode mode, {
     required LatLng position,
     double heading = 0,
+    bool northUp = false,
   }) {
     switch (mode) {
+      case TripMode.driver when northUp:
+        return CameraPosition(
+          target: position,
+          zoom: _driverMapZoom,
+          tilt: 0,
+          bearing: 0,
+        );
       case TripMode.driver:
         return CameraPosition(
           target: position,

@@ -18,6 +18,20 @@ void main() {
       expect(camera.bearing, 128);
       expect(camera.zoom, 18.5);
     });
+
+    test('visão de mapa: vista de cima com o norte para cima', () {
+      final CameraPosition camera = TripCameraConfig.forMode(
+        TripMode.driver,
+        position: position,
+        heading: 128,
+        northUp: true,
+      );
+
+      expect(camera.target, position);
+      expect(camera.tilt, 0);
+      expect(camera.bearing, 0);
+      expect(camera.zoom, 17);
+    });
   });
 
   group('TripCameraConfig.forMode — passageiro (tracking)', () {

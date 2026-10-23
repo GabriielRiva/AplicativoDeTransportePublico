@@ -8,6 +8,25 @@ import '../../../core/utils/map_utils.dart';
 import 'route_progress.dart';
 import 'trip_camera_config.dart';
 
+/// Desenho do ônibus sobreposto ao mapa (ver [TripMapView.busSpriteFor]).
+class BusSprite {
+  /// Cria o desenho com a imagem [asset] exibida com [width] dp de largura.
+  const BusSprite({
+    required this.asset,
+    required this.width,
+    this.anchor = const Offset(0.5, 0.5),
+  });
+
+  /// Imagem PNG dos assets do app.
+  final String asset;
+
+  /// Largura exibida (dp); a altura segue a proporção da imagem.
+  final double width;
+
+  /// Ponto da imagem (0..1) que fica sobre a posição do ônibus.
+  final Offset anchor;
+}
+
 /// Mapa de trajeto ativo compartilhado pelo motorista e pelo passageiro.
 ///
 /// É um widget puramente de apresentação: recebe o traçado já decodificado
@@ -27,6 +46,8 @@ class TripMapView extends StatefulWidget {
     this.extraMarkers = const <Marker>{},
     this.busIcon,
     this.busIconForHeading,
+    this.busSpriteFor,
+    this.northUp = false,
     this.rotateBusIcon = true,
     this.busIconAnchor = const Offset(0.5, 0.5),
     this.mapPadding = EdgeInsets.zero,
@@ -61,6 +82,20 @@ class TripMapView extends StatefulWidget {
   /// Ícone do ônibus de acordo com o rumo dele (ex.: ônibus 3D renderizado
   /// em vários ângulos). Quando informado, tem prioridade sobre [busIcon].
   final BitmapDescriptor Function(double heading)? busIconForHeading;
+
+  /// Desenho do ônibus quando a câmera acompanha o ônibus ([follow]), de
+  /// acordo com o rumo dele e o rumo da câmera (graus, 0 = norte).
+  ///
+  /// Nesse caso o ônibus não é um marcador do mapa: ele é desenhado por
+  /// cima do mapa, fixo no ponto que a câmera centraliza. Mover um
+  /// marcador a cada quadro faz o Google Maps reenviar o ícone toda hora,
+  /// e o ônibus pisca.
+  final BusSprite Function(double heading, double cameraBearing)?
+      busSpriteFor;
+
+  /// Visão de mapa do motorista: vista de cima, com o norte para cima, em
+  /// vez da navegação 3D que gira com o ônibus.
+  final bool northUp;
 
   /// Se o ícone fica "deitado" no mapa girando com a direção da rua (ex.:
   /// ônibus visto de cima). Quando falso, o ícone fica em pé, sempre virado
@@ -126,6 +161,21 @@ class _TripMapViewState extends State<TripMapView>
   /// virar um pouco antes da esquina, como um veículo de verdade.
   static const double _headingLookAheadMeters = 15;
 
+  /// Leituras seguidas longe da rota necessárias para o ônibus sair dela.
+  /// Uma leitura isolada longe da rua costuma ser erro do GPS (sinal ruim,
+  /// celular balançando): o ônibus espera no lugar em vez de sair da rota.
+  static const int _offRouteConfirmations = 3;
+
+  /// Deslocamento (m) mínimo, fora da rota, para recalcular o rumo. Abaixo
+  /// disso a direção entre duas leituras é só ruído do GPS.
+  static const double _minHeadingMoveMeters = 5;
+
+  /// Intervalo mínimo entre atualizações do marcador do ônibus quando a
+  /// câmera não o acompanha (~12 por segundo, o suficiente para parecer
+  /// contínuo). Atualizar o marcador em todo quadro (60 por segundo) faz o
+  /// Google Maps reenviar o ícone toda hora, e o ônibus pisca.
+  static const Duration _markerFrameInterval = Duration(milliseconds: 80);
+
   GoogleMapController? _controller;
   late final AnimationController _animation;
 
@@ -154,6 +204,13 @@ class _TripMapViewState extends State<TripMapView>
 
   /// Posição desenhada no quadro atual.
   late LatLng _display;
+
+  /// Leituras seguidas longe da rota (ver [_offRouteConfirmations]).
+  int _offRouteStreak = 0;
+
+  /// Quando o marcador do ônibus foi atualizado pela última vez (ver
+  /// [_markerFrameInterval]).
+  DateTime _lastMarkerFrame = DateTime.fromMillisecondsSinceEpoch(0);
 
   /// Rumo desenhado (marcador e câmera), suavizado entre quadros.
   double _displayHeading = 0;
@@ -208,21 +265,43 @@ class _TripMapViewState extends State<TripMapView>
     } else if (widget.heading != null) {
       _heading = widget.heading!;
     }
+    if (oldWidget.northUp != widget.northUp) _followCamera();
   }
 
   void _onTick() {
-    setState(_refresh);
-    if (widget.follow) {
-      _controller?.moveCamera(
-        CameraUpdate.newCameraPosition(
-          TripCameraConfig.forMode(
-            widget.mode,
-            position: _display,
-            heading: _displayHeading,
-          ),
-        ),
-      );
+    if (!_usesSprite) {
+      final DateTime now = DateTime.now();
+      final bool lastFrame = _animation.value >= 1;
+      if (!lastFrame &&
+          now.difference(_lastMarkerFrame) < _markerFrameInterval) {
+        return;
+      }
+      _lastMarkerFrame = now;
     }
+    setState(_refresh);
+    _followCamera();
+  }
+
+  /// Se o ônibus é desenhado por cima do mapa (ver busSpriteFor).
+  bool get _usesSprite => widget.follow && widget.busSpriteFor != null;
+
+  /// Rumo da câmera: só a navegação 3D do motorista gira com o ônibus.
+  double get _cameraBearing =>
+      widget.mode == TripMode.driver && !widget.northUp ? _displayHeading : 0;
+
+  /// Centraliza a câmera no ônibus (quando [TripMapView.follow]).
+  void _followCamera() {
+    if (!widget.follow) return;
+    _controller?.moveCamera(
+      CameraUpdate.newCameraPosition(
+        TripCameraConfig.forMode(
+          widget.mode,
+          position: _display,
+          heading: _displayHeading,
+          northUp: widget.northUp,
+        ),
+      ),
+    );
   }
 
   /// Atualiza o intervalo médio com o tempo desde a posição anterior e
@@ -254,6 +333,7 @@ class _TripMapViewState extends State<TripMapView>
       );
       final RouteSnap snap = RouteProgress.snap(route, target, index);
       if (MapUtils.distanceInKm(target, snap.point) <= _maxSnapDistanceKm) {
+        _offRouteStreak = 0;
         _progressIndex = index;
         double toMeters = _metersAt(snap);
         double fromMeters = startMeters ?? toMeters;
@@ -267,13 +347,24 @@ class _TripMapViewState extends State<TripMapView>
         _toMeters = toMeters;
         return;
       }
+      _offRouteStreak++;
+      if (startMeters != null && _offRouteStreak < _offRouteConfirmations) {
+        _fromMeters = startMeters;
+        _toMeters = startMeters;
+        return;
+      }
     }
     final LatLng start = jump ? target : _display;
     _fromMeters = null;
     _toMeters = null;
     _from = start;
     _to = target;
-    _heading = widget.heading ?? _bearing(start, target);
+    if (widget.heading != null) {
+      _heading = widget.heading!;
+    } else if (MapUtils.distanceInKm(start, target) * 1000 >
+        _minHeadingMoveMeters) {
+      _heading = _bearing(start, target);
+    }
   }
 
   /// Distância (m) do início do traçado na animação pela rua, ou nula se o
@@ -425,18 +516,19 @@ class _TripMapViewState extends State<TripMapView>
   Set<Marker> _buildMarkers() {
     return <Marker>{
       ...widget.extraMarkers,
-      Marker(
-        markerId: const MarkerId('active_bus'),
-        position: _display,
-        rotation: widget.rotateBusIcon ? _displayHeading : 0,
-        flat: widget.rotateBusIcon,
-        anchor: widget.busIconAnchor,
-        icon: widget.busIconForHeading?.call(_displayHeading) ??
-            widget.busIcon ??
-            BitmapDescriptor.defaultMarkerWithHue(
-              BitmapDescriptor.hueGreen,
-            ),
-      ),
+      if (!_usesSprite)
+        Marker(
+          markerId: const MarkerId('active_bus'),
+          position: _display,
+          rotation: widget.rotateBusIcon ? _displayHeading : 0,
+          flat: widget.rotateBusIcon,
+          anchor: widget.busIconAnchor,
+          icon: widget.busIconForHeading?.call(_displayHeading) ??
+              widget.busIcon ??
+              BitmapDescriptor.defaultMarkerWithHue(
+                BitmapDescriptor.hueGreen,
+              ),
+        ),
     };
   }
 
@@ -469,11 +561,12 @@ class _TripMapViewState extends State<TripMapView>
 
   @override
   Widget build(BuildContext context) {
-    return GoogleMap(
+    final GoogleMap map = GoogleMap(
       initialCameraPosition: TripCameraConfig.forMode(
         widget.mode,
         position: _display,
         heading: _displayHeading,
+        northUp: widget.northUp,
       ),
       onMapCreated: _onMapCreated,
       padding: widget.mapPadding,
@@ -481,7 +574,16 @@ class _TripMapViewState extends State<TripMapView>
       markers: _buildMarkers(),
       myLocationEnabled: widget.showMyLocation,
       myLocationButtonEnabled: false,
-      compassEnabled: widget.mode == TripMode.driver,
+      // A bússola do Google Maps brigava com a câmera que acompanha o
+      // ônibus (voltava sozinha para o 3D e às vezes sumia). A troca entre
+      // 3D e mapa é feita por um botão próprio na tela do motorista.
+      compassEnabled: false,
+      // Com a câmera acompanhando o ônibus, ela é reposicionada a cada
+      // quadro; arrastar ou girar o mapa não teria efeito.
+      scrollGesturesEnabled: !widget.follow,
+      rotateGesturesEnabled: !widget.follow,
+      tiltGesturesEnabled: !widget.follow,
+      zoomGesturesEnabled: !widget.follow,
       zoomControlsEnabled: false,
       mapToolbarEnabled: false,
       // Trava a câmera dentro de Chapecó, igual ao BusMap — evita o
@@ -490,6 +592,50 @@ class _TripMapViewState extends State<TripMapView>
       // View) aparecendo no mapa do motorista/passageiro.
       cameraTargetBounds: CameraTargetBounds(kChapecoBounds),
       minMaxZoomPreference: const MinMaxZoomPreference(kMinZoom, kMaxZoom),
+    );
+    if (!_usesSprite) return map;
+
+    final BusSprite sprite =
+        widget.busSpriteFor!(_displayHeading, _cameraBearing);
+    final EdgeInsets padding = widget.mapPadding;
+    return Stack(
+      children: <Widget>[
+        map,
+        // A câmera centraliza o ônibus no meio da área do mapa que sobra
+        // depois das margens: é ali que ele é desenhado.
+        Positioned.fill(
+          child: IgnorePointer(
+            child: LayoutBuilder(
+              builder: (BuildContext context, BoxConstraints constraints) {
+                final double x = padding.left +
+                    (constraints.maxWidth - padding.horizontal) / 2;
+                final double y = padding.top +
+                    (constraints.maxHeight - padding.vertical) / 2;
+                return Stack(
+                  children: <Widget>[
+                    Positioned(
+                      left: x,
+                      top: y,
+                      child: FractionalTranslation(
+                        translation: Offset(
+                          -sprite.anchor.dx,
+                          -sprite.anchor.dy,
+                        ),
+                        child: Image.asset(
+                          sprite.asset,
+                          width: sprite.width,
+                          gaplessPlayback: true,
+                          filterQuality: FilterQuality.medium,
+                        ),
+                      ),
+                    ),
+                  ],
+                );
+              },
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

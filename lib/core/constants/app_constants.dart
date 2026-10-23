@@ -12,6 +12,31 @@ const Duration kGpsUpdateInterval = Duration(seconds: 1);
 /// Intervalo de leitura do GPS no aparelho do motorista.
 const Duration kGpsSampleInterval = Duration(seconds: 1);
 
+/// Precisão (m) mínima de uma leitura do GPS para mover o ônibus. Leituras
+/// piores (sinal fraco, dentro de prédios, celular balançando) são
+/// ignoradas e o ônibus fica na última posição confiável.
+const double kGpsMaxAccuracyMeters = 40;
+
+/// Precisão (m) aceita depois de [kGpsStaleAfter] só com leituras
+/// imprecisas, para o ônibus não ficar parado para sempre com sinal ruim.
+const double kGpsMaxAccuracyStaleMeters = 100;
+
+/// Tempo só com leituras imprecisas a partir do qual o filtro do GPS
+/// afrouxa (ver [kGpsMaxAccuracyStaleMeters]).
+const Duration kGpsStaleAfter = Duration(seconds: 15);
+
+/// Velocidade (m/s) acima da qual um salto entre duas leituras é
+/// impossível para um ônibus urbano (~120 km/h): é erro do GPS.
+const double kGpsMaxSpeedMps = 33;
+
+/// Velocidade (m/s) a partir da qual o ônibus é considerado em movimento
+/// (~5 km/h). Parado, o rumo informado pelo GPS é aleatório e é ignorado.
+const double kGpsMovingSpeedMps = 1.5;
+
+/// Deslocamento (m) mínimo, com o ônibus parado, para mover o ônibus no
+/// mapa. Abaixo disso é só a oscilação normal do GPS.
+const double kGpsMinMoveMeters = 5;
+
 /// Raio (em metros) em que o ônibus é considerado "no ponto": a partir daí
 /// o app avisa que o embarque e o desembarque estão liberados.
 const double kStopArrivalRadiusMeters = 35;
