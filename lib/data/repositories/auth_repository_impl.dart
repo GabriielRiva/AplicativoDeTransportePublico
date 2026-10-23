@@ -23,6 +23,9 @@ final class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
+  Future<void> deleteCurrentUser() => _datasource.deleteCurrentUser();
+
+  @override
   Future<String> login({required String email, required String password}) {
     return _datasource.login(email: email, password: password);
   }

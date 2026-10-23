@@ -29,6 +29,36 @@ class UserRemoteDatasource {
     }
   }
 
+  /// Reserva a [cnh] para o motorista [uid] em cnhs/{cnh}.
+  ///
+  /// As regras do banco só permitem gravar uma CNH que ainda não existe;
+  /// se outra conta já usa essa CNH, a gravação é negada e o cadastro é
+  /// recusado com uma mensagem clara.
+  Future<void> reserveCnh(String uid, String cnh) async {
+    try {
+      await _database.ref('$kCnhsPath/$cnh').set(uid);
+    } on FirebaseException catch (error, stackTrace) {
+      AppLogger.error('Falha ao reservar CNH', error, stackTrace);
+      if (error.code == 'permission-denied') {
+        throw const ValidationException(
+          'Esta CNH já está cadastrada em outra conta.',
+        );
+      }
+      throw const DatabaseException(
+        'Não foi possível validar sua CNH. Tente novamente.',
+      );
+    }
+  }
+
+  /// Libera a [cnh] reservada (desfaz [reserveCnh] se o cadastro falhar).
+  Future<void> releaseCnh(String cnh) async {
+    try {
+      await _database.ref('$kCnhsPath/$cnh').remove();
+    } on FirebaseException catch (error, stackTrace) {
+      AppLogger.error('Falha ao liberar CNH', error, stackTrace);
+    }
+  }
+
   /// Lê o perfil de users/{uid}, materializando Driver ou Passenger.
   Future<User> getProfile(String uid) async {
     try {

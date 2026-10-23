@@ -62,5 +62,10 @@ void main() {
     test('rejeita CNH com letras', () {
       expect(Validators.cnh('12345abc901'), isNotNull);
     });
+
+    test('rejeita CNH com os 11 dígitos iguais', () {
+      expect(Validators.cnh('11111111111'), isNotNull);
+      expect(Validators.cnh('00000000000'), isNotNull);
+    });
   });
 }

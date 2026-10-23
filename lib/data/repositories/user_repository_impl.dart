@@ -13,6 +13,13 @@ final class UserRepositoryImpl implements UserRepository {
   Future<void> saveProfile(User user) => _datasource.saveProfile(user);
 
   @override
+  Future<void> reserveCnh(String uid, String cnh) =>
+      _datasource.reserveCnh(uid, cnh);
+
+  @override
+  Future<void> releaseCnh(String cnh) => _datasource.releaseCnh(cnh);
+
+  @override
   Future<User> getProfile(String uid) => _datasource.getProfile(uid);
 
   @override

@@ -18,7 +18,7 @@
           ".validate": "(newData.val() == 'driver' || newData.val() == 'passenger') && (!data.exists() || newData.val() == data.val())"
         },
         "cnh": {
-          ".validate": "newData.isString()"
+          ".validate": "newData.isString() && newData.val().length == 11 && newData.val().matches(/^[0-9]+$/) && root.child('cnhs').child(newData.val()).val() == $uid"
         },
         "createdAt": {
           ".validate": "newData.isNumber()"
@@ -91,6 +91,13 @@
     "speedProfile": {
       ".read": "auth != null",
       ".write": false
+    },
+
+    "cnhs": {
+      "$cnh": {
+        ".write": "auth != null && ((!data.exists() && newData.val() == auth.uid) || (!newData.exists() && data.val() == auth.uid))",
+        ".validate": "$cnh.length == 11 && $cnh.matches(/^[0-9]+$/) && newData.val() == auth.uid"
+      }
     }
   }
 }

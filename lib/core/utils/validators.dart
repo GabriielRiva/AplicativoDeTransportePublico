@@ -7,6 +7,9 @@ abstract final class Validators {
 
   static final RegExp _digitsOnlyRegex = RegExp(r'^\d+$');
 
+  /// Sequência de um mesmo dígito repetido (ex.: 11111111111).
+  static final RegExp _repeatedDigitRegex = RegExp(r'^(\d)\1+$');
+
   /// Valida campo obrigatório genérico.
   static String? required(String? value, {String field = 'Este campo'}) {
     if (value == null || value.trim().isEmpty) {
@@ -67,6 +70,9 @@ abstract final class Validators {
     final String digits = value.trim();
     if (digits.length != kCnhLength || !_digitsOnlyRegex.hasMatch(digits)) {
       return 'A CNH deve conter $kCnhLength dígitos.';
+    }
+    if (_repeatedDigitRegex.hasMatch(digits)) {
+      return 'CNH inválida: os dígitos não podem ser todos iguais.';
     }
     return null;
   }

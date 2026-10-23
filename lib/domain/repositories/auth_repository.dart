@@ -9,6 +9,11 @@ abstract interface class AuthRepository {
   /// Cria uma conta com e-mail e senha e retorna o UID gerado.
   Future<String> register({required String email, required String password});
 
+  /// Exclui a conta recém-criada do usuário autenticado. Usado para
+  /// desfazer um cadastro que falhou depois de criar a conta (ex.: CNH já
+  /// cadastrada), para o e-mail não ficar preso numa conta sem perfil.
+  Future<void> deleteCurrentUser();
+
   /// Autentica o usuário e retorna seu UID.
   Future<String> login({required String email, required String password});
 

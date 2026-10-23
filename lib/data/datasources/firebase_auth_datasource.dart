@@ -42,6 +42,17 @@ class FirebaseAuthDatasource {
     }
   }
 
+  /// Exclui a conta autenticada (desfaz um cadastro incompleto). Falhas
+  /// são só registradas: o erro original do cadastro é o que importa.
+  Future<void> deleteCurrentUser() async {
+    try {
+      await _auth.currentUser?.delete();
+      AppLogger.info('Cadastro incompleto desfeito.');
+    } on FirebaseAuthException catch (error, stackTrace) {
+      AppLogger.error('Falha ao desfazer cadastro', error, stackTrace);
+    }
+  }
+
   /// Autentica com e-mail e senha e retorna o UID.
   Future<String> login({
     required String email,

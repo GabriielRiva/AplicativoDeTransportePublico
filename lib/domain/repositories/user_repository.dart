@@ -8,6 +8,13 @@ abstract interface class UserRepository {
   /// cada perfil são gravados conforme o tipo concreto.
   Future<void> saveProfile(User user);
 
+  /// Reserva a [cnh] para o motorista [uid]. Lança ValidationException
+  /// se a CNH já estiver cadastrada em outra conta.
+  Future<void> reserveCnh(String uid, String cnh);
+
+  /// Libera uma CNH reservada (usado para desfazer um cadastro que falhou).
+  Future<void> releaseCnh(String cnh);
+
   /// Busca o perfil pelo [uid], retornando [Driver] ou [Passenger]
   /// conforme o campo role armazenado.
   Future<User> getProfile(String uid);

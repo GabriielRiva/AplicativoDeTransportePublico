@@ -19,5 +19,10 @@ const String kSchedulesPath = 'schedules';
 /// Nó de ônibus cadastrados.
 const String kBusesPath = 'buses';
 
+/// Nó de CNHs já cadastradas (CNH → UID do motorista). Garante que a mesma
+/// CNH não seja usada em duas contas: as regras só aceitam gravar uma CNH
+/// que ainda não existe.
+const String kCnhsPath = 'cnhs';
+
 /// Nó do perfil de velocidades por faixa de horário (estimativas de tempo).
 const String kSpeedProfilePath = 'speedProfile';
