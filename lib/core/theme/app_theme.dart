@@ -34,6 +34,10 @@ abstract final class AppTheme {
         ),
       ),
       inputDecorationTheme: InputDecorationTheme(
+        // Por padrão o Flutter mostra o erro em uma linha só e corta o
+        // resto com "..." em telas estreitas. Com até 3 linhas, a mensagem
+        // de validação aparece completa em qualquer celular.
+        errorMaxLines: 3,
         filled: true,
         fillColor: kSurfaceColor,
         contentPadding: const EdgeInsets.symmetric(
