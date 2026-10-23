@@ -6,6 +6,7 @@ import '../../../core/theme/app_text_styles.dart';
 import '../../../core/utils/validators.dart';
 import '../../../domain/entities/user.dart';
 import '../../controllers/auth_controller.dart';
+import '../../widgets/auth/auth_error_banner.dart';
 import '../../widgets/auth/auth_layout.dart';
 import '../../widgets/common/app_button.dart';
 import '../../widgets/common/app_logo.dart';
@@ -27,6 +28,10 @@ class _ForgotPasswordPageState extends ConsumerState<ForgotPasswordPage> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final TextEditingController _emailController = TextEditingController();
 
+  /// Erro da última tentativa, exibido dentro do card (ver
+  /// [AuthErrorBanner]). Limpo ao tentar de novo ou ao fechar a faixa.
+  String? _error;
+
   @override
   void dispose() {
     _emailController.dispose();
@@ -34,6 +39,9 @@ class _ForgotPasswordPageState extends ConsumerState<ForgotPasswordPage> {
   }
 
   Future<void> _submit() async {
+    // Fecha o teclado para o card (e a faixa de erro) ficar todo visível.
+    FocusScope.of(context).unfocus();
+    setState(() => _error = null);
     if (!(_formKey.currentState?.validate() ?? false)) return;
 
     final bool success = await ref
@@ -54,7 +62,7 @@ class _ForgotPasswordPageState extends ConsumerState<ForgotPasswordPage> {
     ref.listen<AsyncValue<User?>>(authControllerProvider,
         (AsyncValue<User?>? previous, AsyncValue<User?> next) {
       if (next.hasError && !next.isLoading) {
-        AppSnackbar.showError(context, next.error.toString());
+        setState(() => _error = next.error.toString());
       }
     });
 
@@ -99,6 +107,10 @@ class _ForgotPasswordPageState extends ConsumerState<ForgotPasswordPage> {
                   keyboardType: TextInputType.emailAddress,
                   textInputAction: TextInputAction.done,
                   validator: Validators.email,
+                ),
+                AuthErrorBanner(
+                  message: _error,
+                  onClose: () => setState(() => _error = null),
                 ),
                 const SizedBox(height: 24),
                 AppButton(label: 'Enviar', onPressed: _submit),

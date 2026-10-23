@@ -7,11 +7,11 @@ import '../../../domain/entities/enums/user_role.dart';
 import '../../../domain/entities/user.dart';
 import '../../controllers/auth_controller.dart';
 import '../../routes/app_router.dart';
+import '../../widgets/auth/auth_error_banner.dart';
 import '../../widgets/auth/auth_layout.dart';
 import '../../widgets/auth/profile_selector.dart';
 import '../../widgets/common/app_button.dart';
 import '../../widgets/common/app_logo.dart';
-import '../../widgets/common/app_snackbar.dart';
 import '../../widgets/common/app_text_field.dart';
 import '../../widgets/common/loading_overlay.dart';
 import '../../widgets/common/password_field.dart';
@@ -36,6 +36,10 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
 
   UserRole _selectedRole = UserRole.passenger;
 
+  /// Erro da última tentativa, exibido dentro do card (ver
+  /// [AuthErrorBanner]). Limpo ao tentar de novo ou ao fechar a faixa.
+  String? _error;
+
   @override
   void dispose() {
     _nameController.dispose();
@@ -47,6 +51,9 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
   }
 
   Future<void> _submit() async {
+    // Fecha o teclado para o card (e a faixa de erro) ficar todo visível.
+    FocusScope.of(context).unfocus();
+    setState(() => _error = null);
     if (!(_formKey.currentState?.validate() ?? false)) return;
 
     final User? user =
@@ -73,7 +80,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
     ref.listen<AsyncValue<User?>>(authControllerProvider,
         (AsyncValue<User?>? previous, AsyncValue<User?> next) {
       if (next.hasError && !next.isLoading) {
-        AppSnackbar.showError(context, next.error.toString());
+        setState(() => _error = next.error.toString());
       }
     });
 
@@ -150,6 +157,10 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                     validator: Validators.cnh,
                   ),
                 ],
+                AuthErrorBanner(
+                  message: _error,
+                  onClose: () => setState(() => _error = null),
+                ),
                 const SizedBox(height: 24),
                 AppButton(label: 'Cadastrar', onPressed: _submit),
                 const SizedBox(height: 12),
