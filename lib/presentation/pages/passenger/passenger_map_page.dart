@@ -6,6 +6,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import '../../../core/constants/app_constants.dart';
 import '../../../core/constants/map_constants.dart';
 import '../../../core/errors/error_handler.dart';
+import '../../../core/theme/app_colors.dart';
 import '../../../domain/entities/line.dart';
 import '../../../domain/entities/trip.dart';
 import '../../../domain/usecases/passenger/get_nearby_buses.dart';
@@ -52,6 +53,30 @@ class _PassengerMapPageState extends ConsumerState<PassengerMapPage> {
     if (_centeredOnUser || _mapController == null) return;
     _centeredOnUser = true;
     _mapController!.animateCamera(CameraUpdate.newLatLng(position));
+  }
+
+  /// Volta o mapa para a posição do passageiro (botão "minha localização"),
+  /// com o zoom e a inclinação da visão geral.
+  void _recenterOnUser(LatLng? position) {
+    final GoogleMapController? mapController = _mapController;
+    if (mapController == null) return;
+    if (position == null) {
+      AppSnackbar.showError(
+        context,
+        'Sua localização ainda não está disponível. Verifique se o GPS '
+        'está ligado.',
+      );
+      return;
+    }
+    mapController.animateCamera(
+      CameraUpdate.newCameraPosition(
+        CameraPosition(
+          target: position,
+          zoom: _overviewZoom,
+          tilt: _overviewTilt,
+        ),
+      ),
+    );
   }
 
   Future<void> _openLineDetails(Line line) async {
@@ -137,13 +162,27 @@ class _PassengerMapPageState extends ConsumerState<PassengerMapPage> {
               },
               onTap: (_) => controller.clearSelection(),
             ),
-          if (selectedTrip == null || selectedLine == null)
+          if (selectedTrip == null || selectedLine == null) ...<Widget>[
             const SafeArea(
               child: Padding(
                 padding: EdgeInsets.all(16),
                 child: AppLogo(fontSize: 28),
               ),
             ),
+            // Botão próprio de "minha localização", no canto oposto ao
+            // logo (o do Google Maps ficava por cima da barra de status).
+            SafeArea(
+              child: Align(
+                alignment: Alignment.topRight,
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: _MyLocationButton(
+                    onPressed: () => _recenterOnUser(state.userPosition),
+                  ),
+                ),
+              ),
+            ),
+          ],
           Align(
             alignment: Alignment.bottomCenter,
             child: selectedTrip != null && selectedLine != null
@@ -173,6 +212,28 @@ class _PassengerMapPageState extends ConsumerState<PassengerMapPage> {
                   ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+/// Botão redondo que centraliza o mapa na posição do passageiro.
+class _MyLocationButton extends StatelessWidget {
+  const _MyLocationButton({required this.onPressed});
+
+  /// Chamado ao tocar no botão.
+  final VoidCallback onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: kSurfaceColor,
+      elevation: 3,
+      shape: const CircleBorder(),
+      child: IconButton(
+        onPressed: onPressed,
+        icon: const Icon(Icons.my_location, color: kPrimaryColor),
+        tooltip: 'Minha localização',
       ),
     );
   }
