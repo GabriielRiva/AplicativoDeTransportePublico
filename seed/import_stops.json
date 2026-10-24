@@ -355,5 +355,68 @@
     "latitude": -27.093827,
     "longitude": -52.666742,
     "order": 6
+  },
+  "line_107_stop_01": {
+    "lineId": "line_107",
+    "name": "Início - R. São Vicente de Paula",
+    "latitude": -27.114031,
+    "longitude": -52.598084,
+    "order": 1
+  },
+  "line_107_stop_02": {
+    "lineId": "line_107",
+    "name": "Parada 02",
+    "latitude": -27.114467,
+    "longitude": -52.600729,
+    "order": 2
+  },
+  "line_107_stop_03": {
+    "lineId": "line_107",
+    "name": "Parada 03",
+    "latitude": -27.115155,
+    "longitude": -52.602438,
+    "order": 3
+  },
+  "line_107_stop_04": {
+    "lineId": "line_107",
+    "name": "Parada 04",
+    "latitude": -27.115689,
+    "longitude": -52.599954,
+    "order": 4
+  },
+  "line_107_stop_05": {
+    "lineId": "line_107",
+    "name": "Parada 05",
+    "latitude": -27.115165,
+    "longitude": -52.597628,
+    "order": 5
+  },
+  "line_108_stop_01": {
+    "lineId": "line_108",
+    "name": "Início - R. São Vicente de Paula",
+    "latitude": -27.113992,
+    "longitude": -52.598029,
+    "order": 1
+  },
+  "line_108_stop_02": {
+    "lineId": "line_108",
+    "name": "Parada 02",
+    "latitude": -27.115824,
+    "longitude": -52.59871,
+    "order": 2
+  },
+  "line_108_stop_03": {
+    "lineId": "line_108",
+    "name": "Parada 03",
+    "latitude": -27.115357,
+    "longitude": -52.600876,
+    "order": 3
+  },
+  "line_108_stop_04": {
+    "lineId": "line_108",
+    "name": "Parada 04",
+    "latitude": -27.114361,
+    "longitude": -52.599595,
+    "order": 4
   }
 }

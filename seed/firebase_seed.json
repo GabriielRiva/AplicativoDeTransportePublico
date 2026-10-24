@@ -53,6 +53,24 @@
       "averageDuration": 23,
       "color": "#0E9F9A",
       "routePolyline": "flndDx_a`IqC|CbAlAHAL`AL`A^`CA??@A??@?@A??@?@@??@?@@??@@?@?@?\\bCDXHl@PfAJp@BLN~@NjANlAHh@?@F^@BJx@BPHf@Ff@Hf@eBZC@mB\\y@N_ANsB^?AA?AAA?A?A?A?A??@A?A??@A??@A??@?@A??@?@?@?@?@?@?@@@?@@??@@??@@??@@?Hn@`@`CR|AT|ABN@PXnBPlAPvA@FHd@Hf@A??@{@PIBo@L{@LIBo@JI@IB@F@HN~@L`ANbAPdA@F@FLdANbAJ~@L|@@J@JL~@J|@LdALbALLT~ADVXtBHh@NnABPJp@PvAXnBb@zCBNJv@PfAb@CD?TDTHVHRLh@Xb@|@b@z@Dd@Df@Cf@AVCNAJGXADM\\Ob@Ob@ADKTAFETAPEj@Gp@E\\C^GPQhAGt@GjA?BGfABRFNFLLRh@h@`@ZLHJJJNN\\Jb@GDC@C@M@MKKGe@]WSIEIEi@YUIWG]Ga@CSAU@UBUDWHSFWLKFGDGDGDY\\CD[h@ABIRKVIZI^Ab@CZ?R@T@NBZDd@NpAFp@D`@@PBj@AZARCTIj@EXCJK`@MZUj@Q^Q`@Yp@]t@Uf@CFKVA@Q`@Q^U`@ADQXS^W`@U^Yd@_@h@EDED]VC@k@XUHUFG@IBUFA?}@Pk@Ja@He@HaAReAReARaATMBKDIFYRC@SNA@GBE@OJGFMPMPUd@GNAFCJGRCNALCXAP@P?R?NBVD\\P|@R|@?D@?Lt@Jj@TpAJj@Jb@H^Nh@Rf@LRLPV^XXPRLLJJJNPTLPJVJZ?@DHDP@F@JDVBT@V?X?ZGh@Kx@E`@G^E^A^Cd@ATAX?bCA|B?nAAzAArA?BK`AI`@M`@OXABQVIJA@OJ?@MJQH[NODMBE?_@DC?O?SAWAWGUGUIWKUK}@i@ISMSIOOQCIIKIGCAECICKCEAA@C?GBEFCF?F?FDFDDJFNJFDB@Sx@Qz@WhAc@jCGZKp@Gd@If@Gf@Gb@A@WtBGf@Gd@OnAYzBGj@Eb@Gd@QzAATCTEf@KdAAHEf@Kz@K|@Mz@cBk@{@[WKYMUMCAi@]MK]][[q@o@Yk@OUEIYg@[c@Ye@Y]IIKKUMSIOCIC}Bm@YIWIIAc@GSCM?UD?C?A?AAC?A?A?A?A?AAA?A?AAAACAAAAA?AAA?A??AA?A?A?A?A?A@A?A?A@A@A??@A?A@A@A@?BA@?B?@?@?BA@@B?B?D@B?B@B@@@BBD?F@HInACf@MnBARIbBCf@Ab@OzCItAGvA?RUhECf@O~CC`@q@dMq@K}@Qc@Ia@GGAEA}Ba@GA}@QK?LvB?F?DD`AB\\?@?D@b@ADEh@AHAFSfAAFQjAAJc@`BCFCFOd@EHCPCF?DADCXA`@ADCZAZAJ?H@F@BFFKHGDKDGDGDED"
+    },
+    "line_107": {
+      "number": "L107",
+      "name": "Esplanada",
+      "description": "Rota de teste - circuito Esplanada (circular)",
+      "distance": 1.2,
+      "averageDuration": 5,
+      "color": "#D6336C",
+      "routePolyline": "fundDda``IHl@NdANdARjBThBBNBNRvARvAN~@L`AN~@N|@tBa@tB_@M_AO_AM_AMaAUcBUeBWkBWkB_@gC_@iCoB\\E?uB^NbA?F"
+    },
+    "line_108": {
+      "number": "L108",
+      "name": "Esplanada / Centro Multiuso",
+      "description": "Rota de teste - Esplanada → Centro Multiuso (circular)",
+      "distance": 1.2,
+      "averageDuration": 5,
+      "color": "#3B5BDB",
+      "routePolyline": "dundDv```IAGOcAtB_@D?nB]^hC^fCzAYBAtAYXjBVlBTdBTdB{AX{AVwB`@wB`@SwASwACOCOUiBSkBOeAOeAKs@"
     }
   },
   "stops": {
@@ -412,6 +430,69 @@
       "latitude": -27.093827,
       "longitude": -52.666742,
       "order": 6
+    },
+    "line_107_stop_01": {
+      "lineId": "line_107",
+      "name": "Início - R. São Vicente de Paula",
+      "latitude": -27.114031,
+      "longitude": -52.598084,
+      "order": 1
+    },
+    "line_107_stop_02": {
+      "lineId": "line_107",
+      "name": "Parada 02",
+      "latitude": -27.114467,
+      "longitude": -52.600729,
+      "order": 2
+    },
+    "line_107_stop_03": {
+      "lineId": "line_107",
+      "name": "Parada 03",
+      "latitude": -27.115155,
+      "longitude": -52.602438,
+      "order": 3
+    },
+    "line_107_stop_04": {
+      "lineId": "line_107",
+      "name": "Parada 04",
+      "latitude": -27.115689,
+      "longitude": -52.599954,
+      "order": 4
+    },
+    "line_107_stop_05": {
+      "lineId": "line_107",
+      "name": "Parada 05",
+      "latitude": -27.115165,
+      "longitude": -52.597628,
+      "order": 5
+    },
+    "line_108_stop_01": {
+      "lineId": "line_108",
+      "name": "Início - R. São Vicente de Paula",
+      "latitude": -27.113992,
+      "longitude": -52.598029,
+      "order": 1
+    },
+    "line_108_stop_02": {
+      "lineId": "line_108",
+      "name": "Parada 02",
+      "latitude": -27.115824,
+      "longitude": -52.59871,
+      "order": 2
+    },
+    "line_108_stop_03": {
+      "lineId": "line_108",
+      "name": "Parada 03",
+      "latitude": -27.115357,
+      "longitude": -52.600876,
+      "order": 3
+    },
+    "line_108_stop_04": {
+      "lineId": "line_108",
+      "name": "Parada 04",
+      "latitude": -27.114361,
+      "longitude": -52.599595,
+      "order": 4
     }
   },
   "schedules": {
@@ -621,6 +702,38 @@
       "model": "Mercedes-Benz OF-1721",
       "year": 2024,
       "lineId": "line_106",
+      "status": "offline"
+    },
+    "bus_1907": {
+      "number": "1907",
+      "plate": "CHA-9107",
+      "model": "Mercedes-Benz OF-1721",
+      "year": 2024,
+      "lineId": "line_107",
+      "status": "offline"
+    },
+    "bus_1917": {
+      "number": "1917",
+      "plate": "CHA-9117",
+      "model": "Mercedes-Benz OF-1721",
+      "year": 2024,
+      "lineId": "line_107",
+      "status": "offline"
+    },
+    "bus_1908": {
+      "number": "1908",
+      "plate": "CHA-9108",
+      "model": "Mercedes-Benz OF-1721",
+      "year": 2024,
+      "lineId": "line_108",
+      "status": "offline"
+    },
+    "bus_1918": {
+      "number": "1918",
+      "plate": "CHA-9118",
+      "model": "Mercedes-Benz OF-1721",
+      "year": 2024,
+      "lineId": "line_108",
       "status": "offline"
     }
   }

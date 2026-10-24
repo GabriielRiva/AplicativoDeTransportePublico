@@ -54,5 +54,37 @@
     "year": 2024,
     "lineId": "line_106",
     "status": "offline"
+  },
+  "bus_1907": {
+    "number": "1907",
+    "plate": "CHA-9107",
+    "model": "Mercedes-Benz OF-1721",
+    "year": 2024,
+    "lineId": "line_107",
+    "status": "offline"
+  },
+  "bus_1917": {
+    "number": "1917",
+    "plate": "CHA-9117",
+    "model": "Mercedes-Benz OF-1721",
+    "year": 2024,
+    "lineId": "line_107",
+    "status": "offline"
+  },
+  "bus_1908": {
+    "number": "1908",
+    "plate": "CHA-9108",
+    "model": "Mercedes-Benz OF-1721",
+    "year": 2024,
+    "lineId": "line_108",
+    "status": "offline"
+  },
+  "bus_1918": {
+    "number": "1918",
+    "plate": "CHA-9118",
+    "model": "Mercedes-Benz OF-1721",
+    "year": 2024,
+    "lineId": "line_108",
+    "status": "offline"
   }
 }
