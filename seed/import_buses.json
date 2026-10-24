@@ -47,14 +47,6 @@
     "lineId": "line_105",
     "status": "offline"
   },
-  "bus_1906": {
-    "number": "1906",
-    "plate": "CHA-9106",
-    "model": "Mercedes-Benz OF-1721",
-    "year": 2024,
-    "lineId": "line_106",
-    "status": "offline"
-  },
   "bus_1907": {
     "number": "1907",
     "plate": "CHA-9107",

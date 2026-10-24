@@ -286,76 +286,6 @@
     "longitude": -52.666446,
     "order": 12
   },
-  "line_105_stop_01": {
-    "lineId": "line_105",
-    "name": "Início - R. Israel",
-    "latitude": -27.11393,
-    "longitude": -52.59795,
-    "order": 1
-  },
-  "line_105_stop_02": {
-    "lineId": "line_105",
-    "name": "Parada 02",
-    "latitude": -27.11346,
-    "longitude": -52.60199,
-    "order": 2
-  },
-  "line_105_stop_03": {
-    "lineId": "line_105",
-    "name": "Parada 03",
-    "latitude": -27.11299,
-    "longitude": -52.60393,
-    "order": 3
-  },
-  "line_105_stop_04": {
-    "lineId": "line_105",
-    "name": "Parada 04",
-    "latitude": -27.11596,
-    "longitude": -52.60146,
-    "order": 4
-  },
-  "line_106_stop_01": {
-    "lineId": "line_106",
-    "name": "Início - R. Domingos Baldissera",
-    "latitude": -27.112551,
-    "longitude": -52.603116,
-    "order": 1
-  },
-  "line_106_stop_02": {
-    "lineId": "line_106",
-    "name": "Parada 02",
-    "latitude": -27.112553,
-    "longitude": -52.609876,
-    "order": 2
-  },
-  "line_106_stop_03": {
-    "lineId": "line_106",
-    "name": "Parada 03",
-    "latitude": -27.11166,
-    "longitude": -52.613556,
-    "order": 3
-  },
-  "line_106_stop_04": {
-    "lineId": "line_106",
-    "name": "Parada 04",
-    "latitude": -27.112322,
-    "longitude": -52.622479,
-    "order": 4
-  },
-  "line_106_stop_05": {
-    "lineId": "line_106",
-    "name": "Parada 05",
-    "latitude": -27.102436,
-    "longitude": -52.656247,
-    "order": 5
-  },
-  "line_106_stop_06": {
-    "lineId": "line_106",
-    "name": "Unochapecó",
-    "latitude": -27.093827,
-    "longitude": -52.666742,
-    "order": 6
-  },
   "line_107_stop_01": {
     "lineId": "line_107",
     "name": "Início - R. São Vicente de Paula",
@@ -418,5 +348,40 @@
     "latitude": -27.114361,
     "longitude": -52.599595,
     "order": 4
+  },
+  "line_105_stop_01": {
+    "lineId": "line_105",
+    "name": "Parada 01",
+    "latitude": -27.114215,
+    "longitude": -52.600587,
+    "order": 1
+  },
+  "line_105_stop_02": {
+    "lineId": "line_105",
+    "name": "Parada 02",
+    "latitude": -27.112485,
+    "longitude": -52.602976,
+    "order": 2
+  },
+  "line_105_stop_03": {
+    "lineId": "line_105",
+    "name": "Parada 03",
+    "latitude": -27.114321,
+    "longitude": -52.603606,
+    "order": 3
+  },
+  "line_105_stop_04": {
+    "lineId": "line_105",
+    "name": "Parada 04",
+    "latitude": -27.116239,
+    "longitude": -52.602951,
+    "order": 4
+  },
+  "line_105_stop_05": {
+    "lineId": "line_105",
+    "name": "Parada 05",
+    "latitude": -27.115492,
+    "longitude": -52.599701,
+    "order": 5
   }
 }

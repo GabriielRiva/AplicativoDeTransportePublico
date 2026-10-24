@@ -38,21 +38,12 @@
     },
     "line_105": {
       "number": "L105",
-      "name": "Rota Teste",
-      "description": "Circuito de teste - R. Israel (circular)",
-      "distance": 2.0,
+      "name": "Santa Maria / Esplanada",
+      "description": "Rota de teste - Santa Maria / Esplanada (circular)",
+      "distance": 2.1,
       "averageDuration": 8,
       "color": "#8E44AD",
-      "routePolyline": "`undDd```I@HLbANdANdARjBThBBNBNmAnDQb@a@|@GFEFIHe@j@eDrDgDtDq@z@k@r@B?B?HAF?FANAPCNClASHA?ATG~Bc@JCdCg@~@Qd@KfB]tAK?AlF_AQqAAKCWACMaAM_AO_AM_AMaAA?ScBUeBWkBWkB_@gC_@iCoB\\E?_BX"
-    },
-    "line_106": {
-      "number": "L106",
-      "name": "Teste Unochapecó",
-      "description": "Rota de teste - Palmital → Unochapecó",
-      "distance": 9.4,
-      "averageDuration": 23,
-      "color": "#0E9F9A",
-      "routePolyline": "flndDx_a`IqC|CbAlAHAL`AL`A^`CA??@A??@?@A??@?@@??@?@@??@@?@?@?\\bCDXHl@PfAJp@BLN~@NjANlAHh@?@F^@BJx@BPHf@Ff@Hf@eBZC@mB\\y@N_ANsB^?AA?AAA?A?A?A?A??@A?A??@A??@A??@?@A??@?@?@?@?@?@?@@@?@@??@@??@@??@@?Hn@`@`CR|AT|ABN@PXnBPlAPvA@FHd@Hf@A??@{@PIBo@L{@LIBo@JI@IB@F@HN~@L`ANbAPdA@F@FLdANbAJ~@L|@@J@JL~@J|@LdALbALLT~ADVXtBHh@NnABPJp@PvAXnBb@zCBNJv@PfAb@CD?TDTHVHRLh@Xb@|@b@z@Dd@Df@Cf@AVCNAJGXADM\\Ob@Ob@ADKTAFETAPEj@Gp@E\\C^GPQhAGt@GjA?BGfABRFNFLLRh@h@`@ZLHJJJNN\\Jb@GDC@C@M@MKKGe@]WSIEIEi@YUIWG]Ga@CSAU@UBUDWHSFWLKFGDGDGDY\\CD[h@ABIRKVIZI^Ab@CZ?R@T@NBZDd@NpAFp@D`@@PBj@AZARCTIj@EXCJK`@MZUj@Q^Q`@Yp@]t@Uf@CFKVA@Q`@Q^U`@ADQXS^W`@U^Yd@_@h@EDED]VC@k@XUHUFG@IBUFA?}@Pk@Ja@He@HaAReAReARaATMBKDIFYRC@SNA@GBE@OJGFMPMPUd@GNAFCJGRCNALCXAP@P?R?NBVD\\P|@R|@?D@?Lt@Jj@TpAJj@Jb@H^Nh@Rf@LRLPV^XXPRLLJJJNPTLPJVJZ?@DHDP@F@JDVBT@V?X?ZGh@Kx@E`@G^E^A^Cd@ATAX?bCA|B?nAAzAArA?BK`AI`@M`@OXABQVIJA@OJ?@MJQH[NODMBE?_@DC?O?SAWAWGUGUIWKUK}@i@ISMSIOOQCIIKIGCAECICKCEAA@C?GBEFCF?F?FDFDDJFNJFDB@Sx@Qz@WhAc@jCGZKp@Gd@If@Gf@Gb@A@WtBGf@Gd@OnAYzBGj@Eb@Gd@QzAATCTEf@KdAAHEf@Kz@K|@Mz@cBk@{@[WKYMUMCAi@]MK]][[q@o@Yk@OUEIYg@[c@Ye@Y]IIKKUMSIOCIC}Bm@YIWIIAc@GSCM?UD?C?A?AAC?A?A?A?A?AAA?A?AAAACAAAAA?AAA?A??AA?A?A?A?A?A@A?A?A@A@A??@A?A@A@A@?BA@?B?@?@?BA@@B?B?D@B?B@B@@@BBD?F@HInACf@MnBARIbBCf@Ab@OzCItAGvA?RUhECf@O~CC`@q@dMq@K}@Qc@Ia@GGAEA}Ba@GA}@QK?LvB?F?DD`AB\\?@?D@b@ADEh@AHAFSfAAFQjAAJc@`BCFCFOd@EHCPCF?DADCXA`@ADCZAZAJ?H@F@BFFKHGDKDGDGDED"
+      "routePolyline": "jundDxa``IDXNdANdARjBThBBNBNmAnDQb@a@|@GFEFIHe@j@eDrDgDtDq@z@k@r@B?B?HAF?FANAPCNClASHATI~Bc@JCdCg@~@Qd@KfB]tAKlFaAQqAAKCWACMaAM_AO_AM_AMaAUcBUeBWkBWkB_@gC_@iCoB\\E?uB^NbAD`@"
     },
     "line_107": {
       "number": "L107",
@@ -361,76 +352,6 @@
       "longitude": -52.666446,
       "order": 12
     },
-    "line_105_stop_01": {
-      "lineId": "line_105",
-      "name": "Início - R. Israel",
-      "latitude": -27.11393,
-      "longitude": -52.59795,
-      "order": 1
-    },
-    "line_105_stop_02": {
-      "lineId": "line_105",
-      "name": "Parada 02",
-      "latitude": -27.11346,
-      "longitude": -52.60199,
-      "order": 2
-    },
-    "line_105_stop_03": {
-      "lineId": "line_105",
-      "name": "Parada 03",
-      "latitude": -27.11299,
-      "longitude": -52.60393,
-      "order": 3
-    },
-    "line_105_stop_04": {
-      "lineId": "line_105",
-      "name": "Parada 04",
-      "latitude": -27.11596,
-      "longitude": -52.60146,
-      "order": 4
-    },
-    "line_106_stop_01": {
-      "lineId": "line_106",
-      "name": "Início - R. Domingos Baldissera",
-      "latitude": -27.112551,
-      "longitude": -52.603116,
-      "order": 1
-    },
-    "line_106_stop_02": {
-      "lineId": "line_106",
-      "name": "Parada 02",
-      "latitude": -27.112553,
-      "longitude": -52.609876,
-      "order": 2
-    },
-    "line_106_stop_03": {
-      "lineId": "line_106",
-      "name": "Parada 03",
-      "latitude": -27.11166,
-      "longitude": -52.613556,
-      "order": 3
-    },
-    "line_106_stop_04": {
-      "lineId": "line_106",
-      "name": "Parada 04",
-      "latitude": -27.112322,
-      "longitude": -52.622479,
-      "order": 4
-    },
-    "line_106_stop_05": {
-      "lineId": "line_106",
-      "name": "Parada 05",
-      "latitude": -27.102436,
-      "longitude": -52.656247,
-      "order": 5
-    },
-    "line_106_stop_06": {
-      "lineId": "line_106",
-      "name": "Unochapecó",
-      "latitude": -27.093827,
-      "longitude": -52.666742,
-      "order": 6
-    },
     "line_107_stop_01": {
       "lineId": "line_107",
       "name": "Início - R. São Vicente de Paula",
@@ -493,6 +414,41 @@
       "latitude": -27.114361,
       "longitude": -52.599595,
       "order": 4
+    },
+    "line_105_stop_01": {
+      "lineId": "line_105",
+      "name": "Parada 01",
+      "latitude": -27.114215,
+      "longitude": -52.600587,
+      "order": 1
+    },
+    "line_105_stop_02": {
+      "lineId": "line_105",
+      "name": "Parada 02",
+      "latitude": -27.112485,
+      "longitude": -52.602976,
+      "order": 2
+    },
+    "line_105_stop_03": {
+      "lineId": "line_105",
+      "name": "Parada 03",
+      "latitude": -27.114321,
+      "longitude": -52.603606,
+      "order": 3
+    },
+    "line_105_stop_04": {
+      "lineId": "line_105",
+      "name": "Parada 04",
+      "latitude": -27.116239,
+      "longitude": -52.602951,
+      "order": 4
+    },
+    "line_105_stop_05": {
+      "lineId": "line_105",
+      "name": "Parada 05",
+      "latitude": -27.115492,
+      "longitude": -52.599701,
+      "order": 5
     }
   },
   "schedules": {
@@ -694,14 +650,6 @@
       "model": "Volkswagen Volksbus 15.190",
       "year": 2024,
       "lineId": "line_105",
-      "status": "offline"
-    },
-    "bus_1906": {
-      "number": "1906",
-      "plate": "CHA-9106",
-      "model": "Mercedes-Benz OF-1721",
-      "year": 2024,
-      "lineId": "line_106",
       "status": "offline"
     },
     "bus_1907": {
