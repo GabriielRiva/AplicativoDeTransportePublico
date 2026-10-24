@@ -65,8 +65,12 @@ class BusMap extends StatelessWidget {
       onTap: onTap,
       rotateGesturesEnabled: rotateGesturesEnabled,
       tiltGesturesEnabled: tiltGesturesEnabled,
+      // Mostra o ponto azul do passageiro, mas sem os botões do Google Maps
+      // (bússola e "minha localização"), que ficavam por cima do logo e
+      // da barra de status e não eram necessários.
       myLocationEnabled: myLocationEnabled,
-      myLocationButtonEnabled: myLocationEnabled,
+      myLocationButtonEnabled: false,
+      compassEnabled: false,
       // Trava a câmera dentro de Chapecó e limita o zoom.
       cameraTargetBounds: CameraTargetBounds(kChapecoBounds),
       minMaxZoomPreference: const MinMaxZoomPreference(kMinZoom, kMaxZoom),
