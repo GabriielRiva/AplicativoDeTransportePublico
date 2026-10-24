@@ -125,6 +125,11 @@ class DriverTripController extends Notifier<DriverTripState> {
   /// Quando chegou a última leitura com boa precisão (ver [_isReliable]).
   DateTime? _lastAccurateAt;
 
+  /// Leitura recusada por ser um salto grande demais e quantas leituras
+  /// seguidas confirmaram a nova posição (ver [_confirmsJump]).
+  Position? _jumpCandidate;
+  int _jumpConfirmations = 0;
+
   @override
   DriverTripState build() {
     // Reinicia o fluxo de trajeto a cada mudança de sessão, evitando
@@ -392,7 +397,9 @@ class DriverTripController extends Notifier<DriverTripState> {
         1000;
     final double seconds =
         math.max(now.difference(lastAt).inMilliseconds / 1000, 0.5);
-    if (meters / seconds > kGpsMaxSpeedMps) return false;
+    if (meters / seconds > kGpsMaxSpeedMps) return _confirmsJump(position);
+    _jumpCandidate = null;
+    _jumpConfirmations = 0;
     if (meters < kGpsMinMoveMeters &&
         position.speed < kGpsMovingSpeedMps) {
       return false;
@@ -400,10 +407,33 @@ class DriverTripController extends Notifier<DriverTripState> {
     return true;
   }
 
+  /// Um salto grande isolado é erro do GPS e é ignorado. Mas, se as
+  /// leituras seguintes continuam juntas no lugar novo, o GPS foi mesmo
+  /// reposicionado (saída de túnel, simulação recomeçando a linha) e a
+  /// nova posição é aceita depois de [kGpsJumpConfirmations] leituras.
+  bool _confirmsJump(Position position) {
+    final Position? candidate = _jumpCandidate;
+    final bool together = candidate != null &&
+        MapUtils.distanceInKm(
+              LatLng(candidate.latitude, candidate.longitude),
+              LatLng(position.latitude, position.longitude),
+            ) *
+            1000 <=
+            kGpsJumpClusterMeters;
+    _jumpConfirmations = together ? _jumpConfirmations + 1 : 1;
+    _jumpCandidate = position;
+    if (_jumpConfirmations < kGpsJumpConfirmations) return false;
+    _jumpCandidate = null;
+    _jumpConfirmations = 0;
+    return true;
+  }
+
   void _stopTransmission() {
     _lastReliable = null;
     _lastReliableAt = null;
     _lastAccurateAt = null;
+    _jumpCandidate = null;
+    _jumpConfirmations = 0;
     _positionSubscription?.cancel();
     _positionSubscription = null;
     _connectionSubscription?.cancel();

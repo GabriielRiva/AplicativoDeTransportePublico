@@ -29,6 +29,14 @@ const Duration kGpsStaleAfter = Duration(seconds: 15);
 /// impossível para um ônibus urbano (~120 km/h): é erro do GPS.
 const double kGpsMaxSpeedMps = 33;
 
+/// Leituras seguidas no mesmo lugar novo para aceitar um salto maior que
+/// [kGpsMaxSpeedMps] (GPS reposicionado de verdade, e não um erro isolado).
+const int kGpsJumpConfirmations = 3;
+
+/// Distância (m) entre duas leituras seguidas para contarem como o mesmo
+/// lugar novo (ver [kGpsJumpConfirmations]).
+const double kGpsJumpClusterMeters = 70;
+
 /// Velocidade (m/s) a partir da qual o ônibus é considerado em movimento
 /// (~5 km/h). Parado, o rumo informado pelo GPS é aleatório e é ignorado.
 const double kGpsMovingSpeedMps = 1.5;
@@ -40,6 +48,9 @@ const double kGpsMinMoveMeters = 5;
 /// Raio (em metros) em que o ônibus é considerado "no ponto": a partir daí
 /// o app avisa que o embarque e o desembarque estão liberados.
 const double kStopArrivalRadiusMeters = 35;
+
+/// Espera mínima entre dois pedidos de e-mail de recuperação de senha.
+const Duration kPasswordResetCooldown = Duration(seconds: 60);
 
 /// Tamanho mínimo de senha aceito no cadastro (padrão Firebase Auth).
 const int kMinPasswordLength = 6;

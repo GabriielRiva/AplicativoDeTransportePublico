@@ -35,8 +35,12 @@ Future<void> main(List<String> args) async {
   final _FirebaseConfig firebase;
   final _SimulatorConfig config;
   try {
-    firebase = _FirebaseConfig.load('android/app/google-services.json');
     config = _SimulatorConfig.load('simulador.json');
+    firebase = await _FirebaseConfig.load(
+      'android/app/google-services.json',
+      databaseUrl: config.databaseUrl,
+    );
+    stdout.writeln('Banco: ${firebase.databaseUrl}');
   } on _SetupException catch (error) {
     stderr.writeln(error.message);
     exitCode = 66;
@@ -104,7 +108,15 @@ class _SetupException implements Exception {
 class _FirebaseConfig {
   const _FirebaseConfig(this.apiKey, this.databaseUrl);
 
-  factory _FirebaseConfig.load(String path) {
+  /// Lê a chave da API do [path]. O endereço do banco vem de
+  /// [databaseUrl] (campo "bancoUrl" do simulador.json), do firebase_url do
+  /// google-services.json ou, se nenhum existir, do endereço padrão do
+  /// projeto; se o banco estiver em outra região, o próprio Firebase
+  /// informa o endereço certo, que passa a ser usado.
+  static Future<_FirebaseConfig> load(
+    String path, {
+    String? databaseUrl,
+  }) async {
     final File file = File(path);
     if (!file.existsSync()) {
       throw _SetupException('Arquivo $path não encontrado.');
@@ -118,13 +130,40 @@ class _FirebaseConfig {
     final List<dynamic> keys = client['api_key'] as List<dynamic>;
     final String apiKey =
         (keys.first as Map<String, dynamic>)['current_key'] as String;
-    final String? databaseUrl = project['firebase_url'] as String?;
-    if (databaseUrl == null) {
-      throw const _SetupException(
-        'O google-services.json não tem o firebase_url do Realtime Database.',
-      );
+    final String projectId = project['project_id'] as String;
+    final String url = databaseUrl ??
+        project['firebase_url'] as String? ??
+        'https://$projectId-default-rtdb.firebaseio.com';
+    return _FirebaseConfig(apiKey, await _resolveRegion(url));
+  }
+
+  /// Bancos fora dos EUA têm outro endereço; o Firebase avisa qual é.
+  static Future<String> _resolveRegion(String url) async {
+    final String base =
+        url.endsWith('/') ? url.substring(0, url.length - 1) : url;
+    try {
+      final http.Response response =
+          await http.get(Uri.parse('$base/.json?shallow=true'));
+      final RegExpMatch? match = RegExp(
+        r'different region.*?(https://[^\s"]+)',
+      ).firstMatch(response.body);
+      if (match != null) {
+        // Tira a barra ou o ponto final que vêm grudados no endereço.
+        return match.group(1)!.replaceAll(RegExp(r'[./]+$'), '');
+      }
+      if (response.statusCode == 404) {
+        throw _SetupException(
+          'Banco não encontrado em $base. Copie o endereço que aparece no '
+          'topo de Realtime Database > Dados, no Firebase Console, para o '
+          'campo "bancoUrl" do simulador.json.',
+        );
+      }
+    } on http.ClientException catch (error) {
+      throw _SetupException('Sem conexão com $base: ${error.message}');
+    } on SocketException catch (error) {
+      throw _SetupException('Sem conexão com $base: ${error.message}');
     }
-    return _FirebaseConfig(apiKey, databaseUrl);
+    return base;
   }
 
   final String apiKey;
@@ -134,6 +173,7 @@ class _FirebaseConfig {
 /// Conteúdo do simulador.json.
 class _SimulatorConfig {
   const _SimulatorConfig({
+    required this.databaseUrl,
     required this.speedKmh,
     required this.stopSeconds,
     required this.buses,
@@ -151,6 +191,7 @@ class _SimulatorConfig {
         jsonDecode(file.readAsStringSync()) as Map<String, dynamic>;
     final List<dynamic> buses = json['onibus'] as List<dynamic>;
     return _SimulatorConfig(
+      databaseUrl: json['bancoUrl'] as String?,
       speedKmh: (json['velocidadeKmh'] as num? ?? 20).toDouble(),
       stopSeconds: (json['paradaSegundos'] as num? ?? 15).toInt(),
       buses: buses
@@ -160,6 +201,9 @@ class _SimulatorConfig {
           .toList(),
     );
   }
+
+  /// Endereço do Realtime Database (opcional; ver [_FirebaseConfig.load]).
+  final String? databaseUrl;
 
   /// Velocidade do ônibus em movimento.
   final double speedKmh;
