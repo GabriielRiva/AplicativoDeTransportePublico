@@ -472,8 +472,17 @@ class PassengerMapController extends Notifier<PassengerMapState> {
     return display;
   }
 
+  /// Distância (m) até a qual paradas de linhas diferentes são o mesmo
+  /// ponto físico e viram um só marcador.
+  static const double _samePlaceMeters = 20;
+
   /// Pontos de parada de todas as linhas. Pontos compartilhados (ex.:
-  /// Terminal Urbano) viram um único marcador com as linhas que param ali.
+  /// Terminal Urbano, início das rotas de teste) viram um único marcador
+  /// com as linhas que param ali.
+  ///
+  /// O agrupamento é por distância, e não por coordenadas arredondadas:
+  /// com arredondamento, dois pontos a poucos metros um do outro podiam
+  /// cair em "casas" diferentes e aparecer como abrigos sobrepostos.
   Set<Marker> _buildStopMarkers(
     Map<String, List<Stop>> stopsByLine,
     Map<String, Line> linesById,
@@ -483,15 +492,28 @@ class PassengerMapController extends Notifier<PassengerMapState> {
     final Map<String, ({Stop stop, String lineId})> byPlace =
         <String, ({Stop stop, String lineId})>{};
     final Map<String, Set<String>> linesByPlace = <String, Set<String>>{};
-    for (final MapEntry<String, List<Stop>> entry in stopsByLine.entries) {
-      for (final Stop stop in entry.value) {
-        // ~11 m de precisão: o mesmo ponto físico em linhas diferentes.
-        final String key = '${stop.latitude.toStringAsFixed(4)},'
-            '${stop.longitude.toStringAsFixed(4)}';
-        byPlace.putIfAbsent(key, () => (stop: stop, lineId: entry.key));
+    // Ordem fixa das linhas: o marcador de cada lugar não muda entre uma
+    // atualização e outra.
+    final List<String> lineIds = stopsByLine.keys.toList()..sort();
+    for (final String lineId in lineIds) {
+      for (final Stop stop in stopsByLine[lineId]!) {
+        final LatLng position = LatLng(stop.latitude, stop.longitude);
+        String? key;
+        for (final MapEntry<String, ({Stop stop, String lineId})> place
+            in byPlace.entries) {
+          final LatLng other =
+              LatLng(place.value.stop.latitude, place.value.stop.longitude);
+          if (MapUtils.distanceInKm(position, other) * 1000 <=
+              _samePlaceMeters) {
+            key = place.key;
+            break;
+          }
+        }
+        key ??= stop.id;
+        byPlace.putIfAbsent(key, () => (stop: stop, lineId: lineId));
         linesByPlace
             .putIfAbsent(key, () => <String>{})
-            .add(linesById[entry.key]?.number ?? entry.key);
+            .add(linesById[lineId]?.number ?? lineId);
       }
     }
 
