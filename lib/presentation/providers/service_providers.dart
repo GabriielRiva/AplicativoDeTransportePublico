@@ -5,6 +5,7 @@ import 'package:geolocator/geolocator.dart';
 import '../../core/constants/app_constants.dart';
 import '../../core/network/network_info.dart';
 import '../../core/services/location_service.dart';
+import '../../core/services/password_reset_cooldown.dart';
 import '../../core/services/permission_service.dart';
 
 /// Serviço de acesso ao GPS do dispositivo.
@@ -14,6 +15,11 @@ final Provider<LocationService> locationServiceProvider =
 /// Serviço de permissões de localização.
 final Provider<PermissionService> permissionServiceProvider =
     Provider<PermissionService>((Ref ref) => PermissionService());
+
+/// Limite de reenvio do e-mail de recuperação de senha (uma instância para
+/// o app inteiro, para a espera valer mesmo saindo e voltando à tela).
+final Provider<PasswordResetCooldown> passwordResetCooldownProvider =
+    Provider<PasswordResetCooldown>((Ref ref) => PasswordResetCooldown());
 
 /// Verificador de conectividade.
 final Provider<NetworkInfo> networkInfoProvider =
