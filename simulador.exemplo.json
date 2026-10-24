@@ -1,0 +1,27 @@
+{
+  "velocidadeKmh": 20,
+  "paradaSegundos": 15,
+  "onibus": [
+    {
+      "linha": "line_101",
+      "onibus": "bus_1430",
+      "email": "motorista.sim1@exemplo.com",
+      "senha": "troque-a-senha",
+      "inicio": 0
+    },
+    {
+      "linha": "line_104",
+      "onibus": "bus_1725",
+      "email": "motorista.sim2@exemplo.com",
+      "senha": "troque-a-senha",
+      "inicio": 0.3
+    },
+    {
+      "linha": "line_103",
+      "onibus": "bus_1610",
+      "email": "motorista.sim3@exemplo.com",
+      "senha": "troque-a-senha",
+      "inicio": 0.5
+    }
+  ]
+}

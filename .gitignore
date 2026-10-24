@@ -19,6 +19,9 @@ lib/firebase_options.dart
 android/local.properties
 android/key.properties
 
+# Contas de motorista do simulador de ônibus (ver simulador.exemplo.json)
+simulador.json
+
 # Arquivos locais gerados por ferramentas (não versionar)
 flutter_*.log
 flutter_*.png
