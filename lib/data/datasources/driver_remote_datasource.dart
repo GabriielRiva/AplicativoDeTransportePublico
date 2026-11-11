@@ -12,7 +12,7 @@ import '../models/trip_model.dart';
 /// Datasource do nó drivers/ do Realtime Database.
 ///
 /// Concentra o ciclo de vida do trajeto: início, transmissão de GPS
-/// a cada 5 segundos (RNF05), encerramento e a stream de tempo real
+/// a cada 1 segundo (RNF05), encerramento e a stream de tempo real
 /// consumida pelo perfil do passageiro.
 class DriverRemoteDatasource {
   /// Cria o datasource recebendo a instância de [FirebaseDatabase].

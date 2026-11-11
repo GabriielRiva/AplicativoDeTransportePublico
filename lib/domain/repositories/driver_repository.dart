@@ -14,7 +14,7 @@ abstract interface class DriverRepository {
   /// trip_finished e interrompendo a transmissão.
   Future<void> finishTrip(String driverId);
 
-  /// Sobrescreve a posição atual do motorista (chamado a cada 5 segundos
+  /// Sobrescreve a posição atual do motorista (chamado a cada 1 segundo
   /// durante um trajeto ativo — RNF05).
   Future<void> sendLocation({
     required String driverId,

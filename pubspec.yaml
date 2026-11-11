@@ -1,7 +1,7 @@
 name: trancity
 description: >-
   Aplicativo de rastreamento de onibus do transporte publico de Chapeco-SC
-  em tempo real. Prototipo academico (TCC) - Ciencias da Computacao.
+  em tempo real. Prototipo academico (TCC) - Ciencia da Computacao.
 publish_to: "none"
 version: 1.0.0+1
 

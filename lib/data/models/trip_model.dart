@@ -43,7 +43,7 @@ class TripModel extends Trip {
   }
 
   /// Converte o trajeto para o JSON gravado em drivers/{uid} no início
-  /// do trajeto (a posição é sobrescrita a cada 5 segundos — RNF05).
+  /// do trajeto (a posição é sobrescrita a cada 1 segundo — RNF05).
   Map<String, dynamic> toJson() {
     return <String, dynamic>{
       'busId': busId,

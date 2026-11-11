@@ -29,4 +29,4 @@ de paradas, horários e ônibus por linha.
 3. No motorista: selecionar a linha L101, o ônibus #1430 e Iniciar
    Trajeto.
 4. No passageiro: acompanhar o marcador verde no mapa, com
-   atualização automática a cada 5 segundos (RNF05).
+   atualização automática a cada 1 segundo (RNF05).

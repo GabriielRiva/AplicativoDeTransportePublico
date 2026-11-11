@@ -2,7 +2,7 @@
 
 Aplicativo Android de rastreamento em tempo real dos ônibus do transporte
 público de Chapecó-SC. Protótipo acadêmico desenvolvido como Trabalho de
-Conclusão de Curso — Ciências da Computação (Unochapecó).
+Conclusão de Curso — Ciência da Computação (Unochapecó).
 
 ## Stack
 
@@ -26,7 +26,7 @@ Repository Pattern e injeção de dependência via Riverpod.
 ## Perfis
 
 - **Motorista:** seleciona linha e ônibus, inicia o trajeto e transmite a
-  localização GPS a cada 5 segundos (RNF05).
+  localização GPS a cada 1 segundo (o RNF05 exige no máximo 5 segundos).
 - **Passageiro:** acompanha os ônibus no mapa em tempo real e consulta
   linhas, rotas, paradas e horários.
 

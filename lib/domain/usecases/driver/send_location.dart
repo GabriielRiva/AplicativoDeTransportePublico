@@ -2,7 +2,7 @@ import '../../../core/errors/app_exception.dart';
 import '../../repositories/driver_repository.dart';
 
 /// Transmite a posição atual do motorista (RF06), sobrescrevendo as
-/// coordenadas no nó drivers/{uid} a cada 5 segundos (RNF05).
+/// coordenadas no nó drivers/{uid} a cada 1 segundo (RNF05).
 class SendLocation {
   /// Cria o usecase com o repositório do motorista.
   const SendLocation(this._driverRepository);
